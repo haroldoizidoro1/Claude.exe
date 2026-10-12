@@ -1,3 +1,8 @@
+# Setup no PC
+
+Rápido: `./install-pc.sh` instala OmniRoute, Headroom e claude-mem (claude-code-setup e Task Observer vêm pela conta/`/plugin`).
+Testado no container: `npm i -g omniroute` sobe na porta 20128; `headroom-ai[mcp,code]` instala em venv.
+
 # Setup no PC (Claude Code)
 
 Este repositório já traz `.claude/settings.json`, que registra o marketplace do
