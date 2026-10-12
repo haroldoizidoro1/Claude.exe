@@ -2,7 +2,7 @@
 # Instala no PC (Linux/macOS/WSL): OmniRoute, Headroom, claude-mem, claude-code-setup, task-observer.
 # Só instala. Não altera ANTHROPIC_BASE_URL nem redireciona o tráfego do Claude Code.
 set -euo pipefail
-command -v node >/dev/null || { echo "Instale Node.js 18+ primeiro"; exit 1; }
+command -v node >/dev/null || { echo "Instale Node.js 20+ primeiro"; exit 1; }
 command -v claude >/dev/null || { echo "Instale o Claude Code primeiro"; exit 1; }
 
 echo "==> OmniRoute (gateway local, porta 20128)"

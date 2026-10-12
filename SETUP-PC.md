@@ -14,7 +14,7 @@ git clone https://github.com/haroldoizidoro1/claude.exe && cd claude.exe
 claude            # aceite o prompt de confiança / instalação do plugin
 ```
 
-Pré-requisito do claude-mem: Node.js 18+ (Bun e uv são instalados sozinhos).
+Pré-requisito do claude-mem: Node.js 20+ (Bun e uv são instalados sozinhos).
 Manualmente: `/plugin marketplace add thedotmack/claude-mem` e `/plugin install claude-mem`.
 
 ## Plugins do catálogo da conta (claude-code-setup, Task Observer, Headroom)
@@ -38,3 +38,11 @@ projeto para instalar e depois exporte:
 export ANTHROPIC_BASE_URL="http://localhost:<porta-do-omniroute>"
 export ANTHROPIC_AUTH_TOKEN="<chave gerada no dashboard do OmniRoute>"
 ```
+
+## claude-mem: instalador alternativo e conta
+O README oficial (https://github.com/thedotmack/claude-mem) recomenda também
+`npx claude-mem install`. Esse instalador pede login no cmem.ai (e-mail, trial
+de 30 dias) e pode sincronizar memórias na nuvem. Para ficar 100% local, use
+`CLAUDE_MEM_ONLINE_OPTIN=false npx claude-mem install` ou o caminho por
+`/plugin` descrito acima. Não use `npm install -g claude-mem` (só instala a SDK).
+Configurações ficam em `~/.claude-mem/settings.json`.
