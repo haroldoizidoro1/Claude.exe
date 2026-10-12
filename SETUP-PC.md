@@ -46,3 +46,14 @@ de 30 dias) e pode sincronizar memórias na nuvem. Para ficar 100% local, use
 `CLAUDE_MEM_ONLINE_OPTIN=false npx claude-mem install` ou o caminho por
 `/plugin` descrito acima. Não use `npm install -g claude-mem` (só instala a SDK).
 Configurações ficam em `~/.claude-mem/settings.json`.
+
+## Headroom: detalhes do README oficial
+Repositório: https://github.com/headroomlabs-ai/headroom (pacote PyPI `headroom-ai`).
+- Instalação completa: `pip install "headroom-ai[all]"` (ou `uv tool install --python 3.13 "headroom-ai[all]"`;
+  em macOS use Python 3.13 se o seu `python3` for mais novo que os wheels). O script usa `[mcp,code]`, mais leve.
+- `npm install headroom-ai` é só o SDK TypeScript, sem a CLI.
+- `headroom mcp install` registra as ferramentas no Claude Code (é o que o script faz; não redireciona tráfego).
+- Opcionais que roteiam o tráfego por um proxy local, então use só se quiser: `headroom wrap claude`
+  (desfaz com `headroom unwrap claude`) ou `headroom proxy --port 8787`.
+- `headroom learn --verbosity` (simula) e `--apply` mineram sessões com falha e gravam correções em `CLAUDE.local.md`.
+- Atualizar: `headroom update`.
