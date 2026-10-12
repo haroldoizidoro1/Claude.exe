@@ -2,9 +2,17 @@
   "extraKnownMarketplaces": {
     "thedotmack": {
       "source": { "source": "github", "repo": "thedotmack/claude-mem" }
+    },
+    "claude-plugins-official": {
+      "source": { "source": "github", "repo": "anthropics/claude-plugins-official" }
+    },
+    "one-skill-to-rule-them-all": {
+      "source": { "source": "github", "repo": "rebelytics/one-skill-to-rule-them-all" }
     }
   },
   "enabledPlugins": {
-    "claude-mem@thedotmack": true
+    "claude-mem@thedotmack": true,
+    "claude-code-setup@claude-plugins-official": true,
+    "task-observer@one-skill-to-rule-them-all": true
   }
 }

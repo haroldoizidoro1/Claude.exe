@@ -57,3 +57,12 @@ Repositório: https://github.com/headroomlabs-ai/headroom (pacote PyPI `headroom
   (desfaz com `headroom unwrap claude`) ou `headroom proxy --port 8787`.
 - `headroom learn --verbosity` (simula) e `--apply` mineram sessões com falha e gravam correções em `CLAUDE.local.md`.
 - Atualizar: `headroom update`.
+
+## claude-code-setup e Task Observer (fontes oficiais)
+- claude-code-setup: https://github.com/anthropics/claude-plugins-official (marketplace `claude-plugins-official`).
+- Task Observer: https://github.com/rebelytics/one-skill-to-rule-them-all (plugin `task-observer`).
+  Alternativa: `npx skills add rebelytics/one-skill-to-rule-them-all --skill task-observer -g`.
+  Só instalar não basta: a ativação vem do `CLAUDE.md` deste repo (carregar a skill no início);
+  confirme em uma sessão NOVA. Sinal de que funciona: a pasta `skill-observations/observation-log/` aparece depois de algumas sessões.
+- Os dois também estão em `.claude/settings.json`, então o PC os oferece ao abrir a pasta.
+- Isto substitui os plugins do cartão do catálogo (versões de terceiros); o Task Observer certo é o do rebelytics.

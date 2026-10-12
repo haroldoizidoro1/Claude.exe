@@ -21,7 +21,9 @@ headroom mcp install || echo "(rode 'headroom mcp install' manualmente se falhou
 echo "==> Plugins do Claude Code"
 claude plugin marketplace add thedotmack/claude-mem || true
 claude plugin install claude-mem@thedotmack || true
-# claude-code-setup e Task Observer: habilitados na conta (Anthropic Directory).
-# Se não aparecerem, dentro do Claude Code use /plugin e busque pelo nome.
+claude plugin marketplace add anthropics/claude-plugins-official || true
+claude plugin install claude-code-setup@claude-plugins-official || true
+claude plugin marketplace add rebelytics/one-skill-to-rule-them-all || true
+claude plugin install task-observer@one-skill-to-rule-them-all || true
 
 echo "Pronto. Inicie o gateway com: omniroute  (dashboard em http://localhost:20128)"
