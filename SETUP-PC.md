@@ -66,3 +66,23 @@ Repositório: https://github.com/headroomlabs-ai/headroom (pacote PyPI `headroom
   confirme em uma sessão NOVA. Sinal de que funciona: a pasta `skill-observations/observation-log/` aparece depois de algumas sessões.
 - Os dois também estão em `.claude/settings.json`, então o PC os oferece ao abrir a pasta.
 - Isto substitui os plugins do cartão do catálogo (versões de terceiros); o Task Observer certo é o do rebelytics.
+
+## OmniRoute + Claude Code (guia oficial, opt-in manual)
+Fonte: https://github.com/diegosouzapw/OmniRoute (docs/guides/CLAUDE-CODE-CONFIGURATION.md).
+Isto redireciona o Claude Code para o gateway e pode usar modelos que não são da Anthropic.
+Nada disso é aplicado automaticamente; rode você mesmo quando quiser.
+
+```bash
+npm install -g omniroute && omniroute      # dashboard em http://localhost:20128
+# no dashboard: Providers -> conectar Kiro AI ou OpenCode Free (sem cadastro)
+omniroute launch                           # abre o claude apontado para o OmniRoute local, só nessa execução
+omniroute setup-claude                     # cria perfis em ~/.claude/profiles/<nome>/settings.json
+omniroute launch --profile <nome>          # usa um perfil/modelo específico
+```
+- `omniroute launch` define `ANTHROPIC_BASE_URL` (sem `/v1`) e `ANTHROPIC_AUTH_TOKEN` só para aquela execução;
+  um `claude` aberto normalmente continua usando a Anthropic.
+- Remoto (VPS): `omniroute connect <host>` e depois `omniroute launch`.
+- Modelos não-Claude no `/model`: ligue `EXPOSE_CC_DISCOVERY_ALIASES` (Settings -> Feature Flags) e use
+  `CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY=1`. Ajuste `CLAUDE_CODE_AUTO_COMPACT_WINDOW` abaixo da janela real do modelo.
+- Variáveis de ambiente só são lidas na inicialização: reinicie o Claude Code após mudar.
+- MCP do OmniRoute (110 ferramentas): `claude mcp add-server omniroute --type http --url http://localhost:20128/api/mcp/stream`.
