@@ -86,3 +86,7 @@ omniroute launch --profile <nome>          # usa um perfil/modelo específico
   `CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY=1`. Ajuste `CLAUDE_CODE_AUTO_COMPACT_WINDOW` abaixo da janela real do modelo.
 - Variáveis de ambiente só são lidas na inicialização: reinicie o Claude Code após mudar.
 - MCP do OmniRoute (110 ferramentas): `claude mcp add-server omniroute --type http --url http://localhost:20128/api/mcp/stream`.
+
+## Permissões globais (todas as sessões e projetos)
+No PC, rode `./apply-global-permissions.sh`: mescla `global-permissions.json` em `~/.claude/settings.json`
+(faz backup, preserva o que já existe, sem duplicar). São as mesmas 11 regras estreitas do projeto.
