@@ -89,8 +89,11 @@ omniroute launch --profile <nome>          # usa um perfil/modelo específico
 
 ## Skills caveman, ultracave e graphify em todos os projetos
 Já valem neste repositório (`.claude/skills/` + `CLAUDE.md`). Para valer em qualquer pasta do PC, rode
-`./install-skills-global.sh` uma vez: copia as três para `~/.claude/skills/` e acrescenta a regra de ativação em
-`~/.claude/CLAUDE.md` (sem duplicar). Detalhes e fontes em `memoria.md`.
+`./install-skills-global.sh` uma vez. Ele instala o plugin oficial da caveman (com ganchos, comandos `/caveman-*` e
+agentes), deixa o modo inicial em `caveman`, instala a CLI e a skill do graphify e acrescenta a regra de ativação em
+`~/.claude/CLAUDE.md` (sem duplicar). Precisa de Node.js (ganchos da caveman) e Python 3 (graphify).
+Ganchos do graphify são por projeto: dentro de cada um, `graphify claude install` e, se quiser, `graphify hook install`.
+Detalhes e fontes em `memoria.md`.
 
 ## Permissões globais (todas as sessões e projetos)
 No PC, rode `./apply-global-permissions.sh`: mescla `global-permissions.json` em `~/.claude/settings.json`

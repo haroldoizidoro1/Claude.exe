@@ -28,7 +28,13 @@ Ficam em `.claude/skills/`, copiadas sem alteração dos repositórios oficiais 
 ### Onde vale
 
 - **Este repositório** (PC e nuvem): `.claude/skills/` + seção "Skills sempre ativas" do `CLAUDE.md`.
-- **Todos os projetos no PC**: rodar `./install-skills-global.sh` uma vez. Ele copia as três skills para `~/.claude/skills/` e acrescenta a regra de ativação em `~/.claude/CLAUDE.md`.
+- **Todos os projetos no PC, com ganchos extras**: rodar `./install-skills-global.sh` uma vez. Ele:
+  - instala o plugin oficial `caveman@caveman` no escopo de usuário: skills (caveman, ultracave, megacave e outras), comandos `/caveman-*`, agentes cavecrew e ganchos SessionStart, SubagentStart, UserPromptSubmit e SessionEnd (precisam de Node.js);
+  - cria `~/.config/caveman/config.json` com `{"defaultMode": "caveman"}` se não existir (troque para `"ultracave"` para o modo máximo sempre);
+  - instala a CLI `graphifyy` e roda `graphify install` (skill global);
+  - acrescenta a regra de ativação em `~/.claude/CLAUDE.md` como reserva.
+  - Ganchos do graphify são por projeto: `graphify claude install` (consulta o grafo antes de ler arquivos) e `graphify hook install` (refaz o grafo a cada commit).
+- **Pendente**: habilitar o plugin caveman no `.claude/settings.json` deste repositório (para os ganchos valerem também nas sessões de nuvem). A sessão de 2026-10-22 não teve permissão para editar esse arquivo; precisa de aprovação do usuário.
 - **Fora do Claude Code** (claude.ai e app): enviar as pastas das skills em Configurações > Capacidades > Skills da conta.
 
 ## Outros registros
