@@ -8,12 +8,16 @@
     },
     "one-skill-to-rule-them-all": {
       "source": { "source": "github", "repo": "rebelytics/one-skill-to-rule-them-all" }
+    },
+    "caveman": {
+      "source": { "source": "github", "repo": "JuliusBrussee/caveman" }
     }
   },
   "enabledPlugins": {
     "claude-mem@thedotmack": true,
     "claude-code-setup@claude-plugins-official": true,
-    "task-observer@one-skill-to-rule-them-all": true
+    "task-observer@one-skill-to-rule-them-all": true,
+    "caveman@caveman": true
   },
   "permissions": {
     "allow": [

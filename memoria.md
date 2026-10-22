@@ -34,7 +34,7 @@ Ficam em `.claude/skills/`, copiadas sem alteração dos repositórios oficiais 
   - instala a CLI `graphifyy` e roda `graphify install` (skill global);
   - acrescenta a regra de ativação em `~/.claude/CLAUDE.md` como reserva.
   - Ganchos do graphify são por projeto: `graphify claude install` (consulta o grafo antes de ler arquivos) e `graphify hook install` (refaz o grafo a cada commit).
-- **Pendente**: habilitar o plugin caveman no `.claude/settings.json` deste repositório (para os ganchos valerem também nas sessões de nuvem). A sessão de 2026-10-22 não teve permissão para editar esse arquivo; precisa de aprovação do usuário.
+- **Este repositório também habilita o plugin**: `.claude/settings.json` registra o marketplace `JuliusBrussee/caveman` e `caveman@caveman` (aprovado pelo usuário em 2026-10-22). Ao abrir a pasta, o Claude Code oferece instalar o plugin com os ganchos.
 - **Fora do Claude Code** (claude.ai e app): enviar as pastas das skills em Configurações > Capacidades > Skills da conta.
 
 ## Outros registros
