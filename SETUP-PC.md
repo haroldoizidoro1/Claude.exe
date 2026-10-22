@@ -87,6 +87,11 @@ omniroute launch --profile <nome>          # usa um perfil/modelo específico
 - Variáveis de ambiente só são lidas na inicialização: reinicie o Claude Code após mudar.
 - MCP do OmniRoute (110 ferramentas): `claude mcp add-server omniroute --type http --url http://localhost:20128/api/mcp/stream`.
 
+## Skills caveman, ultracave e graphify em todos os projetos
+Já valem neste repositório (`.claude/skills/` + `CLAUDE.md`). Para valer em qualquer pasta do PC, rode
+`./install-skills-global.sh` uma vez: copia as três para `~/.claude/skills/` e acrescenta a regra de ativação em
+`~/.claude/CLAUDE.md` (sem duplicar). Detalhes e fontes em `memoria.md`.
+
 ## Permissões globais (todas as sessões e projetos)
 No PC, rode `./apply-global-permissions.sh`: mescla `global-permissions.json` em `~/.claude/settings.json`
 (faz backup, preserva o que já existe, sem duplicar). São as mesmas 11 regras estreitas do projeto.
