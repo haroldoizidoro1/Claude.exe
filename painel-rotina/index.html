@@ -350,6 +350,21 @@ body.solid .tcard, .tcard { box-shadow: 0 6px 16px -12px rgba(0,0,0,.6); }
 .ev { border-radius: 10px; padding: 8px 10px; background: color-mix(in oklab, var(--cc) 16%, var(--solid)); border-left: 3px solid var(--cc); cursor: pointer; display: grid; gap: 2px; text-align: left; }
 .ev .tt { font-weight: 500; font-size: 13px; overflow-wrap: anywhere; }
 .ev .hh { font-size: 11.5px; color: var(--fg-2); }
+.ev.allday { border-left: 0; padding: 5px 10px; background: color-mix(in oklab, var(--cc) 20%, transparent); }
+.gb { display: inline-block; font-size: 9.5px; font-weight: 700; line-height: 15px; padding: 0 5px; border-radius: 4px; background: var(--track); color: var(--fg-2); margin-left: 6px; vertical-align: 1px; }
+.gerr { background: color-mix(in oklab, var(--c-amber) 15%, transparent); border-radius: var(--r-md); padding: 10px 12px; font-size: 13px; line-height: 1.5; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 0 0 12px; }
+.callist { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.callist li { display: flex; gap: 10px; align-items: center; min-width: 0; }
+.callist li span { overflow-wrap: anywhere; }
+.callist .check { width: 20px; height: 20px; }
+.callist .check .i { width: 12px; height: 12px; }
+.gmeta { display: grid; gap: 10px; color: var(--fg-2); }
+.gmeta > div { display: flex; gap: 10px; align-items: flex-start; overflow-wrap: anywhere; }
+.gmeta .i { margin-top: 1px; }
+.modal-err { background: color-mix(in oklab, var(--c-red) 13%, transparent); border-radius: var(--r-md); padding: 10px 12px; font-size: 13px; line-height: 1.5; }
+a.btn { text-decoration: none; color: inherit; }
+a.btn.primary { color: var(--on-accent); }
+.btn[disabled] { opacity: .6; cursor: default; }
 .day .due-t { display: flex; gap: 8px; align-items: center; font-size: 12.5px; padding: 4px 2px; color: var(--fg-2); }
 .day .due-t .check { width: 16px; height: 16px; }
 .day .due-t .check .i { width: 10px; height: 10px; }
@@ -584,7 +599,7 @@ const KINDS = [
   { k:'focus',    n:'Bloco de foco', c:'teal' },
   { k:'personal', n:'Pessoal',       c:'amber' },
 ];
-const DEFAULTS = { name:'', wallpaper:'ash', accent:'blue', glass:'clear', solid:false, focusMin:25, breakMin:5, goalFocusH:2, goalTasks:0, theme:'' };
+const DEFAULTS = { name:'', wallpaper:'ash', accent:'blue', glass:'clear', solid:false, focusMin:25, breakMin:5, goalFocusH:2, goalTasks:0, theme:'', gcalOn:false, gcalCals:['primary'] };
 const COLS = ['tasks','projects','events','focus'];
 const VIEWS = ['home','tarefas','agenda','projetos','relatorios','ajustes'];
 
@@ -659,7 +674,7 @@ const Store = {
       });
       let gotS = false;
       this.settingsRef.onSnapshot(snap => {
-        if (!this.settingsTimer) { S.settings = { ...DEFAULTS, ...(snap.exists ? snap.data() : {}) }; applyLook(); }
+        if (!this.settingsTimer) { S.settings = { ...DEFAULTS, ...(snap.exists ? snap.data() : {}) }; applyLook(); gcalSync(); }
         if (!gotS) { gotS = true; first(); } else scheduleRender();
       }, err => this.fail(err));
     } else {
@@ -668,6 +683,7 @@ const Store = {
       applyLook(); render();
     }
     setSync();
+    gcalBoot();
   },
   loadLocal() {
     try {
@@ -724,6 +740,170 @@ function setSync() {
   const el = $('#sync');
   el.dataset.s = Store.mode;
   el.title = { db:'Salvo na sua conta Claude', local:'Salvo só neste navegador', none:'Sem armazenamento: os dados somem ao fechar', wait:'Conectando…' }[Store.mode];
+}
+
+/* ================= google calendar ================= */
+const GC = 'Google Calendar';
+const G = { mcp:null, booted:false, state:'off', note:'', cals:null, calsTried:false, data:{}, subs:new Map(), updatedAt:0, busy:false };
+const AUTHZ = ['needs_reauth','server_not_connected','selection_required','server_not_found','blocked_by_policy','approval_required','not_in_manifest','not_granted','capability_disabled','capability_removed','consent_required'];
+const GCAL_MSG = {
+  unavailable: 'O Google Agenda funciona quando o painel está aberto no claude.ai.',
+  off: 'Veja suas reuniões do Google Agenda na tela inicial e na agenda, e crie compromissos no Google direto daqui.',
+  reauth: 'A conexão com o Google expirou. Reconecte o Google Agenda em claude.ai, Configurações → Conectores, e toque em Tentar de novo.',
+  notconn: 'O Google Agenda não está conectado à sua conta Claude. Adicione em claude.ai, Configurações → Conectores, e toque em Tentar de novo.',
+  select: 'Há mais de uma conta do Google Agenda conectada. Escolha qual usar no aviso do claude.ai e toque em Tentar de novo.',
+  blocked: 'A sua organização bloqueou o Google Agenda para este painel.',
+  denied: 'Este painel ainda não tem permissão para ler sua agenda. Toque em Permitir e confirme no aviso do claude.ai.',
+  down: 'O Google Agenda não respondeu agora. O painel tenta de novo sozinho em alguns minutos.',
+};
+const gErrState = code => ({ needs_reauth:'reauth', server_not_connected:'notconn', server_not_found:'notconn', selection_required:'select', blocked_by_policy:'blocked', approval_required:'denied', not_in_manifest:'denied', consent_required:'denied', not_granted:'unavailable', capability_disabled:'unavailable', capability_removed:'unavailable' }[code] || 'down');
+const gIsErr = s => ['reauth','notconn','select','blocked','denied','down'].includes(s);
+const asObj = p => { if (typeof p === 'string') { try { return JSON.parse(p); } catch (e) { return {}; } } return p || {}; };
+const hhmm = ts => { const d = new Date(ts); return `${pad(d.getHours())}:${pad(d.getMinutes())}`; };
+const safeUrl = u => (typeof u === 'string' && u.startsWith('https://')) ? u : '';
+const gOn = () => !!(G.mcp && S.settings.gcalOn);
+
+async function gcalBoot() {
+  try { G.mcp = window.claude?.use ? await window.claude.use('mcp') : null; } catch (e) { G.mcp = null; }
+  G.booted = true;
+  if (!G.mcp) G.state = 'unavailable';
+  gcalSync(); render();
+}
+function gcalWindows() {
+  const ws = weekStart(), out = [ws, addDays(ws, 7)];
+  if (ui.weekOffset < 0 || ui.weekOffset > 1) out.push(addDays(ws, ui.weekOffset * 7));
+  return out;
+}
+function gcalSync() {
+  if (!G.booted) return;
+  const want = new Map();
+  if (gOn()) {
+    if (G.state === 'off' || G.state === 'unavailable') G.state = 'wait';
+    for (const cal of S.settings.gcalCals || []) for (const w of gcalWindows()) want.set(`${cal}|${ymd(w)}`, { cal, w });
+  } else if (G.mcp) { G.state = 'off'; G.note = ''; }
+  for (const [k, un] of G.subs) if (!want.has(k)) { un(); G.subs.delete(k); delete G.data[k]; }
+  for (const [k, { cal, w }] of want) {
+    if (G.subs.has(k)) continue;
+    const input = { startTime: `${ymd(w)}T00:00:00`, endTime: `${ymd(addDays(w, 7))}T00:00:00`, orderBy: 'startTime', pageSize: 250 };
+    if (cal !== 'primary') input.calendarId = cal;
+    G.subs.set(k, G.mcp.watchTool(GC, 'list_events', input, ev => gcalOnWatch(k, cal, ev), { cache: { staleTime: 120000, gcTime: 86400000 }, refetchInterval: 300000 }));
+  }
+}
+function gcalOnWatch(k, cal, ev) {
+  if (!G.subs.has(k)) return;
+  if (ev.type === 'data') {
+    G.data[k] = parseGEvents(ev.result.payload, cal);
+    G.state = 'ok'; G.note = '';
+    G.updatedAt = (ev.result.cache && ev.result.cache.storedAt) || Date.now();
+  } else {
+    const code = ev.error && ev.error.code;
+    if (AUTHZ.includes(code)) { G.data = {}; G.state = gErrState(code); }
+    else G.note = 'down';
+  }
+  scheduleRender();
+}
+function parseGEvents(payload, cal) {
+  const out = [];
+  for (const e of (asObj(payload).events || [])) {
+    if (!e || e.status === 'cancelled' || e.eventType === 'WORKING_LOCATION') continue;
+    if ((e.attendees || []).some(a => a.self && a.responseStatus === 'declined')) continue;
+    const base = { g: true, cal, title: e.summary || '(sem título)',
+      kind: e.eventType === 'FOCUS_TIME' ? 'focus' : e.eventType === 'OUT_OF_OFFICE' ? 'personal' : 'meeting',
+      link: safeUrl(e.htmlLink), meet: safeUrl(e.conferenceUrl || e.conferenceData?.videoEntryPoint?.uri), location: e.location || '' };
+    if (e.start && e.start.dateTime) {
+      const s = new Date(e.start.dateTime), en = new Date(e.end?.dateTime || e.start.dateTime);
+      const date = ymd(s);
+      out.push({ ...base, id: `g:${cal}:${e.id}`, date, allDay: false,
+        start: `${pad(s.getHours())}:${pad(s.getMinutes())}`,
+        end: ymd(en) === date ? `${pad(en.getHours())}:${pad(en.getMinutes())}` : '23:59' });
+    } else if (e.start && e.start.date) {
+      let d = parseYmd(e.start.date); const last = e.end?.date ? parseYmd(e.end.date) : addDays(d, 1);
+      for (let i = 0; d < last && i < 14; i++, d = addDays(d, 1)) out.push({ ...base, id: `g:${cal}:${e.id}:${ymd(d)}`, date: ymd(d), start: '', end: '', allDay: true });
+    }
+  }
+  return out;
+}
+function allEvents() {
+  const m = new Map();
+  list('events').forEach(e => m.set(e.id, e));
+  Object.values(G.data).forEach(arr => arr.forEach(e => { if (!m.has(e.id)) m.set(e.id, e); }));
+  return [...m.values()];
+}
+const findEvent = id => S.events[id] || allEvents().find(e => e.id === id);
+const calName = id => { const c = (G.cals || []).find(x => x.id === id); return c ? (c.summary || c.id) : id === 'primary' ? 'Agenda principal' : id; };
+function adoptCals(cals) {
+  G.cals = cals;
+  const cur = S.settings.gcalCals || [];
+  if ((!cur.length || (cur.length === 1 && cur[0] === 'primary')) && cals[0]) { S.settings = { ...S.settings, gcalCals: [cals[0].id] }; Store.saveSettings(); }
+}
+async function gcalConnect() {
+  if (!G.mcp) { toast(GCAL_MSG.unavailable, { kind:'warn', ms:6000 }); return; }
+  if (G.busy) return;
+  G.busy = true; render();
+  try {
+    const r = await G.mcp.callTool(GC, 'list_calendars', { pageSize: 100 }, { cache: false });
+    G.state = 'wait'; G.note = '';
+    S.settings = { ...S.settings, gcalOn: true }; Store.saveSettings();
+    adoptCals(asObj(r.payload).calendars || []);
+    gcalSync();
+    toast('Google Agenda conectado');
+  } catch (e) { G.state = gErrState(e && e.code); }
+  finally { G.busy = false; render(); }
+}
+async function gcalLoadCals() {
+  if (!gOn() || G.cals || G.calsTried) return;
+  G.calsTried = true;
+  try {
+    const r = await G.mcp.callTool(GC, 'list_calendars', { pageSize: 100 }, { cache: { staleTime: 600000, gcTime: 86400000 } });
+    adoptCals(asObj(r.payload).calendars || []); gcalSync();
+  } catch (e) { if (AUTHZ.includes(e && e.code)) G.state = gErrState(e.code); }
+  render();
+}
+async function gcalCreate(d, title) {
+  ui.saving = true; ui.modalErr = ''; renderModal();
+  let input;
+  if (d.start) {
+    const s = parseYmd(d.date); const [h, m] = d.start.split(':').map(Number); s.setHours(h, m, 0, 0);
+    let en = new Date(s); if (d.end && d.end > d.start) { const [eh, em] = d.end.split(':').map(Number); en.setHours(eh, em, 0, 0); } else en = new Date(s.getTime() + 30*60000);
+    const iso = x => `${ymd(x)}T${pad(x.getHours())}:${pad(x.getMinutes())}:00`;
+    input = { summary: title, startTime: iso(s), endTime: iso(en) };
+  } else input = { summary: title, allDay: true, startTime: `${d.date}T00:00:00`, endTime: `${ymd(addDays(parseYmd(d.date), 1))}T00:00:00` };
+  if (d.gcal && d.gcal !== 'primary') input.calendarId = d.gcal;
+  if (d.notes) input.description = d.notes;
+  try {
+    await G.mcp.callTool(GC, 'create_event', input);
+    ui.saving = false; closeModal();
+    toast(`No Google Agenda: ${title}`);
+    G.mcp.invalidate(GC, 'list_events').catch(() => {});
+    render();
+  } catch (e) {
+    ui.saving = false;
+    const c = e && e.code;
+    ui.modalErr = (c === 'tool_error' ? 'O Google recusou o compromisso. Confira data e horários.'
+      : ['server_unavailable','upstream_error','cancelled'].includes(c) ? 'O Google não respondeu. O compromisso pode ter sido criado: confira a agenda antes de salvar de novo.'
+      : (GCAL_MSG[gErrState(c)] || 'Não foi possível criar no Google Agenda.')) + ' Para salvar só no painel, desligue a opção do Google.';
+    renderModal();
+  }
+}
+function gcalCard() {
+  const st = S.settings, err = gIsErr(G.state) ? G.state : null;
+  let body;
+  if (!G.booted) body = `<p class="note">Verificando a conexão…</p>`;
+  else if (!G.mcp) body = `<p class="note">${GCAL_MSG.unavailable}</p>`;
+  else if (!st.gcalOn) body = `<p class="note" style="margin:0 0 12px">${GCAL_MSG.off}</p>
+    ${err ? `<div class="gerr">${esc(GCAL_MSG[err])}</div>` : ''}
+    <button class="btn primary sm" data-act="gcal-connect" ${G.busy ? 'disabled' : ''}>${ic('cal')}${G.busy ? 'Conectando…' : 'Conectar Google Agenda'}</button>`;
+  else {
+    if (!G.cals && !G.calsTried) setTimeout(gcalLoadCals, 0);
+    const cals = G.cals;
+    body = `${err ? `<div class="gerr"><span style="flex:1;min-width:180px">${esc(GCAL_MSG[err])}</span>${['blocked','down'].includes(err) ? '' : `<button class="btn sm" data-act="gcal-connect">${err === 'denied' ? 'Permitir' : 'Tentar de novo'}</button>`}</div>`
+        : `<p class="note" style="margin:0 0 12px">${G.state === 'ok' ? `Conectado${G.updatedAt ? ` · atualizado às ${hhmm(G.updatedAt)}` : ''}` : 'Carregando eventos…'}${G.note === 'down' ? '. ' + GCAL_MSG.down : ''}</p>`}
+      <div class="field" style="margin-bottom:14px"><span>Agendas exibidas</span>
+        ${cals ? (cals.length ? `<ul class="callist">${cals.map(c => `<li><button class="check ${(st.gcalCals || []).includes(c.id) ? 'on' : ''}" data-act="gcal-cal" data-id="${esc(c.id)}" aria-label="Mostrar ${esc(c.summary || c.id)}">${ic('check')}</button><span>${esc(c.summary || c.id)}</span></li>`).join('')}</ul>` : '<p class="note">Nenhuma agenda encontrada.</p>')
+          : G.calsTried ? '<p class="note">Não foi possível carregar a lista de agendas agora.</p>' : '<p class="note">Carregando agendas…</p>'}</div>
+      <div class="head-actions"><button class="btn sm" data-act="gcal-refresh">Atualizar agora</button><button class="btn sm danger" data-act="gcal-off">Desconectar do painel</button></div>`;
+  }
+  return `<section class="card glass"><div class="card-h"><div><h2>Google Agenda</h2><div class="sub">Seus eventos ficam só na sua tela, não são copiados para o painel</div></div></div>${body}</section>`;
 }
 
 /* ================= appearance ================= */
@@ -846,14 +1026,14 @@ function render() {
 /* ---------- home ---------- */
 function vHome() {
   const t = today(), now = new Date(), st = stats();
-  const evToday = list('events').filter(e => e.date === t).sort((a,b) => (a.start||'').localeCompare(b.start||''));
+  const evToday = allEvents().filter(e => e.date === t && !e.allDay).sort((a,b) => (a.start||'').localeCompare(b.start||''));
   const meetings = evToday.filter(e => e.kind === 'meeting');
   const mine = list('tasks').filter(x => x.due && x.due <= t && (x.status !== 'done' || (x.doneAt && ymd(new Date(x.doneAt)) === t))).sort((a,b) => (a.status === 'done') - (b.status === 'done') || sortTasks(a,b));
   const openToday = mine.filter(x => x.status !== 'done').length;
   const fToday = focusOn(t);
   const name = S.settings.name.trim();
 
-  const upcoming = list('events').filter(e => evEnd(e) > now).sort((a,b) => evStart(a) - evStart(b));
+  const upcoming = allEvents().filter(e => !e.allDay && evEnd(e) > now).sort((a,b) => evStart(a) - evStart(b));
   const next = upcoming[0];
   let nextHtml;
   if (next) {
@@ -861,12 +1041,13 @@ function vHome() {
     const when = mins <= 0 ? 'Agora' : mins < 60 ? `Em ${mins} min` : next.date === t ? `Hoje às ${next.start}` : `${fmtDue(next.date)} às ${next.start}`;
     const k = KINDS.find(x => x.k === next.kind) || KINDS[0];
     const rest = evToday.filter(e => e.id !== next.id && evEnd(e) > now);
-    nextHtml = `<div class="next-ev" style="--accent:var(--c-${k.c})" role="button" tabindex="0" data-act="open-event" data-id="${next.id}">
-        <div class="when">${esc(when)} · ${esc(k.n)}</div><div class="t">${esc(next.title)}</div>
+    nextHtml = `<div class="next-ev" style="--accent:var(--c-${k.c})" role="button" tabindex="0" data-act="open-event" data-id="${esc(next.id)}">
+        <div class="when">${esc(when)} · ${esc(k.n)}${next.g ? ' · Google' : ''}</div><div class="t">${esc(next.title)}</div>
         <div class="time num">${esc(next.start || '')}${next.end ? ' – ' + esc(next.end) : ''}</div></div>
-      ${rest.length ? `<ul class="ev-list">${rest.map(e => { const kk = KINDS.find(x=>x.k===e.kind)||KINDS[0]; return `<li data-act="open-event" data-id="${e.id}" style="--cc:var(--c-${kk.c})"><span class="b"></span><span class="n">${esc(e.title)}</span><span class="h num">${esc(e.start||'')}</span></li>`; }).join('')}</ul>` : ''}`;
+      ${next.meet && mins <= 15 ? `<a class="btn primary sm" style="margin-top:10px" href="${esc(next.meet)}" target="_blank" rel="noopener">${ic('play')}Entrar na chamada</a>` : ''}
+      ${rest.length ? `<ul class="ev-list">${rest.map(e => { const kk = KINDS.find(x=>x.k===e.kind)||KINDS[0]; return `<li data-act="open-event" data-id="${esc(e.id)}" style="--cc:var(--c-${kk.c})"><span class="b"></span><span class="n">${esc(e.title)}</span><span class="h num">${esc(e.start||'')}</span></li>`; }).join('')}</ul>` : ''}`;
   } else {
-    nextHtml = `<div class="empty"><span><strong>Agenda livre.</strong> Reuniões e blocos de foco que você marcar aparecem aqui com contagem regressiva.</span><button class="btn sm" data-act="new-event" data-date="${t}">${ic('plus')}Marcar compromisso</button></div>`;
+    nextHtml = `<div class="empty"><span><strong>Agenda livre.</strong> Reuniões e blocos de foco que você marcar aparecem aqui com contagem regressiva.</span><div class="head-actions"><button class="btn sm" data-act="new-event" data-date="${t}">${ic('plus')}Marcar compromisso</button>${G.mcp && !S.settings.gcalOn ? `<button class="btn sm" data-act="gcal-connect">${ic('cal')}Conectar Google Agenda</button>` : ''}</div></div>`;
   }
 
   const goalTasks = S.settings.goalTasks || (st.doneToday + openToday);
@@ -885,7 +1066,7 @@ function vHome() {
     <div><h1>${greeting()}${name ? ', ' + esc(name) : ''}</h1>
       <p>${esc(fmtLong(now))} · ${plural(meetings.length, 'reunião', 'reuniões')} e ${plural(openToday, 'tarefa', 'tarefas')} para hoje</p></div>
     <div class="head-actions">
-      ${next ? `<button class="btn" data-act="open-event" data-id="${next.id}">${ic('clock')}Próximo: <span class="num">${esc(next.start||'')}</span></button>` : ''}
+      ${next ? `<button class="btn" data-act="open-event" data-id="${esc(next.id)}">${ic('clock')}Próximo: <span class="num">${esc(next.start||'')}</span></button>` : ''}
       <button class="btn primary" data-act="new-task" data-due="${t}">${ic('plus')}Nova tarefa</button>
     </div>
   </div>
@@ -1042,22 +1223,27 @@ function vAgenda() {
   const ws = addDays(weekStart(), ui.weekOffset*7), t = today();
   const days = [...Array(7)].map((_,i) => addDays(ws,i));
   const label = `${fmtDayMonth(days[0])} – ${fmtDayMonth(days[6])}`;
-  const evs = list('events'), tasks = list('tasks');
-  const total = evs.filter(e => days.some(d => ymd(d) === e.date)).length;
+  const evs = allEvents(), tasks = list('tasks');
+  const total = evs.filter(e => !e.allDay && days.some(d => ymd(d) === e.date)).length;
+  const gErr = gIsErr(G.state) && S.settings.gcalOn;
+  const gLine = !G.mcp ? '' : !S.settings.gcalOn ? '' : gErr ? ' · Google Agenda com problema' : G.state === 'ok' ? ` · Google Agenda atualizado às ${hhmm(G.updatedAt)}` : ' · carregando Google Agenda…';
   return `
   <div class="page-head">
-    <div><h1>Agenda</h1><p>Semana de ${esc(label)} · ${plural(total, 'compromisso', 'compromissos')}</p></div>
+    <div><h1>Agenda</h1><p>Semana de ${esc(label)} · ${plural(total, 'compromisso', 'compromissos')}${esc(gLine)}</p></div>
     <div class="head-actions">
+      ${G.mcp && !S.settings.gcalOn ? `<button class="btn" data-act="gcal-connect">${ic('cal')}Conectar Google Agenda</button>` : gErr ? `<button class="btn" data-act="nav" data-view="ajustes">${ic('cal')}Ver problema do Google</button>` : ''}
       <div class="seg"><button data-act="week" data-d="-1" aria-label="Semana anterior">${ic('left')}</button><button data-act="week" data-d="0" aria-pressed="${ui.weekOffset === 0}">Esta semana</button><button data-act="week" data-d="1" aria-label="Próxima semana">${ic('right')}</button></div>
       <button class="btn primary" data-act="new-event" data-date="${t}">${ic('plus')}Novo compromisso</button>
     </div>
   </div>
   <div class="week">${days.map(d => {
-    const k = ymd(d), de = evs.filter(e => e.date === k).sort((a,b) => (a.start||'').localeCompare(b.start||''));
+    const k = ymd(d), de = evs.filter(e => e.date === k).sort((a,b) => (b.allDay ? 1 : 0) - (a.allDay ? 1 : 0) || (a.start||'').localeCompare(b.start||''));
     const dt = tasks.filter(x => x.due === k).sort(sortTasks);
     return `<section class="day glass ${k === t ? 'today' : ''}">
       <div class="dh"><span class="wd">${esc(fmtWeekday(d))}</span><span class="dn num">${d.getDate()}</span></div>
-      ${de.map(e => { const kk = KINDS.find(x => x.k === e.kind) || KINDS[0]; return `<button class="ev" data-act="open-event" data-id="${e.id}" style="--cc:var(--c-${kk.c})"><span class="tt">${esc(e.title)}</span><span class="hh num">${esc(e.start||'')}${e.end ? '–' + esc(e.end) : ''} · ${esc(kk.n)}</span></button>`; }).join('')}
+      ${de.map(e => { const kk = KINDS.find(x => x.k === e.kind) || KINDS[0];
+        if (e.allDay) return `<button class="ev allday" data-act="open-event" data-id="${esc(e.id)}" style="--cc:var(--c-${e.g ? 'gray' : kk.c})"><span class="tt">${esc(e.title)}${e.g ? '<span class="gb">G</span>' : ''}</span></button>`;
+        return `<button class="ev" data-act="open-event" data-id="${esc(e.id)}" style="--cc:var(--c-${kk.c})"><span class="tt">${esc(e.title)}${e.g ? '<span class="gb" title="Google Agenda">G</span>' : ''}</span><span class="hh num">${esc(e.start||'')}${e.end ? '–' + esc(e.end) : ''} · ${esc(kk.n)}</span></button>`; }).join('')}
       ${dt.map(x => `<div class="due-t"><button class="check ${x.status === 'done' ? 'on' : ''}" data-act="toggle-done" data-id="${x.id}" aria-label="Concluir ${esc(x.title)}">${ic('check')}</button><button class="tx" data-act="open-task" data-id="${x.id}" style="${x.status === 'done' ? 'text-decoration:line-through;color:var(--fg-3)' : ''}">${esc(x.title)}</button></div>`).join('')}
       <button class="add" data-act="new-event" data-date="${k}">${ic('plus')}Adicionar</button>
     </section>`;
@@ -1146,6 +1332,7 @@ function vSettings() {
       </section>
     </div>
     <div style="display:grid;gap:16px">
+      ${gcalCard()}
       <section class="card glass">
         <div class="setrow" style="--cc:var(--c-orange)"><span class="ic">${ic('palette')}</span><div><div class="k">Cor de destaque</div><div class="s">${esc(COLOR_NAMES[st.accent] || 'Azul')}</div></div><span></span></div>
         <div class="swatches" style="padding:0 0 14px 42px">${ACCENTS.map(c => `<button class="swatch" style="--cc:var(--c-${c})" data-act="set" data-k="accent" data-v="${c}" aria-pressed="${st.accent === c}" aria-label="${COLOR_NAMES[c]}">${st.accent === c ? ic('check') : ''}</button>`).join('')}</div>
@@ -1187,7 +1374,7 @@ function stepper(label, k, v, unit, step, min, max) {
 }
 
 /* ================= modals ================= */
-function openModal(kind, draft) { ui.modal = kind; ui.draft = draft; ui.confirmDel = false; renderModal(true); }
+function openModal(kind, draft) { ui.modal = kind; ui.draft = draft; ui.confirmDel = false; ui.modalErr = ''; ui.saving = false; renderModal(true); }
 function closeModal() { ui.modal = null; ui.draft = null; $('#modal-root').innerHTML = ''; }
 function renderModal(first) {
   const root = $('#modal-root');
@@ -1218,7 +1405,20 @@ function renderModal(first) {
         <label class="field"><span>Fim</span><input id="m-end" type="time" data-bind="end" value="${esc(d.end)}"></label>
       </div>
       <div class="field"><span>Tipo</span><div class="seg">${KINDS.map(k => `<button data-act="draft" data-k="kind" data-v="${k.k}" aria-pressed="${d.kind === k.k}">${k.n}</button>`).join('')}</div></div>
-      <label class="field"><span>Notas</span><textarea id="m-notes" data-bind="notes" placeholder="Pauta, link da chamada, participantes…">${esc(d.notes)}</textarea></label>`;
+      <label class="field"><span>Notas</span><textarea id="m-notes" data-bind="notes" placeholder="Pauta, link da chamada, participantes…">${esc(d.notes)}</textarea></label>
+      ${isNew && gOn() && !gIsErr(G.state) ? `<div class="setrow" style="--cc:var(--c-blue);border-top:1px solid var(--line)"><span class="ic">${ic('cal')}</span>
+        <div style="min-width:0"><div class="k">Criar no Google Agenda</div><div class="s">${d.toGoogle ? 'Vai para o Google, não fica salvo só no painel' : 'Fica salvo só no painel'}</div>
+          ${d.toGoogle && (S.settings.gcalCals || []).length > 1 ? `<select id="m-gcal" data-bind="gcal" style="margin-top:6px;height:32px;border-radius:8px;border:1px solid var(--line-2);background:var(--solid-2);padding:0 8px;max-width:100%">${S.settings.gcalCals.map(c => `<option value="${esc(c)}" ${d.gcal === c ? 'selected' : ''}>${esc(calName(c))}</option>`).join('')}</select>` : ''}</div>
+        <button class="toggle" role="switch" aria-checked="${!!d.toGoogle}" aria-label="Criar no Google Agenda" data-act="draft-bool" data-k="toGoogle"></button></div>` : ''}`;
+  } else if (ui.modal === 'gevent') {
+    const k = KINDS.find(x => x.k === d.kind) || KINDS[0];
+    body = `<header><h2 id="mTitle">${esc(d.title)}</h2><button class="icon-btn" data-act="modal-close" aria-label="Fechar">${ic('x')}</button></header>
+      <div class="gmeta">
+        <div>${ic('clock')}<span>${esc(fmtLong(parseYmd(d.date)))}${d.allDay ? ' · dia inteiro' : ` · <span class="num">${esc(d.start)}–${esc(d.end)}</span>`}</span></div>
+        <div>${ic('cal')}<span>${esc(calName(d.cal))} · ${esc(k.n)}</span></div>
+        ${d.location ? `<div>${ic('folder')}<span>${esc(d.location)}</span></div>` : ''}
+      </div>
+      <p class="note" style="margin:0">Este compromisso vem do Google Agenda. Para mudar ou cancelar, abra no Google.</p>`;
   } else if (ui.modal === 'project') {
     body = `<header><h2 id="mTitle">${isNew ? 'Novo projeto' : 'Editar projeto'}</h2><button class="icon-btn" data-act="modal-close" aria-label="Fechar">${ic('x')}</button></header>
       <label class="field"><span>Nome</span><input id="m-title" data-bind="name" value="${esc(d.name)}" placeholder="Ex.: Fechamento mensal" maxlength="60"></label>
@@ -1226,10 +1426,14 @@ function renderModal(first) {
       ${!isNew ? `<p class="note">${plural(list('tasks').filter(x => x.projectId === d.id).length, 'tarefa', 'tarefas')} neste projeto.</p>` : ''}`;
   }
   const delMsg = ui.modal === 'project' ? 'Excluir este projeto? As tarefas dele continuam, só que sem projeto.' : ui.modal === 'event' ? 'Excluir este compromisso?' : 'Excluir esta tarefa?';
+  const footer = ui.modal === 'gevent'
+    ? `<footer><span class="sp"></span>${d.meet ? `<a class="btn" href="${esc(d.meet)}" target="_blank" rel="noopener">${ic('play')}Entrar na chamada</a>` : ''}${d.link ? `<a class="btn primary" href="${esc(d.link)}" target="_blank" rel="noopener">Abrir no Google Agenda</a>` : `<button class="btn" data-act="modal-close">Fechar</button>`}</footer>`
+    : `<footer>${!isNew && !ui.confirmDel ? `<button class="btn sm danger" data-act="del-ask">${ic('trash')}Excluir</button>` : ''}<span class="sp"></span>
+      <button class="btn" data-act="modal-close">Cancelar</button><button class="btn primary" data-act="modal-save" ${ui.saving ? 'disabled' : ''}>${ui.saving ? 'Criando no Google…' : isNew ? 'Criar' : 'Salvar'}</button></footer>`;
   root.innerHTML = `<div class="overlay" data-act="overlay"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">${body}
+    ${ui.modalErr ? `<div class="modal-err" role="alert">${esc(ui.modalErr)}</div>` : ''}
     ${ui.confirmDel ? `<div class="confirm"><span style="flex:1;min-width:160px">${delMsg}</span><button class="btn sm" data-act="del-cancel">Cancelar</button><button class="btn sm danger solid" data-act="del-confirm">Excluir</button></div>` : ''}
-    <footer>${!isNew && !ui.confirmDel ? `<button class="btn sm danger" data-act="del-ask">${ic('trash')}Excluir</button>` : ''}<span class="sp"></span>
-      <button class="btn" data-act="modal-close">Cancelar</button><button class="btn primary" data-act="modal-save">${isNew ? 'Criar' : 'Salvar'}</button></footer>
+    ${footer}
   </div></div>`;
   const f = first ? $('#m-title') : (keepId && document.getElementById(keepId));
   if (f) f.focus();
@@ -1248,6 +1452,7 @@ function saveModal() {
     const title = d.title.trim();
     if (!title) { const el = $('#m-title'); el.focus(); el.placeholder = 'Dê um título para o compromisso'; return; }
     if (!d.date) { $('#m-date').focus(); return; }
+    if (!d._exists && d.toGoogle && gOn()) { if (!ui.saving) gcalCreate(d, title); return; }
     let end = d.end; if (end && d.start && end < d.start) end = d.start;
     Store.put('events', { id:d.id, title, date:d.date, start:d.start || '', end:end || '', kind:d.kind, notes:d.notes || '', createdAt:d.createdAt || Date.now() });
     toast(d._exists ? 'Compromisso salvo' : `Marcado: ${title}`);
@@ -1277,7 +1482,8 @@ function newTask(o={}) {
 function editTask(id) { const x = S.tasks[id]; if (x) openModal('task', { ...x, subtasks: (x.subtasks || []).map(s => ({ ...s })), _exists: true }); }
 function newEvent(date) {
   const now = new Date(), h = Math.min(22, now.getHours() + 1);
-  openModal('event', { id: uid(), title:'', date: date || today(), start: `${pad(h)}:00`, end: `${pad(h)}:30`, kind:'meeting', notes:'' });
+  openModal('event', { id: uid(), title:'', date: date || today(), start: `${pad(h)}:00`, end: `${pad(h)}:30`, kind:'meeting', notes:'',
+    toGoogle: gOn() && !gIsErr(G.state), gcal: (S.settings.gcalCals || [])[0] || 'primary' });
 }
 
 /* ================= actions ================= */
@@ -1316,7 +1522,7 @@ async function importData(file) {
     if (!d || d.app !== 'painel-rotina') throw new Error('formato');
     let n = 0;
     for (const c of COLS) for (const [id, obj] of Object.entries(d[c] || {})) { await Store.put(c, { ...obj, id }); n++; }
-    if (d.settings) { S.settings = { ...DEFAULTS, ...d.settings }; applyLook(); Store.saveSettings(); }
+    if (d.settings) { S.settings = { ...DEFAULTS, ...d.settings }; applyLook(); Store.saveSettings(); gcalSync(); }
     toast(`Backup importado: ${n} itens`); render();
   } catch (e) { toast('Esse arquivo não é um backup do Painel de Rotina. Escolha o .json exportado aqui.', { kind:'warn', ms:6000 }); }
 }
@@ -1338,8 +1544,13 @@ document.addEventListener('click', e => {
     case 'toggle-done': e.stopPropagation(); toggleDone(id); break;
     case 'mode': ui.mode = el.dataset.mode; try { localStorage.setItem('painel-rotina.mode', ui.mode); } catch (er) {} render(); break;
     case 'new-event': newEvent(el.dataset.date); break;
-    case 'open-event': { const x = S.events[id]; if (x) openModal('event', { ...x, _exists: true }); break; }
-    case 'week': { const d = +el.dataset.d; ui.weekOffset = d === 0 ? 0 : ui.weekOffset + d; render(); break; }
+    case 'open-event': { const x = findEvent(id); if (x) openModal(x.g ? 'gevent' : 'event', { ...x, _exists: true }); break; }
+    case 'week': { const d = +el.dataset.d; ui.weekOffset = d === 0 ? 0 : ui.weekOffset + d; gcalSync(); render(); break; }
+    case 'gcal-connect': gcalConnect(); break;
+    case 'gcal-off': S.settings = { ...S.settings, gcalOn: false }; Store.saveSettings(); G.data = {}; gcalSync(); toast('Google Agenda desligado do painel'); render(); break;
+    case 'gcal-refresh': if (G.mcp) G.mcp.invalidate(GC, 'list_events').catch(() => {}); toast('Atualizando a agenda…', { kind:'info' }); break;
+    case 'gcal-cal': { const a = new Set(S.settings.gcalCals || []); a.has(id) ? a.delete(id) : a.add(id); S.settings = { ...S.settings, gcalCals: [...a] }; Store.saveSettings(); gcalSync(); render(); break; }
+    case 'draft-bool': ui.draft[el.dataset.k] = !ui.draft[el.dataset.k]; renderModal(); break;
     case 'new-project': openModal('project', { id: uid(), name:'', color: COLORS[list('projects').length % COLORS.length] }); break;
     case 'edit-project': { const p = S.projects[id]; if (p) openModal('project', { ...p, _exists: true }); break; }
     case 'focus-start': focusStart(); break;

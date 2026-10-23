@@ -40,4 +40,5 @@ Ficam em `.claude/skills/`, copiadas sem alteração dos repositórios oficiais 
 ## Outros registros
 
 - 2026-10-22: Painel de Rotina publicado (https://claude.ai/artifact/J7hNVFedq1DNpTVX5hoETM). Código em `painel-rotina/index.html`. Dados salvos na conta Claude do usuário, privados.
+- 2026-10-23: Painel conectado ao Google Agenda pelo conector "Google Calendar" do claude.ai (ferramentas `list_calendars`, `list_events`, `create_event`). Lê a semana atual e a próxima (e a semana aberta na Agenda), atualiza a cada 5 min, mostra os eventos na Início e na Agenda e cria compromissos no Google pelo formulário. Os eventos do Google não são gravados no banco do painel. Ligar e escolher agendas em Ajustes > Google Agenda.
 - A skill `task-observer` pedida no `CLAUDE.md` não estava instalada na sessão de nuvem de 2026-10-22.
