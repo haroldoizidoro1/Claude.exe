@@ -40,6 +40,7 @@ Quando eu pedir para "salvar", "lembrar", "anotar" ou "da próxima vez faça X":
 
 ## Skills (índice — o detalhe fica em cada skill)
 - `contexto-operacao-logistica` — Amazon/Shopee/J&T, OTP/OTA, CPT, SLA.
+- `verificacao` — checklist por módulo (dados, sites, vídeo, texto) antes de dizer "terminei".
 - [adicione aqui uma linha por skill nova]
 
 ## Preferências técnicas
