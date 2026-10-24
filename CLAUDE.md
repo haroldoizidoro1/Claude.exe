@@ -19,7 +19,8 @@ Quando eu pedir para "salvar", "lembrar", "anotar" ou "da próxima vez faça X":
 5. Depois de uma correção minha, registre sozinho uma linha em `docs/erros-viram-regra.md` (data, erro, regra) e me avise em uma frase; eu posso vetar. Se o mesmo erro aparecer pela 2ª vez, promova a regra para ESTE arquivo.
 6. Faça commit e push na branch da sessão e me diga em uma linha o que foi salvo e onde.
 7. No início da sessão, leia `docs/erros-viram-regra.md` e não repita o que está lá.
-8. Mantenha este arquivo curto (meta: menos de 150 linhas). Se passar, mova blocos para docs/skills.
+8. Se houver acesso ao Painel de Rotina, leia as regras pendentes (coleção `data/users/me/workspace/rules`, `status: pendente`), grave cada uma aqui na seção certa e marque no painel `status: salva` com `savedAt`.
+9. Mantenha este arquivo curto (meta: menos de 150 linhas). Se passar, mova blocos para docs/skills.
 
 ## Quem sou eu
 - Nome: Haroldo Izidoro Turetta (Haroldin)
@@ -38,6 +39,7 @@ Quando eu pedir para "salvar", "lembrar", "anotar" ou "da próxima vez faça X":
 | Preferências técnicas completas (código, dados, painéis, vídeo, design) | `docs/preferencias-tecnicas.md` |
 | Agente finalizador: pronto, PR, acessos, limites, relatório | `docs/agente-finalizador.md` |
 | Lições aprendidas (uma linha cada) | `docs/erros-viram-regra.md` |
+| Painel de Rotina (tarefas, notas, rotinas, regras pendentes) | https://claude.ai/artifact/J7hNVFedq1DNpTVX5hoETM |
 | Plano do Projeto 1 | `projetos/painel-planos-de-acao/PLANO.md` |
 | Plano do Projeto 2 | `projetos/projeto-2-a-nomear/PLANO.md` |
 
