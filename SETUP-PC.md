@@ -2,7 +2,7 @@
 
 ```bash
 git clone https://github.com/haroldoizidoro1/claude.exe && cd claude.exe
-./install-pc.sh                 # claude-code-setup + task-observer
+./install-pc.sh                 # claude-code-setup + task-observer + harness-engineering
 ./install-pc.sh --omniroute     # + gateway opcional
 ./apply-global-permissions.sh   # mescla as regras de permissão em ~/.claude/settings.json
 ```
@@ -21,6 +21,10 @@ Apague também `~/.claude-mem/` e `CLAUDE.local.md` se existirem.
 Fonte: https://github.com/rebelytics/one-skill-to-rule-them-all (plugin `task-observer`).
 Alternativa: `npx skills add rebelytics/one-skill-to-rule-them-all --skill task-observer -g`.
 A ativação vem do `CLAUDE.md` (carregar a skill no início); confirme em uma sessão NOVA. Sinal de que funciona: a pasta `skill-observations/observation-log/` aparece depois de algumas sessões.
+
+## harness-engineering (instalado só como plugin)
+Fonte: https://github.com/jrenaldi79/harness-engineering. Traz `/readiness` (analisa o projeto e gera `readiness-report.md` com nota, sem alterar nada sem seu aceite) e `/setup` (escreve hooks, scripts, `.claude/rules/` e ajusta o CLAUDE.md).
+Ordem: rode `/readiness` primeiro. O `/setup` só com o ok do Haroldo, porque pode reescrever o CLAUDE.md.
 
 ## OmniRoute (opcional, não é plugin)
 Gateway local que pode rotear para modelos que não são da Anthropic. Só roda quando você pede:

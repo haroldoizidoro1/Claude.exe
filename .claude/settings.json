@@ -11,11 +11,18 @@
         "source": "github",
         "repo": "rebelytics/one-skill-to-rule-them-all"
       }
+    },
+    "harness-engineering": {
+      "source": {
+        "source": "github",
+        "repo": "jrenaldi79/harness-engineering"
+      }
     }
   },
   "enabledPlugins": {
     "claude-code-setup@claude-plugins-official": true,
-    "task-observer@one-skill-to-rule-them-all": true
+    "task-observer@one-skill-to-rule-them-all": true,
+    "harness-engineering@harness-engineering": true
   },
   "permissions": {
     "allow": [

@@ -50,6 +50,7 @@ Quando eu pedir para "salvar", "lembrar", "anotar" ou "da próxima vez faça X":
 - Plano curto e meu ok antes de mudança grande. Commits pequenos.
 - Nunca fazer deploy, apagar dados ou enviar algo para fora sem confirmar.
 - Nunca gravar senha, token ou chave em arquivo ou repositório.
+- Plugin harness-engineering: rodar `/readiness` à vontade; `/setup` só com meu ok (pode reescrever este arquivo).
 - Cálculo sempre por código ou fórmula, nunca de cabeça, e conferido contra a fonte.
 - Ao terminar: o que foi feito, o que falta, próximo passo, e o que foi (e não foi) conferido.
 
