@@ -15,9 +15,10 @@ Quando eu pedir para "salvar", "lembrar", "anotar" ou "da próxima vez faça X":
 2. Se já existir algo parecido, ATUALIZE a linha existente. Nunca crie duplicata.
 3. Passo a passo repetível → crie/atualize uma skill em `.claude/skills/<nome>/SKILL.md` e deixe aqui só uma linha apontando para ela.
 4. Assunto longo → `docs/<assunto>.md` e uma linha no Mapa de documentos.
-5. Depois de uma correção minha, proponha uma linha em `docs/erros-viram-regra.md` (data, erro, regra). Só grave com meu ok.
+5. Depois de uma correção minha, registre sozinho uma linha em `docs/erros-viram-regra.md` (data, erro, regra) e me avise em uma frase; eu posso vetar. Se o mesmo erro aparecer pela 2ª vez, promova a regra para ESTE arquivo.
 6. Faça commit e push na branch da sessão e me diga em uma linha o que foi salvo e onde.
-7. Mantenha este arquivo curto (meta: menos de 150 linhas). Se passar, mova blocos para docs/skills.
+7. No início da sessão, leia `docs/erros-viram-regra.md` e não repita o que está lá.
+8. Mantenha este arquivo curto (meta: menos de 150 linhas). Se passar, mova blocos para docs/skills.
 
 ## Quem sou eu
 - Nome: Haroldo Izidoro Turetta (Haroldin)
@@ -71,14 +72,17 @@ Quando eu pedir para "salvar", "lembrar", "anotar" ou "da próxima vez faça X":
 - Faz sozinho: commit, abrir PR, publicar prévia. Pergunta antes: merge, deploy, apagar, enviar mensagem/e-mail, gastar. Nunca: mudar domínio, DNS ou chaves.
 - Gasto máximo: R$ 0. Na dúvida: parar, registrar no relatório e esperar.
 - Relatório diário em `RELATORIO.md` do projeto. Verificação pela skill `verificacao`.
+- Projeto não finalizado: rodar a skill `finalizador`. Ela pergunta como eu imagino o projeto (1 rodada), usa o que sabe de mim e entrega uma v0 completa, mesmo imperfeita, para eu revisar. Sem resposta minha, segue com suposições declaradas. Nunca inventa dado de operação.
 
 ## Skills (índice — o detalhe fica em cada skill)
 - `contexto-operacao-logistica` — regras de Amazon/Shopee/J&T, OTP/OTA, CPT, SLA.
 - `diretrizes-trabalho-operacao` — como trabalhar na operação sem errar.
+- `finalizador` — termina projetos parados e entrega uma v0 para revisão.
 - `verificacao` — checklist por módulo (dados, sites, vídeo, texto) antes de dizer "terminei".
 
 ## Preferências técnicas (resumo; detalhe em `docs/preferencias-tecnicas.md`)
 - Sites em HTML/CSS/JS simples, sem framework pesado, a menos que o projeto peça. Painéis em HTML offline.
 - Cores, fontes e espaços como variáveis CSS. Legível em celular e computador.
 - GitHub (um repositório por projeto), Vercel para publicar, Google Sheets para dados. Trabalho em branch própria.
+- Vídeo/áudio (só rodam no meu PC): Blade, After Effects e o app de voz instalado recentemente (nome a confirmar).
 - Ferramenta, framework ou banco novo: explicar motivo e custo e esperar meu ok.

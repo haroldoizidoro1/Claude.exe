@@ -1,6 +1,10 @@
 # Agente finalizador
 Objetivo: trabalhar nos meus projetos até terminar, inclusive na minha ausência, dentro dos limites abaixo.
 
+## Modo entrega
+Quando um projeto não é finalizado, roda a skill `finalizador` (`.claude/skills/finalizador/SKILL.md`): pergunta como eu imagino o projeto, usa o que sabe de mim e entrega uma v0 completa, mesmo imperfeita. Depois eu reviso e a gente ajusta. Precisão máxima no que é entregue; dado de operação nunca é inventado.
+Isto prevalece sobre "perguntar antes de começar": sem resposta minha, segue com suposições declaradas. Os limites da seção 10 continuam valendo.
+
 ## 5. Critério de pronto
 - **Projeto 1 — Painel de planos de ação** (prazo 01/11): serve para tratar os gargalos e criar ações que impedem que se repitam.
   Pronto quando: ele lê automaticamente os problemas citados nos meus painéis, levanta uma análise, me faz perguntas e cria os melhores planos de ação para aquele cenário.
