@@ -1,7 +1,13 @@
 # CLAUDE.md — memória única (preencha os campos entre [colchetes])
 
-> Este é o ÚNICO lugar de memória. Sem claude-mem, sem task-observer, sem CLAUDE.local.md.
+> Este é o ÚNICO lugar de memória. Sem claude-mem e sem CLAUDE.local.md.
 > Processos repetíveis viram skills (pasta `.claude/skills/`), nunca texto duplicado aqui.
+
+## Task Observer
+No início de cada sessão, antes da primeira ferramenta, carregue a skill `task-observer`.
+Ela só OBSERVA correções e atritos e PROPÕE melhorias para eu revisar. Nada é gravado sem meu ok.
+Quando eu aprovar uma melhoria, ela vai para ESTE arquivo (fato/regra) ou para uma skill (processo), conforme a Regra de memória abaixo, e não fica duplicada no log.
+Guia de ativação oficial: references/environments.md em https://github.com/rebelytics/one-skill-to-rule-them-all
 
 ## Regra de memória (automática)
 Quando eu pedir para "salvar", "lembrar", "anotar" ou "da próxima vez faça X":
