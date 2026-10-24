@@ -6,12 +6,8 @@
       "Bash(omniroute --version)",
       "Bash(omniroute launch *)",
       "Bash(omniroute setup-claude *)",
-      "Bash(headroom --version)",
-      "Bash(headroom mcp install)",
-      "Bash(headroom update)",
       "Bash(claude plugin marketplace add *)",
-      "Bash(claude plugin install *)",
-      "Bash(npx claude-mem install *)"
+      "Bash(claude plugin install *)"
     ]
   }
 }
