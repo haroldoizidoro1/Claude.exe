@@ -7,6 +7,7 @@
 No início de cada sessão, antes da primeira ferramenta, carregue a skill `task-observer`.
 Ela só OBSERVA correções e atritos e PROPÕE melhorias para eu revisar. Nada é gravado sem meu ok.
 Quando eu aprovar uma melhoria, ela vai para ESTE arquivo (fato/regra) ou para uma skill (processo), conforme a Regra de memória abaixo, e não fica duplicada no log.
+Use a skill todas as vezes que for necessário: a cada correção minha, atrito ou tarefa que deu errado, e antes de encerrar um trabalho longo.
 Guia de ativação oficial: references/environments.md em https://github.com/rebelytics/one-skill-to-rule-them-all
 
 ## Regra de memória (automática)
@@ -62,16 +63,17 @@ Quando eu pedir para "salvar", "lembrar", "anotar" ou "da próxima vez faça X":
 - Enviar dados para terceiros: só eu faço. Se não há dado novo para atualizar, não atualize.
 
 ## Áreas e projetos ativos
-| Projeto | Objetivo | Estado | Próximo passo | Repositório |
-|---|---|---|---|---|
-| Painel de planos de ação (prazo 01/11, prioridade: Painel Shopee) | Tratar gargalos e criar ações para não se repetirem | Em andamento (aba "Visão operacional") | Concluir a aba "Visão operacional" | [a informar] |
-| Projeto 2 (nome a confirmar): Performance MREBR + Torre Amazon | Performance/faturamento MREBR e registro diário de OTP/OTA | Em andamento | Aguardando de mim: valor por minuto de desconto e explicação da divergência Relay x Performance | [a informar] |
+| Projeto | Objetivo | Estado | Próximo passo | Última atividade | Repositório |
+|---|---|---|---|---|---|
+| Painel de planos de ação (prazo 01/11, prioridade: Painel Shopee) | Tratar gargalos e criar ações para não se repetirem | Em andamento (aba "Visão operacional") | Concluir a aba "Visão operacional" | 2026-10-24 | [a informar] |
+| Projeto 2 (nome a confirmar): Performance MREBR + Torre Amazon | Performance/faturamento MREBR e registro diário de OTP/OTA | Em andamento | Aguardando de mim: valor por minuto de desconto e explicação da divergência Relay x Performance | 2026-10-24 | [a informar] |
 
 ## Agente finalizador (resumo; detalhe em `docs/agente-finalizador.md`)
 - Trabalha em branch própria, abre um PR por passo do plano (passo máx. 1 h). Eu aprovo só o que for sensível; merge só com verificações verdes e meu ok.
 - Faz sozinho: commit, abrir PR, publicar prévia. Pergunta antes: merge, deploy, apagar, enviar mensagem/e-mail, gastar. Nunca: mudar domínio, DNS ou chaves.
 - Gasto máximo: R$ 0. Na dúvida: parar, registrar no relatório e esperar.
 - Relatório diário em `RELATORIO.md` do projeto. Verificação pela skill `verificacao`.
+- Gatilho: uma tarefa agendada diária olha a coluna "Última atividade". Projeto parado há mais de 4 dias → roda a skill `finalizador`, entrega a v0 e me avisa por notificação. Sempre que eu ou o agente trabalharmos num projeto, atualizar essa data.
 - Projeto não finalizado: rodar a skill `finalizador`. Ela pergunta como eu imagino o projeto (1 rodada), usa o que sabe de mim e entrega uma v0 completa, mesmo imperfeita, para eu revisar. Sem resposta minha, segue com suposições declaradas. Nunca inventa dado de operação.
 
 ## Skills (índice — o detalhe fica em cada skill)
@@ -84,5 +86,5 @@ Quando eu pedir para "salvar", "lembrar", "anotar" ou "da próxima vez faça X":
 - Sites em HTML/CSS/JS simples, sem framework pesado, a menos que o projeto peça. Painéis em HTML offline.
 - Cores, fontes e espaços como variáveis CSS. Legível em celular e computador.
 - GitHub (um repositório por projeto), Vercel para publicar, Google Sheets para dados. Trabalho em branch própria.
-- Vídeo/áudio (só rodam no meu PC): Blade, After Effects e o app de voz instalado recentemente (nome a confirmar).
+- Vídeo/áudio (só rodam no meu PC): Voice Studio (voz, está nos meus arquivos), Blender e After Effects.
 - Ferramenta, framework ou banco novo: explicar motivo e custo e esperar meu ok.

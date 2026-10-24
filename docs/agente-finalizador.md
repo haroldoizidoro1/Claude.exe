@@ -5,6 +5,9 @@ Objetivo: trabalhar nos meus projetos até terminar, inclusive na minha ausênci
 Quando um projeto não é finalizado, roda a skill `finalizador` (`.claude/skills/finalizador/SKILL.md`): pergunta como eu imagino o projeto, usa o que sabe de mim e entrega uma v0 completa, mesmo imperfeita. Depois eu reviso e a gente ajusta. Precisão máxima no que é entregue; dado de operação nunca é inventado.
 Isto prevalece sobre "perguntar antes de começar": sem resposta minha, segue com suposições declaradas. Os limites da seção 10 continuam valendo.
 
+## Gatilho automático
+Tarefa agendada diária (08:31, horário de Brasília). Projeto com "Última atividade" há mais de 4 dias e não pronto → skill `finalizador` entrega a v0 em branch própria e manda notificação com o resumo e o lembrete. Nenhum parado → não faz nada. Roda sem conectores além do GitHub do repositório; Drive, Sheets e Vercel só quando forem liberados para as execuções agendadas.
+
 ## 5. Critério de pronto
 - **Projeto 1 — Painel de planos de ação** (prazo 01/11): serve para tratar os gargalos e criar ações que impedem que se repitam.
   Pronto quando: ele lê automaticamente os problemas citados nos meus painéis, levanta uma análise, me faz perguntas e cria os melhores planos de ação para aquele cenário.

@@ -32,7 +32,7 @@ Escrevem a stack como decisão fechada, com o motivo e uma exceção explícita 
 - Fluxo atual: HTML offline preenchido pela operação e sincronizado manualmente com o painel online toda semana.
 
 ## Vídeo e audiovisual
-- Apps instalados no meu PC e que uso para editar: **Blade**, **After Effects** e o **aplicativo de voz** instalado recentemente. **(confirmar o nome exato do Blade e do app de voz)**
+- Apps instalados no meu PC e que uso para editar: **Voice Studio** (voz; está nos meus arquivos), **Blender** e **After Effects**.
 - Esses apps rodam só no PC; em sessão na nuvem o Claude prepara roteiro, assets e scripts, e eu abro nos apps.
 - Padrão dos grandes usuários: roteiro e transcrição primeiro; FFmpeg para corte e conversão; Remotion para vídeos feitos por código; IA generativa só para o que não dá para gravar.
 - Revisão com feedback curto e específico, com números e nomes ("a legenda entra aos 3s"), nunca "melhore".
