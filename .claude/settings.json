@@ -1,19 +1,11 @@
 {
   "extraKnownMarketplaces": {
-    "thedotmack": {
-      "source": { "source": "github", "repo": "thedotmack/claude-mem" }
-    },
     "claude-plugins-official": {
       "source": { "source": "github", "repo": "anthropics/claude-plugins-official" }
-    },
-    "one-skill-to-rule-them-all": {
-      "source": { "source": "github", "repo": "rebelytics/one-skill-to-rule-them-all" }
     }
   },
   "enabledPlugins": {
-    "claude-mem@thedotmack": true,
-    "claude-code-setup@claude-plugins-official": true,
-    "task-observer@one-skill-to-rule-them-all": true
+    "claude-code-setup@claude-plugins-official": true
   },
   "permissions": {
     "allow": [
@@ -22,12 +14,8 @@
       "Bash(omniroute --version)",
       "Bash(omniroute launch *)",
       "Bash(omniroute setup-claude *)",
-      "Bash(headroom --version)",
-      "Bash(headroom mcp install)",
-      "Bash(headroom update)",
       "Bash(claude plugin marketplace add *)",
-      "Bash(claude plugin install *)",
-      "Bash(npx claude-mem install *)"
+      "Bash(claude plugin install *)"
     ]
   }
 }
