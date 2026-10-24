@@ -20,7 +20,7 @@ paths:
 - Indicador por pacotes por viagem, não por viagens feitas.
 
 ## J&T (somente RJ)
-- Tolerância 0. Desconto de R$10 por minuto de atraso.
+- Desconto de R$10 por minuto de atraso, com carência de 5 min SÓ na chegada ao destino (saída e check-in sem carência). A skill ainda diz "tolerância zero": confirmar com o Haroldo antes de mexer na Torre J&T ou no Painel SLA.
 - Uso do app: R$50 se faltar em um ponto (saída ou chegada), R$100 se faltar nos dois. Soma com os R$10 por minuto.
 
 ## Ao mudar uma regra
