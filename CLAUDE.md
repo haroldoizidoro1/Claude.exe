@@ -81,7 +81,9 @@ Quando eu pedir para "salvar", "lembrar", "anotar" ou "da próxima vez faça X":
 - `contexto-operacao-logistica` — regras de Amazon/Shopee/J&T, OTP/OTA, CPT, SLA.
 - `diretrizes-trabalho-operacao` — como trabalhar na operação sem errar.
 - `finalizador` — termina projetos parados e entrega uma v0 para revisão.
-- `verificacao` — checklist por módulo (dados, sites, vídeo, texto) antes de dizer "terminei".
+- `verificacao` — checklist por módulo + bloco "Conferido" com prova antes de dizer "terminei".
+- `comparar-operacao-cliente` — compara atrasos da operação x cliente e classifica (A–D).
+- `pdf-semanal-supervisao` — PDF de sexta para a supervisão (compacto, formal).
 
 ## Preferências técnicas (resumo; detalhe em `docs/preferencias-tecnicas.md`)
 - Sites em HTML/CSS/JS simples, sem framework pesado, a menos que o projeto peça. Painéis em HTML offline.

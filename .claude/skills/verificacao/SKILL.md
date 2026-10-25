@@ -10,12 +10,14 @@ description: Checklist de verificação por módulo (Performance/Dados, Design/S
 2. Rode cada item de verdade (abrir, medir, comparar). Não marque de memória.
 3. No relatório/PR, liste por item: passou, falhou ou não deu para verificar (e por quê).
 4. Se algo falhou, corrija e rode de novo. Só então diga que terminou.
+4b. Toda entrega termina com o bloco **Conferido**, curto, uma linha por item: o que foi testado, como e o resultado (testado / falhou / não deu para testar). Exemplos: "botão Exportar clicado: funcionou"; "total Shopee 1.234 = planilha 1.234 (somado por código)". Item sem prova não vale. Assim o Haroldo confere em segundos e não precisa pedir revisão de novo.
 5. O critério de "pronto" do projeto (tabela do CLAUDE.md) vale junto com este checklist.
 
 ## MÓDULO PERFORMANCE / DADOS
 - Totais do painel batem com a planilha de origem, no mesmo período.
 - Número calculado por mim separado do número do cliente, com a divergência e a causa.
 - Regra de cada cliente aplicada, nunca misturada.
+- Cada função do painel (botões, filtros, exportar, preenchimento offline) clicada de verdade, e cada cálculo refeito por código contra a fonte.
 
 ## MÓDULO DESIGN / SITES
 - Contraste de texto legível (mínimo 4,5:1) e fontes carregando.
