@@ -5,3 +5,4 @@ Revisão semanal: cortar o obsoleto e promover ao CLAUDE.md só o que se repetiu
 
 | Data | Erro | Regra |
 |---|---|---|
+| 2026-10-25 | Pedido "deixar o painel prático" foi tratado como "tirar o visual": removi o design do Painel de Rotina sem perguntar. | Melhorar nunca é tirar. Antes de remover visual ou função que já existe, perguntar. Haroldo gosta de visual bonito e moderno. |

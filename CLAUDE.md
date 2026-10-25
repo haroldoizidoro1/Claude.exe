@@ -30,6 +30,7 @@ Quando eu pedir para "salvar", "lembrar", "anotar" ou "da próxima vez faça X":
 
 ## Como quero as respostas
 - Tamanho médio, com o motivo. Tom informal e amigável. Prefiro passo a passo numerado.
+- Gosto de visual bonito, moderno e atraente. "Melhorar" nunca é "tirar": antes de remover visual ou função que já existe, pergunte.
 - Antes de começar um projeto, tenha certeza de que terminei de explicar tudo. Não refaça o trabalho toda vez que eu acrescentar um texto: incorpore o novo e siga.
 
 ## Mapa de documentos
