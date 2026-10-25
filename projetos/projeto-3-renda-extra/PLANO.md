@@ -2,7 +2,7 @@
 Prioridade: 3 · Passo máximo: 1 h
 
 ## Objetivo
-Vender painéis de performance e automações (Google Sheets, HTML offline) para transportadoras e pequenas empresas, usando o Claude. Primeira meta: R$ 3.361 (valor do MacBook no Mercado Livre), pagos pelo próprio trabalho, sem empréstimo.
+Vender painéis de performance e automações (Google Sheets, HTML offline) para transportadoras e pequenas empresas, usando o Claude. Objetivo nº 1: a PRIMEIRA VENDA do painel. Meta pessoal ligada: juntar R$ 4.000 de reserva (vira notebook/PC/Mac quando fizer sentido), sem empréstimo.
 
 ## Pronto quando
 - 1º cliente pagante fechado.
@@ -17,7 +17,8 @@ Vender painéis de performance e automações (Google Sheets, HTML offline) para
 - Sábado: um bloco de 4 h. Domingo: livre, para a família.
 
 ## Passos (cada um até 1 h)
-1. Painel de demonstração com dados fictícios: atraso por motivo (origem, trânsito, destino), desconto estimado, nosso número x número do cliente.
+1. Bases fictícias (feito em 25/10): `dados-ficticios/` com Amazon 1.250, Shopee 1.180 e J&T 1.060 viagens, cada uma com a regra do seu cliente. Gerador: `gerar_bases.py`.
+1b. Painel de demonstração: o Haroldo desenha e monta; o Claude ajuda quando pedido.
 2. Segunda demonstração: automação de planilha (ex.: relatório semanal automático no Google Sheets).
 3. Página de apresentação (HTML simples, Vercel) com as duas demonstrações e um contato.
 4. Definir 2 ou 3 pacotes e preços, com pesquisa de mercado.
