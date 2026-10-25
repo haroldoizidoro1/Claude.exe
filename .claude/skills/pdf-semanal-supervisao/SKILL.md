@@ -1,14 +1,14 @@
 ---
 name: pdf-semanal-supervisao
-description: Monta o conteúdo do PDF executivo semanal que o Haroldo envia à supervisão toda sexta, com os dados da semana anterior (S-1) e o impacto, na performance em %, de operadores que não lançam evidência ou não preenchem a planilha. Use quando ele pedir o relatório semanal, o PDF de sexta ou o envio para a supervisão. A geração do arquivo PDF usa a skill `pdf`.
+description: Monta o conteúdo do PDF executivo semanal que o Haroldo envia à supervisão toda segunda, com os dados da semana anterior (S-1) e o impacto, na performance em %, de operadores que não lançam evidência ou não preenchem a planilha. Use quando ele pedir o relatório semanal, o PDF de segunda ou o envio para a supervisão. A geração do arquivo PDF usa a skill `pdf`.
 ---
 
-# PDF semanal para a supervisão
+# PDF semanal para a supervisão (toda segunda, semana anterior)
 
 Objetivo do documento: mostrar à supervisão que evidência não lançada e planilha não preenchida derrubam a performance (%) por cliente. O Haroldo só encaminha o PDF, sem apresentar. Ele precisa se explicar sozinho.
 
 ## Passos
-1. Defina o período e escreva no topo. Suposição até ele confirmar: os 7 dias fechados até a quinta anterior à sexta de envio. Se ele disser outro período, use o dele.
+1. Defina o período e escreva no topo: a semana anterior inteira, de segunda a domingo (a operação é 24h, 7 dias). Se ele disser outro período, use o dele.
 2. Rode `comparar-operacao-cliente` para cada cliente, separado (Amazon, Shopee, J&T). Cliente sem dado novo: escreva "sem dado novo no período", não atualize nem invente.
 3. Monte o PDF, nesta ordem:
    - Título, período, data de emissão.

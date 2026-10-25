@@ -83,7 +83,7 @@ Quando eu pedir para "salvar", "lembrar", "anotar" ou "da próxima vez faça X":
 - `finalizador` — termina projetos parados e entrega uma v0 para revisão.
 - `verificacao` — checklist por módulo + bloco "Conferido" com prova antes de dizer "terminei".
 - `comparar-operacao-cliente` — compara atrasos da operação x cliente e classifica (A–D).
-- `pdf-semanal-supervisao` — PDF de sexta para a supervisão (compacto, formal).
+- `pdf-semanal-supervisao` — PDF de segunda (semana anterior) para a supervisão (compacto, formal).
 
 ## Preferências técnicas (resumo; detalhe em `docs/preferencias-tecnicas.md`)
 - Sites em HTML/CSS/JS simples, sem framework pesado, a menos que o projeto peça. Painéis em HTML offline.
