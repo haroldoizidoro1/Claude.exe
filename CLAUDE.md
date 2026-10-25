@@ -89,3 +89,4 @@ Quando eu pedir para "salvar", "lembrar", "anotar" ou "da próxima vez faça X":
 - GitHub (um repositório por projeto), Vercel para publicar, Google Sheets para dados. Trabalho em branch própria.
 - Vídeo/áudio (só rodam no meu PC): Voice Studio (voz, está nos meus arquivos), Blender e After Effects.
 - Ferramenta, framework ou banco novo: explicar motivo e custo e esperar meu ok.
+- ECC (plugin `ecc@ecc` 2.2.3, fonte: github.com/affaan-m/ECC e ecc.tools) instalado no meu PC em 2026-10-25. Custa ~47 mil tokens por sessão; desativar com `/plugin disable ecc@ecc`. Não usar o aprendizado do ECC (`/ecc:learn`, instincts): a memória continua só neste arquivo.
