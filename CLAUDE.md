@@ -40,6 +40,7 @@ Quando eu pedir para "salvar", "lembrar", "anotar" ou "da próxima vez faça X":
 | Lições aprendidas (uma linha cada) | `docs/erros-viram-regra.md` |
 | Plano do Projeto 1 | `projetos/painel-planos-de-acao/PLANO.md` |
 | Plano do Projeto 2 | `projetos/projeto-2-a-nomear/PLANO.md` |
+| Plano do Projeto 3 (renda extra) | `projetos/projeto-3-renda-extra/PLANO.md` |
 
 ## Regras de trabalho (resumo)
 1. Pensar antes de agir: declarar suposições, perguntar na dúvida, mostrar interpretações possíveis em vez de escolher em silêncio.
@@ -68,6 +69,7 @@ Quando eu pedir para "salvar", "lembrar", "anotar" ou "da próxima vez faça X":
 |---|---|---|---|---|---|
 | Painel de planos de ação (prazo 01/11, prioridade: Painel Shopee) | Tratar gargalos e criar ações para não se repetirem | Em andamento (aba "Visão operacional") | Concluir a aba "Visão operacional" | 2026-10-24 | [a informar] |
 | Projeto 2 (nome a confirmar): Performance MREBR + Torre Amazon | Performance/faturamento MREBR e registro diário de OTP/OTA | Em andamento | Aguardando de mim: valor por minuto de desconto e explicação da divergência Relay x Performance | 2026-10-24 | [a informar] |
+| Projeto 3: Renda extra (painéis e automações) | Vender painéis/automações com dados fictícios; meta 1: R$ 3.361 | Começando | Painel de demonstração com dados fictícios | 2026-10-25 | este |
 
 ## Agente finalizador (resumo; detalhe em `docs/agente-finalizador.md`)
 - Trabalha em branch própria, abre um PR por passo do plano (passo máx. 1 h). Eu aprovo só o que for sensível; merge só com verificações verdes e meu ok.
