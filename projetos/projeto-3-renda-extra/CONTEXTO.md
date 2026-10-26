@@ -20,7 +20,9 @@ Atualizado em 26/10/2026. Leia isto + `PLANO.md` antes de continuar.
 - `dados-ficticios/base_ficticia_mercado_livre.xlsx`: 1.276 rotas last mile + 12 planos de ação (indicadores genéricos, confirmar os oficiais com o cliente). Gerador: `gerar_base_meli.py`.
 - `paineis/amazon/`: Torre Amazon de demonstração (template + `montar.py`), publicada em https://claude.ai/artifact/77t8YBveTUdL7Az4VVXuiK. Alvo do pitch: Murici Logística.
 - `identidade-visual.md`: paletas de Amazon, Shopee e J&T e regras de uso de marca.
-- `PLANO.md`: pacotes e preços sugeridos (Essencial R$ 1.200 · Painel + automação R$ 2.000 · atualização R$ 300/mês), canais e clientes-alvo.
+- `PLANO.md`: preços (Essencial R$ 2.500–3.500 + R$ 400–600/mês · Automação R$ 5.000–8.000 + R$ 800–1.500/mês · Piloto R$ 1.500 + R$ 300/mês por 3 meses), canais e clientes-alvo.
+- `abordagens/beon-email.md` (e-mail pronto) · `contrato/contrato-painel-v0.md|.docx` (rascunho) · Apresentação: "especialista independente em performance logística".
+- MEI: TI não pode ser MEI (2026). Primeira venda por RPA (pessoa física) ou abrir ME no Simples; confirmar com contador.
 
 ## Finanças (Caixa do Casal, outubro)
 - Entra (Haroldo): ~R$ 3.387 (salário + adiantamento + aluguel), mais VR/VA R$ 660.

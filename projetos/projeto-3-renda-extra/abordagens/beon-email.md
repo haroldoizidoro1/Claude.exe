@@ -33,18 +33,24 @@ Na demonstração você vai ver:
 
 E o mais importante: nada disso é um modelo fechado. O painel é montado do zero para a BeOn, com as regras e as metas de cada cliente de vocês, os indicadores que fizerem sentido para a operação, o formato e até as cores que vocês preferirem. Antes de construir, eu quero entender onde está a dor de vocês, para entregar algo simples, direto e que a equipe realmente use. Ele começa com as planilhas que vocês já têm hoje e, se um dia fizer sentido, pode evoluir para uma versão automática, integrada aos sistemas (aí o escopo e o investimento mudam).
 
+Sobre investimento: a implantação da versão com planilhas começa em R$ 2.500, com suporte mensal a partir de R$ 400 (ajustes de regra, correções e melhorias). Para as primeiras transportadoras que toparem construir isso comigo, ofereço uma condição de parceira: R$ 1.500 de implantação e R$ 300 por mês nos três primeiros meses, em troca de um depoimento se o resultado aparecer. A versão automática, integrada aos sistemas, é orçada depois de entendermos a operação.
+
 Se fizer sentido, eu adoraria te mostrar com calma numa videochamada de 20 minutos, no dia e horário que for melhor para você. Se quiser ver na prática antes, me envie uma semana de viagens e eu devolvo um diagnóstico de pontualidade por rota e por agregado, sem custo e sem compromisso.
 
 Obrigado pelo seu tempo. Será um prazer conversar.
 
 Um abraço,
 Haroldo Izidoro Turetta
-Painéis de performance logística
+Especialista independente em performance logística
 WhatsApp: [WhatsApp]
 haroldoizidoro1@gmail.com
+
+## Se perguntarem "qual é a sua empresa?"
+Resposta sugerida (fala ou mensagem):
+"Hoje eu atuo como especialista independente. Sou analista de performance logística há alguns anos e desenvolvo os painéis sob medida, do levantamento ao suporte. O contrato e o recibo saem no meu nome; se vocês precisarem de nota fiscal, eu emito pela minha empresa assim que fecharmos." (Ver a decisão de RPA x ME em CONTEXTO.md.)
 
 ## Se ela responder (lembretes)
 - Não citar o nome da empresa onde trabalho nem números dela.
 - Se perguntar se os números são de um cliente: são da demonstração, com dados fictícios montados sobre a regra real do marketplace. O diagnóstico gratuito é para ela ver com os números da BeOn.
-- Preços de referência do PLANO.md: Essencial R$ 1.200 · Painel + automação R$ 2.000 · Atualização R$ 300/mês. A BeOn pode ser cliente-piloto (desconto em troca de depoimento).
+- Preços: ver tabela do PLANO.md (Essencial R$ 2.500 a 3.500 + R$ 400 a 600/mês · Automação R$ 5.000 a 8.000 + R$ 800 a 1.500/mês · Piloto R$ 1.500 + R$ 300/mês por 3 meses).
 - Follow-up: se não houver resposta em 4 dias úteis, mensagem curta no WhatsApp (11) 91431-9506.

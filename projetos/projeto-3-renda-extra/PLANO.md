@@ -28,7 +28,13 @@ Vender painéis de performance e automações (Google Sheets, HTML offline) para
 
 ## Pesquisa (25/10/2026, a validar)
 - Preço freelancer BI no Brasil: R$ 45 a 120/h em marketplaces; analista pleno R$ 130 a 220/h. Consultorias: R$ 5 mil a 18 mil por dashboard (fora do nosso alcance no início).
-- Proposta inicial: Painel Essencial R$ 1.200 (1 fonte, até 6 indicadores) · Painel + automação R$ 2.000 · Atualização semanal R$ 300/mês. 1º cliente pode ter desconto de "cliente-piloto" em troca de depoimento.
+- Preços (aprovados em 26/10/2026, substituem R$ 1.200 / R$ 2.000):
+  | Pacote | Implantação | Mensalidade |
+  |---|---|---|
+  | Essencial (sob medida, planilhas, planos de ação) | R$ 2.500 a 3.500 | R$ 400 a 600 |
+  | Automação (integração com sistemas do cliente) | R$ 5.000 a 8.000 | R$ 800 a 1.500 |
+  | Cliente-piloto (só os primeiros) | R$ 1.500 | R$ 300 nos 3 primeiros meses, depois preço cheio |
+  Piloto = desconto em troca de depoimento/case.
 - Demanda real vista: vaga no Workana de transportadora que atende o Mercado Livre pedindo planilha de coleta + dashboard (indicadores DS, CR, PNR).
 - Canais: Workana, 99Freelas, LinkedIn, grupos de transportadoras/agregados no WhatsApp e Facebook, contatos da própria operação (sem usar dado interno).
 - Clientes-alvo: transportadoras e agregados que rodam para Shopee (SPX), Amazon (DSP), J&T e Mercado Livre; depois, pequenos comércios com planilha bagunçada.
