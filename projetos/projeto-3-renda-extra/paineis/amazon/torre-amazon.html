@@ -128,6 +128,14 @@ tbody tr[data-lane]{cursor:pointer}
 .status b{font-family:var(--display);font-size:26px;font-weight:800}
 .niveis td{white-space:normal;min-width:160px;vertical-align:top}
 .niveis td:last-child{color:var(--accent-2)}
+.faixas{display:grid;gap:12px}
+.fx{display:grid;grid-template-columns:118px minmax(0,1fr) 64px;gap:12px;align-items:center;border:1px solid transparent;border-radius:10px;padding:8px 10px;background:none;cursor:pointer;text-align:left}
+.fx:hover{background:var(--surface-2)}
+.fx[aria-pressed="true"]{border-color:var(--accent);background:rgba(255,153,0,.08)}
+.fx .t{font-weight:600}.fx .t small{display:block;font-weight:400;font-size:12px;color:var(--muted)}
+.fx .bar2{display:flex;height:22px;border-radius:6px;overflow:hidden;background:var(--surface-2)}
+.fx .bar2 i{display:block;height:100%}
+.fx .n{font-family:var(--display);font-weight:800;font-size:22px;text-align:right;font-variant-numeric:tabular-nums}
 .ex{font-family:var(--mono);font-size:10px;border:1px dashed var(--muted);color:var(--muted);border-radius:5px;padding:0 5px;margin-left:6px}
 /* tela de senha do faturamento */
 .lock{display:grid;place-items:center;min-height:440px;border-radius:var(--r);border:1px solid var(--line);background:radial-gradient(70% 90% at 50% 0%,rgba(255,153,0,.12),transparent 70%),var(--surface)}
@@ -210,8 +218,8 @@ tbody tr[data-lane]{cursor:pointer}
         <div class="cal" id="cal"></div>
       </div>
       <div class="card s7">
-        <div><h2>Tempo de atraso</h2><p class="sub">Cada ponto é um atraso apontado. Altura = minutos. Vermelho: responsabilidade nossa ou 60 min ou mais.</p></div>
-        <div class="cv"><canvas id="orbita" height="300" aria-label="Tempo de atraso por dia"></canvas><div class="tip" id="tip" hidden></div></div>
+        <div><h2>Tempo de atraso</h2><p class="sub">Quantos atrasos caem em cada faixa de minutos. Clique numa faixa para ver só esses atrasos na lista.</p></div>
+        <div class="faixas" id="faixas"></div>
         <div class="legend"><span><i style="--c:var(--bad)"></i>Real (nosso)</span><span><i style="--c:var(--good)"></i>Indevido (Amazon/base)</span></div>
       </div>
       <div class="card s12">
@@ -348,7 +356,8 @@ const T=D.v.map(r=>({vrid:r[0],mes:r[1],dia:r[2],lane:r[3],placa:D.placas[r[4]],
 // cada atraso apontado pela Amazon vira uma linha (OTP e/ou OTA), como na Torre Amazon
 const A=[];T.forEach(t=>{[['OTP',t.tO,t.a1,t.mO,t.rO,D.lanes[t.lane].o],['OTA',t.tA,t.a3,t.mA,t.rA,D.lanes[t.lane].d]].forEach(([ind,tp,nosso,amz,res,onde])=>{
   if(!tp)return;const real=tp===1;A.push({t,ind,real,min:real?nosso:amz,res,onde,hot:real||amz>=60});});});
-const S={mes:0,lane:-1,tab:'geral',sel:-1,dia:0,fAtr:'todos',edit:null};
+const S={mes:0,lane:-1,tab:'geral',sel:-1,dia:0,fAtr:'todos',faixa:-1,edit:null};
+const FAIXAS=[[0,15,'Até 15 min'],[15,30,'15 a 30 min'],[30,60,'30 a 60 min'],[60,1e9,'60 min ou mais']];
 const R={meta:99,multa:100,teto:2,bO:.5,bA:1.5};
 // senha de demonstração do faturamento (123). Num painel real os valores ficam num banco com leitura restrita, não só atrás da tela.
 const PIN_HASH='a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3';
@@ -416,8 +425,8 @@ function atrasos(){const mesCal=S.mes||10,AF=A.filter(a=>inF(a.t)),reais=AF.filt
   $('#chipsAtr').innerHTML=CH.map(([k,n])=>`<button type="button" data-f="${k}" aria-pressed="${S.fAtr===k}">${n}</button>`).join('');
   $('#chipsAtr').querySelectorAll('button').forEach(b=>b.onclick=()=>{S.fAtr=b.dataset.f;atrasos();});
   const fx={todos:()=>1,real:a=>a.real,ind:a=>!a.real,'60':a=>a.min>=60,sem:a=>a.real&&!planoDe(a)&&!planos().some(p=>!p.vrid&&p.res===a.res),pend:a=>a.t.evid===2}[S.fAtr];
-  const L=AF.filter(a=>(!S.dia||a.t.dia===S.dia)&&fx(a)).sort((a,b)=>b.t.mes-a.t.mes||b.t.dia-a.t.dia||b.min-a.min);
-  $('#atrSub').textContent=`${fi(L.length)} atrasos${S.dia?' em '+dd(S.mes,S.dia):''}. Vermelho na borda: responsabilidade nossa ou 60 min ou mais.`;
+  const L=AF.filter(a=>(!S.dia||a.t.dia===S.dia)&&fx(a)&&(S.faixa<0||(a.min>=FAIXAS[S.faixa][0]&&a.min<FAIXAS[S.faixa][1]))).sort((a,b)=>b.t.mes-a.t.mes||b.t.dia-a.t.dia||b.min-a.min);
+  $('#atrSub').textContent=`${fi(L.length)} atrasos${S.dia?' em '+dd(S.mes,S.dia):''}${S.faixa>=0?' · '+FAIXAS[S.faixa][2].toLowerCase():''}. Vermelho na borda: responsabilidade nossa ou 60 min ou mais.`;
   $('#tAtr').innerHTML=L.slice(0,300).map((a,i)=>{const t=a.t,p=planoDe(a)||planos().find(p=>!p.vrid&&p.res===a.res);
     return`<tr class="${a.hot?'hot':''}"><td class="mono">${dd(t.mes,t.dia)}</td><td class="mono">${t.vrid}</td><td>${a.ind}</td><td><span class="pill ${a.real?'bad':'good'}">${a.real?'Real':'Indevido'}</span></td><td>${a.ind==='OTP'?'Origem':'Destino'} · ${a.onde}</td><td class="v">${a.min}</td><td>${esc(a.res)}</td><td>${t.frota?'Frota':'Agregado'}</td><td>${t.truck?'Truck':'Carreta'}</td><td>${['–','ADHOC','Retorno'][t.adhoc]}</td><td>${t.evid===2?'<span class="pill warn">Pendente</span>':'OK'}</td><td>${t.op}</td>
     <td>${p?`<button class="btn sm ghost" type="button" data-ver="${esc(a.res)}">O que fazer</button>`:a.real?`<button class="btn sm" type="button" data-plan="${i}">Criar plano</button>`:'<span class="mut">disputa</span>'}</td></tr>`;}).join('')||'<tr><td colspan="13">Nenhum atraso neste filtro.</td></tr>';
@@ -425,21 +434,10 @@ function atrasos(){const mesCal=S.mes||10,AF=A.filter(a=>inF(a.t)),reais=AF.filt
   $('#tAtr').querySelectorAll('[data-ver]').forEach(b=>b.onclick=()=>verPlano(b.dataset.ver));
   $('#atrNote').innerHTML=L.length>300?`Mostrando os 300 mais recentes de ${fi(L.length)}.`:`<b>${fi(L.filter(a=>a.hot).length)}</b> de ${fi(L.length)} pedem atenção (nossa responsabilidade ou 60 min ou mais).`;
   $('#btnCopyAtr').onclick=()=>copiar($('#btnCopyAtr'),L.map(a=>`${a.t.vrid}\t${a.ind}\t${a.real?'Real':'Indevido'}\t${a.min} min\t${a.res}`).join('\n'),'Copiar VRIDs da lista');
-  orbita(AF);causas();resumos(AF);}
-let pts=[];
-function orbita(AF){const cv=$('#orbita'),dpr=Math.min(2,devicePixelRatio||1),W=cv.clientWidth,H=300;cv.width=W*dpr;cv.height=H*dpr;const c=cv.getContext('2d');c.scale(dpr,dpr);
-  const l=40,r=10,top=14,bot=H-24,off={7:0,8:31,9:62,10:92},N=116,X=t=>l+(off[t.mes]+t.dia-.5)/N*(W-l-r),Y=m=>bot-Math.sqrt(Math.min(m,150)/150)*(bot-top);
-  c.fillStyle='rgba(255,153,0,.06)';c.fillRect(l+62/N*(W-l-r),top-6,(W-l-r)*54/N,bot-top+6);c.strokeStyle='#2b3846';c.fillStyle='#8C98A6';c.font='11px JetBrains Mono, monospace';
-  [0,10,30,60,120].forEach(m=>{const y=Y(m);c.beginPath();c.moveTo(l,y);c.lineTo(W-r,y);c.stroke();c.fillText(m+'m',4,y+4);});
-  Object.keys(MES).forEach(m=>c.fillText(MES[m],X({mes:+m,dia:1}),H-6));
-  c.strokeStyle='rgba(255,95,82,.5)';c.setLineDash([4,4]);c.beginPath();c.moveTo(l,Y(60));c.lineTo(W-r,Y(60));c.stroke();c.setLineDash([]);
-  pts=AF.map((a,i)=>({x:X(a.t)+((i*37)%7-3),y:Y(a.min),a}));
-  pts.forEach(p=>{c.fillStyle=p.a.real?css('--bad'):css('--good');c.globalAlpha=p.a.hot?.95:.6;c.beginPath();c.arc(p.x,p.y,p.a.hot?3:2.2,0,7);c.fill();});c.globalAlpha=1;}
-$('#orbita').addEventListener('mousemove',e=>{const r=e.target.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;let best=null,bd=64;
-  pts.forEach(p=>{const d=(p.x-x)**2+(p.y-y)**2;if(d<bd){bd=d;best=p;}});const tip=$('#tip');if(!best){tip.hidden=true;return;}
-  const a=best.a;tip.hidden=false;tip.style.left=best.x+'px';tip.style.top=best.y+'px';
-  tip.innerHTML=`<b class="mono">${a.t.vrid}</b> · ${dd(a.t.mes,a.t.dia)}<br>${a.ind} ${a.real?'real':'indevido'} · ${a.min} min em ${a.onde}<br>${esc(a.res)}`;});
-$('#orbita').addEventListener('mouseleave',()=>$('#tip').hidden=true);
+  faixas(AF);causas();resumos(AF);}
+function faixas(AF){const cnt=FAIXAS.map(([lo,hi])=>{const X=AF.filter(a=>a.min>=lo&&a.min<hi);return[X.filter(a=>a.real).length,X.filter(a=>!a.real).length];}),mx=Math.max(1,...cnt.map(c=>c[0]+c[1])),tot=AF.length||1;
+  $('#faixas').innerHTML=FAIXAS.map(([,,n],i)=>{const[re,ind]=cnt[i];return`<button type="button" class="fx" data-i="${i}" aria-pressed="${S.faixa===i}"><span class="t">${n}<small>${fp(pct(re+ind,tot))} dos atrasos</small></span><span class="bar2" style="width:${Math.max(4,100*(re+ind)/mx)}%"><i style="width:${pct(re,re+ind)||0}%;background:var(--bad)"></i><i style="width:${pct(ind,re+ind)||0}%;background:var(--good)"></i></span><span class="n">${re+ind}</span></button>`;}).join('');
+  $('#faixas').querySelectorAll('.fx').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;S.faixa=S.faixa===i?-1:i;atrasos();});}
 function causas(){const W=640,H=240,l=40,r=10,t=16,b=30,ms=[7,8,9,10],gw=(W-l-r)/4,bw=gw*.5,LL=filt(true).filter(x=>x.tO===1||x.tA===1);
   const cnt=ms.map(m=>[0,1,2].map(k=>LL.filter(x=>x.mes===m&&(x.causa<0?1:x.causa)===k).length)),mx=Math.max(...cnt.map(a=>a[0]+a[1]+a[2]),1),top=Math.ceil(mx/20)*20,Y=v=>H-b-v/top*(H-t-b);let g='';
   for(let v=0;v<=top;v+=top/4)g+=`<line x1="${l}" x2="${W-r}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--line)"/><text x="${l-6}" y="${Y(v)+4}" text-anchor="end">${v}</text>`;
