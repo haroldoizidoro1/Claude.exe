@@ -1,40 +1,41 @@
-# Abordagem BeOn Transportes · e-mail para Beatriz Cabral
+# Abordagem BeOn Transportes · e-mail para Beatriz Cabral (v2, tom mais humano)
 
 - Para: contato@beontransportes.com.br (aos cuidados de Beatriz Cabral)
 - Quem envia: Haroldo (o Claude só prepara)
 - Antes de enviar: compartilhar a vitrine com link público (menu Share do artefato) e trocar [WhatsApp] pelo seu número.
+- Os números citados são da DEMONSTRAÇÃO (dados fictícios). O texto deixa isso claro; não apresentar como resultado de cliente real.
 
 ## Assunto (escolha um)
-1. Pontualidade por agregado e por rota, sem planilha manual
-2. BeOn: uma forma simples de chegar nos 99% de SLA
-3. Para a Beatriz Cabral: painel de pontualidade para transportadoras de e-commerce
+1. Beatriz, sobre os atrasos que só aparecem na fatura
+2. Uma ideia para a operação da BeOn enxergar o atraso antes do desconto
+3. Pontualidade por agregado e por rota, sem planilha manual
 
 ## Texto
 
 Olá, Beatriz, tudo bem?
 
-Meu nome é Haroldo Turetta. Trabalho com performance de transportadoras que rodam para Amazon, Shopee e J&T, e conheci a BeOn pelo site: line haul, middle mile, mais de 200 agregados e meta de 99% de SLA. É exatamente o tipo de operação para a qual eu desenvolvo painéis de controle.
+Meu nome é Haroldo Turetta. Trabalho há alguns anos no dia a dia de transportadoras que rodam para Amazon, Shopee e J&T, olhando atraso por atraso. Conheço bem aquela sensação de fechar o mês e descobrir, só na fatura, que um atraso de madrugada virou desconto. Ou de ver a equipe se esforçando muito e, mesmo assim, o número não refletir esse esforço.
 
-Na prática, quem roda para marketplace conhece estes problemas:
+Conheci a BeOn pelo site e me chamou a atenção a história: começar com uma Kombi e hoje ter mais de 200 agregados, com meta de 99% de SLA. Uma operação desse tamanho depende de gente que conhece cada rota e cada motorista. O que eu faço é dar a essa equipe uma forma de enxergar os números com clareza, no dia a dia.
 
-1. O atraso só aparece quando a fatura já veio com desconto.
-2. Parte dos atrasos apontados pelo cliente não é culpa da transportadora, mas sem registro organizado não dá para contestar.
-3. O operador novo não sabe o que fazer quando o caminhão atrasa, e o mesmo problema se repete.
-
-Montei uma demonstração com dados fictícios para mostrar como resolvo isso:
+Montei uma demonstração, com dados fictícios, para mostrar a ideia:
 [link da vitrine]
 
-Nela a equipe vê:
-- OTP e OTA por viagem e por rota, com a meta de 99%;
-- cada atraso com o motivo (origem, trânsito ou destino) e o que o operador deve fazer na hora;
-- os atrasos indevidos separados, prontos para a disputa;
-- o fechamento do mês: quantos atrasos ainda cabem na meta e quanto custou cada um.
+O que mais me orgulha nela é a história que os números contam. A transportadora do exemplo tinha 56 atrasos em julho. Quando a operação passou a ver, toda manhã, onde cada atraso aconteceu e o que fazer em cada situação, eles caíram para 26 em outubro. E 23 desses 26 (88%) nem eram culpa da transportadora: eram erros da base ou do cliente, já separados para a disputa. Com eles contestados, a meta de 99% é batida.
 
-No exemplo, a transportadora sai de 56 atrasos em julho para 26 em outubro, e 70% dos que sobraram são indevidos, ou seja, contestáveis.
+Não foi mágica nem troca de equipe. Foi a mesma equipe, enxergando melhor e agindo antes de o atraso virar desconto. A tecnologia, inclusive a inteligência artificial que uso para montar e atualizar os painéis, entra para facilitar o trabalho das pessoas, não para substituí-las.
 
-O painel se adapta aos números da BeOn: funciona com as planilhas que a equipe já baixa hoje e cresce até a versão automática, integrada aos sistemas do cliente.
+Na demonstração você vai ver:
+- o OTP e o OTA de cada viagem e de cada rota;
+- o motivo de cada atraso e o passo a passo para o operador seguir na hora;
+- os atrasos indevidos separados, prontos para contestar;
+- o fechamento do mês, com quantos atrasos ainda cabem na meta.
 
-Posso te mostrar em 20 minutos, por vídeo ou aí em Guarulhos. Se preferir, me envie uma semana de viagens (pode ser a planilha que vocês já usam) e eu devolvo um diagnóstico de pontualidade por rota e por agregado, sem custo.
+Tudo se adapta à realidade da BeOn e começa com as planilhas que vocês já usam hoje.
+
+Se fizer sentido, eu adoraria te mostrar com calma: 20 minutos por vídeo ou um café aí em Guarulhos, como você preferir. Se quiser ver na prática antes, me envie uma semana de viagens e eu devolvo um diagnóstico de pontualidade por rota e por agregado, sem custo e sem compromisso.
+
+Obrigado pelo seu tempo. Será um prazer conversar.
 
 Um abraço,
 Haroldo Izidoro Turetta
@@ -44,5 +45,6 @@ haroldoizidoro1@gmail.com
 
 ## Se ela responder (lembretes)
 - Não citar o nome da empresa onde trabalho nem números dela.
+- Se perguntar se os números são de um cliente: são da demonstração, com dados fictícios montados sobre a regra real do marketplace. O diagnóstico gratuito é para ela ver com os números da BeOn.
 - Preços de referência do PLANO.md: Essencial R$ 1.200 · Painel + automação R$ 2.000 · Atualização R$ 300/mês. A BeOn pode ser cliente-piloto (desconto em troca de depoimento).
-- Follow-up: se não houver resposta em 4 dias úteis, mandar mensagem curta no WhatsApp (11) 91431-9506.
+- Follow-up: se não houver resposta em 4 dias úteis, mensagem curta no WhatsApp (11) 91431-9506.

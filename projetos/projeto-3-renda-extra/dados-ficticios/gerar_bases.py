@@ -49,10 +49,10 @@ def salva(nome, cab, linhas):
     with open(f"{OUT}/{nome}.csv", "w", newline="", encoding="utf-8-sig") as f:
         w = csv.writer(f, delimiter=";"); w.writerow(cab); w.writerows(linhas)
 
-# ---------------- AMAZON: atrasos apontados por mês caindo (jul 56 · ago 53 · set 45 · out 26), outubro com 70% indevidos ----------------
+# ---------------- AMAZON: atrasos apontados por mês caindo (jul 56 · ago 53 · set 45 · out 26), outubro com 23 de 26 indevidos (88%) ----------------
 A_LANES = {"Duque de Caxias/RJ → Cajamar/SP":420,"Duque de Caxias/RJ → Betim/MG":390,"Duque de Caxias/RJ → Serra/ES":480,
  "Nova Iguaçu/RJ → São Gonçalo/RJ":75,"Nova Iguaçu/RJ → Campos dos Goytacazes/RJ":240,"Cajamar/SP → Duque de Caxias/RJ":420,"Betim/MG → Duque de Caxias/RJ":390}
-A_ATRASOS = {7: 56, 8: 53, 9: 45, 10: 26}; A_REAL = {7: .88, 8: .87, 9: .65, 10: .30}
+A_ATRASOS = {7: 56, 8: 53, 9: 45, 10: 26}; A_REAL = {7: .88, 8: .87, 9: .65, 10: 3 / 26}
 cab_a = ["ID Viagem","Mês","Data","Fase","Lane","Tipo de rota","Motorista","Placa","Veículo","Apresentação programada","Chegada na origem","CPT (STD)","Saída real (ATD)","STA destino","Chegada real (ATA)",
  "Transit time (min)","Atraso chegada origem (min)","Atraso saída (min)","Atraso destino (min)","OTP","OTA","Status nosso","Status Amazon","Divergência","Motivo do atraso","Detalhe do motivo",
  "VRID","Vínculo","ADHOC/Retorno","Operador","Evidência","Amazon OTP","Amazon OTA","Tipo OTP","Tipo OTA","Min. Amazon OTP","Min. Amazon OTA","Resumo OTP","Resumo OTA","Preço BID (R$)"]
