@@ -20,6 +20,7 @@
   color-scheme:dark;
 }
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:14.5px;line-height:1.5;-webkit-font-smoothing:antialiased}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
 .wrap{max-width:1280px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 56px;display:grid;gap:18px}
@@ -128,6 +129,29 @@ tbody tr[data-lane]{cursor:pointer}
 .niveis td{white-space:normal;min-width:160px;vertical-align:top}
 .niveis td:last-child{color:var(--accent-2)}
 .ex{font-family:var(--mono);font-size:10px;border:1px dashed var(--muted);color:var(--muted);border-radius:5px;padding:0 5px;margin-left:6px}
+/* tela de senha do faturamento */
+.lock{display:grid;place-items:center;min-height:440px;border-radius:var(--r);border:1px solid var(--line);background:radial-gradient(70% 90% at 50% 0%,rgba(255,153,0,.12),transparent 70%),var(--surface)}
+.lock-card{width:min(360px,100%);display:grid;gap:14px;justify-items:center;text-align:center;padding:24px 18px}
+.lock-ic{width:52px;height:52px;border-radius:16px;display:grid;place-items:center;border:1px solid var(--line);background:var(--surface-2);color:var(--accent);box-shadow:0 0 0 0 rgba(255,153,0,.4);animation:lp 2.4s ease-out infinite}
+@keyframes lp{70%{box-shadow:0 0 0 14px rgba(255,153,0,0)}}
+.lock h2{font-size:24px}
+.pin{position:relative;display:flex;gap:10px}
+.pin span{width:54px;height:60px;border-radius:14px;border:1px solid var(--line);background:var(--surface-2);display:grid;place-items:center;font-family:var(--mono);font-size:24px;transition:border-color .2s,box-shadow .2s}
+.pin span.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent),0 0 18px rgba(255,153,0,.35)}
+.pin.err span{border-color:var(--bad);color:var(--bad)}
+.pin.ok span{border-color:var(--good);color:var(--good)}
+.pin input{position:absolute;inset:0;opacity:0;font-size:16px;cursor:text}
+.shake{animation:sh .36s ease-out}
+@keyframes sh{20%{transform:translateX(-8px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(3px)}}
+/* guia do operador */
+.guia{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:12px}
+.gcard{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:14px;display:grid;gap:8px;align-content:start}
+.gcard h3{font-size:16px;display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.gcard ol{margin:0;padding-left:20px;display:grid;gap:4px;font-size:13.5px;color:var(--ink-2)}
+.gcard.pend{border-style:dashed}
+.gcard .mut{font-size:13px}
+.modal{position:fixed;inset:0;z-index:30;display:grid;place-items:center;padding:16px;background:rgba(5,8,12,.6);backdrop-filter:blur(4px)}
+.modal .card{width:min(520px,100%);max-height:86vh;overflow:auto}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
@@ -210,13 +234,18 @@ tbody tr[data-lane]{cursor:pointer}
   <!-- PLANOS DE AÇÃO -->
   <section class="view" id="v-planos" hidden>
     <div class="grid">
+      <div class="card s12">
+        <div><h2>Guia do operador</h2><p class="sub">O que fazer na hora em que cada situação acontece. O operador novo não precisa adivinhar: abre o motivo e segue os passos.</p></div>
+        <div class="guia" id="guia"></div>
+      </div>
       <div class="card s5">
         <div><h2 id="formT">Novo plano de ação</h2><p class="sub">Um plano por atraso (VRID) ou por motivo que se repete. Fica salvo neste navegador.</p></div>
         <form class="form" id="fPlano" autocomplete="off">
           <div class="field"><label class="label" for="pVrid">VRID (opcional)</label><input id="pVrid" list="vridList" placeholder="ex.: 11Q7S6***"><datalist id="vridList"></datalist></div>
           <div class="field"><label class="label" for="pRes">Resumo do atraso</label><select id="pRes" required></select></div>
           <div class="field full"><label class="label" for="pCausa">Causa raiz</label><textarea id="pCausa" required placeholder="Por que aconteceu? Pergunte 'por quê' até chegar no processo."></textarea></div>
-          <div class="field full"><label class="label" for="pAcao">Ação</label><textarea id="pAcao" required placeholder="O que muda para não repetir"></textarea></div>
+          <div class="field full"><label class="label" for="pProc">O que o operador faz na hora (um passo por linha)</label><textarea id="pProc" placeholder="1º passo&#10;2º passo"></textarea></div>
+          <div class="field full"><label class="label" for="pAcao">Ação para não repetir</label><textarea id="pAcao" required placeholder="O que muda no processo"></textarea></div>
           <div class="field"><label class="label" for="pResp">Responsável</label><input id="pResp" required></div>
           <div class="field"><label class="label" for="pPrazo">Prazo</label><input id="pPrazo" type="date" required></div>
           <div class="field"><label class="label" for="pSt">Status</label><select id="pSt"><option>Planejado</option><option>Em andamento</option><option>Concluído</option></select></div>
@@ -239,7 +268,18 @@ tbody tr[data-lane]{cursor:pointer}
 
   <!-- FATURAMENTO -->
   <section class="view" id="v-fat" hidden>
-    <div class="grid">
+    <div class="lock" id="fatLock">
+      <form class="lock-card" id="fLock" autocomplete="off">
+        <div class="lock-ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></div>
+        <span class="label">Área restrita</span>
+        <h2>Faturamento</h2>
+        <p class="sub">Só a equipe de faturamento tem a senha. A operação vê atrasos, planos e disputa, mas não os valores.</p>
+        <label class="pin" id="pin" for="pinIn"><span></span><span></span><span></span><input id="pinIn" inputmode="numeric" maxlength="3" type="password" aria-label="Senha de 3 dígitos"></label>
+        <p class="mut" id="lockMsg" role="status">Demonstração: a senha é 123</p>
+      </form>
+    </div>
+    <div class="grid" id="fatBody" hidden>
+      <div class="card s12 row-h" style="align-items:center"><p class="sub" style="margin:0">Acesso liberado para esta sessão.</p><button class="btn ghost sm" type="button" id="btnSair">Sair do faturamento</button></div>
       <div class="kpis s12" id="kFat"></div>
       <div class="card s12">
         <div><h2>Fechamento por mês</h2><p class="sub">VRIDs executados × preço BID por carga. Penalidade e bônus pela regra ao lado, com os atrasos que a Amazon apontou.</p></div>
@@ -267,8 +307,8 @@ tbody tr[data-lane]{cursor:pointer}
   <section class="view" id="v-rotas" hidden>
     <div class="grid">
       <div class="card s7">
-        <div><h2>Rotas</h2><p class="sub">Cada arco é uma lane. Cor pelo OTA em relação à meta: verde na meta, âmbar até 4 p.p. abaixo, vermelho abaixo disso. Clique numa lane para destacar.</p></div>
-        <div class="cv"><canvas id="globe" height="420" aria-label="Mapa de rotas"></canvas></div>
+        <div><h2>Rotas</h2><p class="sub">Globo com foco no Rio de Janeiro. Cada linha liga duas bases; fora do RJ aparece o estado. Cor pelo OTA em relação à meta: verde na meta, âmbar até 4 p.p. abaixo, vermelho abaixo disso.</p></div>
+        <div class="cv"><canvas id="globe" height="440" aria-label="Mapa de rotas"></canvas></div>
       </div>
       <div class="card s5"><h2>Pontualidade por lane</h2><div class="tbl"><table><thead><tr><th>Lane</th><th>VRIDs</th><th>OTA</th><th>Min. médio</th></tr></thead><tbody id="tLanes"></tbody></table></div></div>
     </div>
@@ -285,6 +325,8 @@ tbody tr[data-lane]{cursor:pointer}
       <div class="tbl"><table><thead><tr><th>VRID</th><th>Data</th><th>Indicador</th><th>Lane</th><th>Min. apontados</th><th>Nosso registro</th><th>Resumo</th><th>Evidência</th></tr></thead><tbody id="tCont"></tbody></table></div>
     </div>
   </section>
+
+  <div class="modal" id="modal" hidden><div class="card" role="dialog" aria-modal="true" aria-labelledby="mT"><div class="row-h"><h2 id="mT"></h2><button class="btn ghost sm" type="button" id="mClose">Fechar</button></div><div id="mBody" style="display:grid;gap:10px"></div></div></div>
 
   <p class="foot">Demonstração com dados fictícios gerados por código: VRIDs mascarados, preços BID e regras de exemplo. Não é afiliado à Amazon.</p>
 </main>
@@ -308,6 +350,9 @@ const A=[];T.forEach(t=>{[['OTP',t.tO,t.a1,t.mO,t.rO,D.lanes[t.lane].o],['OTA',t
   if(!tp)return;const real=tp===1;A.push({t,ind,real,min:real?nosso:amz,res,onde,hot:real||amz>=60});});});
 const S={mes:0,lane:-1,tab:'geral',sel:-1,dia:0,fAtr:'todos',edit:null};
 const R={meta:99,multa:100,teto:2,bO:.5,bA:1.5};
+// senha de demonstração do faturamento (123). Num painel real os valores ficam num banco com leitura restrita, não só atrás da tela.
+const PIN_HASH='a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3';
+let FAT_OK=false;try{FAT_OK=sessionStorage.getItem('torreVitrineFat')==='1';}catch(e){}
 $('#agentSub').textContent=`base atualizada 24/10 06:00 · ${fi(T.length)} VRIDs`;
 const inF=t=>(!S.mes||t.mes===S.mes)&&(S.lane<0||t.lane===S.lane);
 const filt=all=>T.filter(t=>(all||!S.mes||t.mes===S.mes)&&(S.lane<0||t.lane===S.lane));
@@ -340,7 +385,7 @@ function fech(X){const n=X.length,fat=X.reduce((s,t)=>s+t.preco,0),lo=X.filter(t
 function geral(){const L=filt(),n=L.length,f=fech(L);
   kpiRow('#kpis',[['VRIDs',fi(n),S.mes?MES[S.mes]+'/2026':'jul a 24/out'],['OTP · origem',fp(pct(L.filter(t=>!t.a1).length,n)),'pelo nosso registro'],
     ['OTA · destino',fp(pct(L.filter(t=>!t.a3).length,n)),'pelo nosso registro'],['Atrasos reais',fi(A.filter(a=>a.real&&inF(a.t)).length),'responsabilidade nossa'],
-    ['Indevidos',fi(A.filter(a=>!a.real&&inF(a.t)).length),'vão para a disputa'],['Penalidade estimada',brl(f.pen),`regra de exemplo · ${brl(f.fat)} faturados`,1]]);
+    ['Indevidos',fi(A.filter(a=>!a.real&&inF(a.t)).length),'vão para a disputa'],FAT_OK?['Penalidade estimada',brl(f.pen),`regra de exemplo · ${brl(f.fat)} faturados`,1]:['Planos de ação',fi(planos().length),`${planos().filter(p=>p.st==='Concluído').length} concluídos`,1]]);
   const W=640,H=260,l=40,r=10,t=16,b=30,ms=[7,8,9,10],gw=(W-l-r)/4,bw=gw*.28,y0=50,LL=filt(true);
   const Y=v=>t+(100-Math.max(v,y0))*(H-t-b)/(100-y0);let g=`<rect x="${l+gw*2}" y="2" width="${gw*2}" height="${H-b-2}" fill="var(--accent)" opacity=".07"/><text x="${l+gw*2+8}" y="12" fill="var(--accent)">painel em uso</text>`;
   [50,60,70,80,90,100].forEach(v=>g+=`<line x1="${l}" x2="${W-r}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--line)"/><text x="${l-6}" y="${Y(v)+4}" text-anchor="end">${v}%</text>`);
@@ -351,7 +396,7 @@ function geral(){const L=filt(),n=L.length,f=fech(L);
   const B=LL.filter(t=>t.mes<=8),Z=LL.filter(t=>t.mes===10),m=(X,fn)=>pct(X.filter(fn).length,X.length);
   $('#mudou').innerHTML=[['OTP',t=>!t.a1],['OTA',t=>!t.a3],['Atrasos reais por 100 VRIDs',t=>t.tO===1||t.tA===1,1]].map(([nm,fn,inv])=>{const a=m(B,fn),z=m(Z,fn),d=z-a,good=inv?d<=0:d>=0;
     return`<div class="note"><span class="label">${nm}</span><br><b class="mono" style="font-size:20px">${inv?a.toFixed(1).replace('.',','):fp(a)} → ${inv?z.toFixed(1).replace('.',','):fp(z)}</b> <span class="delta ${good?'up':'down'}">${d>=0?'+':''}${d.toFixed(1).replace('.',',')}${inv?'':' p.p.'}</span></div>`;}).join('')+
-    (()=>{const fb=fech(LL.filter(t=>t.mes===7)),fz=fech(Z);return`<div class="note"><span class="label">Penalidade do mês</span><br><b class="mono" style="font-size:20px">${brl(fb.pen)} → ${brl(fz.pen)}</b> <span class="delta up">jul → out</span></div>`;})();}
+    (FAT_OK?(()=>{const fb=fech(LL.filter(t=>t.mes===7)),fz=fech(Z);return`<div class="note"><span class="label">Penalidade do mês</span><br><b class="mono" style="font-size:20px">${brl(fb.pen)} → ${brl(fz.pen)}</b> <span class="delta up">jul → out</span></div>`;})():'');}
 
 /* ATRASOS */
 const planoDe=a=>planos().find(p=>p.vrid&&p.vrid===a.t.vrid);
@@ -375,8 +420,9 @@ function atrasos(){const mesCal=S.mes||10,AF=A.filter(a=>inF(a.t)),reais=AF.filt
   $('#atrSub').textContent=`${fi(L.length)} atrasos${S.dia?' em '+dd(S.mes,S.dia):''}. Vermelho na borda: responsabilidade nossa ou 60 min ou mais.`;
   $('#tAtr').innerHTML=L.slice(0,300).map((a,i)=>{const t=a.t,p=planoDe(a)||planos().find(p=>!p.vrid&&p.res===a.res);
     return`<tr class="${a.hot?'hot':''}"><td class="mono">${dd(t.mes,t.dia)}</td><td class="mono">${t.vrid}</td><td>${a.ind}</td><td><span class="pill ${a.real?'bad':'good'}">${a.real?'Real':'Indevido'}</span></td><td>${a.ind==='OTP'?'Origem':'Destino'} · ${a.onde}</td><td class="v">${a.min}</td><td>${esc(a.res)}</td><td>${t.frota?'Frota':'Agregado'}</td><td>${t.truck?'Truck':'Carreta'}</td><td>${['–','ADHOC','Retorno'][t.adhoc]}</td><td>${t.evid===2?'<span class="pill warn">Pendente</span>':'OK'}</td><td>${t.op}</td>
-    <td>${p?`<span class="pill ${p.st==='Concluído'?'good':'warn'}">${p.st}</span>`:a.real?`<button class="btn sm" type="button" data-plan="${i}">Criar plano</button>`:'<span class="mut">disputa</span>'}</td></tr>`;}).join('')||'<tr><td colspan="13">Nenhum atraso neste filtro.</td></tr>';
+    <td>${p?`<button class="btn sm ghost" type="button" data-ver="${esc(a.res)}">O que fazer</button>`:a.real?`<button class="btn sm" type="button" data-plan="${i}">Criar plano</button>`:'<span class="mut">disputa</span>'}</td></tr>`;}).join('')||'<tr><td colspan="13">Nenhum atraso neste filtro.</td></tr>';
   $('#tAtr').querySelectorAll('[data-plan]').forEach(b=>b.onclick=()=>{const a=L[+b.dataset.plan];novoPlano(a.t.vrid,a.res);});
+  $('#tAtr').querySelectorAll('[data-ver]').forEach(b=>b.onclick=()=>verPlano(b.dataset.ver));
   $('#atrNote').innerHTML=L.length>300?`Mostrando os 300 mais recentes de ${fi(L.length)}.`:`<b>${fi(L.filter(a=>a.hot).length)}</b> de ${fi(L.length)} pedem atenção (nossa responsabilidade ou 60 min ou mais).`;
   $('#btnCopyAtr').onclick=()=>copiar($('#btnCopyAtr'),L.map(a=>`${a.t.vrid}\t${a.ind}\t${a.real?'Real':'Indevido'}\t${a.min} min\t${a.res}`).join('\n'),'Copiar VRIDs da lista');
   orbita(AF);causas();resumos(AF);}
@@ -404,13 +450,13 @@ function resumos(AF){const c={};AF.forEach(a=>{c[a.res]=c[a.res]||[0,0];c[a.res]
   $('#tRes').innerHTML=Object.entries(c).sort((a,b)=>b[1][0]+b[1][1]-a[1][0]-a[1][1]).map(([k,[re,ind]])=>`<tr><td>${esc(k)}</td><td class="v">${re}</td><td class="v">${ind}</td></tr>`).join('');}
 
 /* PLANOS DE AÇÃO (salvos neste navegador) */
-const KEY='torreAmazonVitrine.planos.v1';
+const KEY='torreAmazonVitrine.planos.v2';
 const SEED=[
- {id:'ex1',vrid:'',res:'Trânsito',causa:'Saída no horário de pico na Dutra e na Av. Brasil.',acao:'Antecipar o CPT das lanes para SP em 40 min e monitorar a rota pelo rastreador.',resp:'Planejamento',prazo:'2026-09-20',st:'Concluído',ex:1},
- {id:'ex2',vrid:'',res:'Condutor sem evidência',causa:'Motorista não registrava a chegada no app e não guardava foto.',acao:'Checklist de chegada com foto obrigatória; torre cobra em 10 min.',resp:'Torre de controle',prazo:'2026-09-15',st:'Concluído',ex:1},
- {id:'ex3',vrid:'',res:'Documentação',causa:'Nota fiscal liberada depois da chegada do motorista.',acao:'Conferir documentação 2 h antes do CPT e escalar para a base.',resp:'Supervisor de pátio',prazo:'2026-10-10',st:'Em andamento',ex:1},
- {id:'ex4',vrid:'',res:'Quebra mecânica',causa:'Preventiva dos agregados sem controle.',acao:'Agenda de preventiva por placa e bloqueio de veículo vencido.',resp:'Manutenção',prazo:'2026-10-30',st:'Em andamento',ex:1},
- {id:'ex5',vrid:'',res:'Erro do condutor em trajeto',causa:'Rotas novas sem treinamento do motorista.',acao:'Briefing de rota no primeiro embarque e rota fixa no GPS.',resp:'Torre de controle',prazo:'2026-11-05',st:'Planejado',ex:1}];
+ {id:'ex1',vrid:'',proc:'Ligar para o motorista e confirmar onde está e a previsão de chegada.\nRegistrar a ocorrência de trânsito com print do mapa ou do rastreador.\nAvisar o destino da nova previsão antes do horário.',res:'Trânsito',causa:'Saída no horário de pico na Dutra e na Av. Brasil.',acao:'Antecipar o CPT das lanes para SP em 40 min e monitorar a rota pelo rastreador.',resp:'Planejamento',prazo:'2026-09-20',st:'Concluído',ex:1},
+ {id:'ex2',vrid:'',proc:'Pedir ao motorista a foto da chegada (placa + doca) pelo WhatsApp.\nRegistrar a chegada no app da Amazon na hora.\nSe não houver evidência em 10 min, avisar o supervisor.',res:'Condutor sem evidência',causa:'Motorista não registrava a chegada no app e não guardava foto.',acao:'Checklist de chegada com foto obrigatória; torre cobra em 10 min.',resp:'Torre de controle',prazo:'2026-09-15',st:'Concluído',ex:1},
+ {id:'ex3',vrid:'',proc:'Avisar a Amazon pelo canal oficial que a documentação está atrasada, antes do CPT.\nAcionar a base para liberar a nota fiscal.\nRegistrar a ocorrência com o horário em que a nota foi liberada.',res:'Documentação',causa:'Nota fiscal liberada depois da chegada do motorista.',acao:'Conferir documentação 2 h antes do CPT e escalar para a base.',resp:'Supervisor de pátio',prazo:'2026-10-10',st:'Em andamento',ex:1},
+ {id:'ex4',vrid:'',proc:'Garantir a segurança: motorista e veículo em local seguro.\nAcionar o guincho e o veículo reserva mais próximo.\nAvisar a Amazon e registrar a ocorrência com fotos.',res:'Quebra mecânica',causa:'Preventiva dos agregados sem controle.',acao:'Agenda de preventiva por placa e bloqueio de veículo vencido.',resp:'Manutenção',prazo:'2026-10-30',st:'Em andamento',ex:1},
+ {id:'ex5',vrid:'',proc:'Ligar para o motorista e corrigir a rota no GPS.\nAvisar o destino da nova previsão.\nRegistrar a ocorrência e marcar o motorista para o briefing de rota.',res:'Erro do condutor em trajeto',causa:'Rotas novas sem treinamento do motorista.',acao:'Briefing de rota no primeiro embarque e rota fixa no GPS.',resp:'Torre de controle',prazo:'2026-11-05',st:'Planejado',ex:1}];
 function planos(){try{const x=JSON.parse(localStorage.getItem(KEY)||'null');if(Array.isArray(x))return x;}catch(e){}return SEED.slice();}
 function salvar(L){try{localStorage.setItem(KEY,JSON.stringify(L));return true;}catch(e){return false;}}
 const RES=[...new Set(A.map(a=>a.res))].sort();
@@ -419,20 +465,32 @@ $('#vridList').innerHTML=A.filter(a=>a.real).slice(-400).map(a=>`<option value="
 function novoPlano(vrid,res){S.edit=null;$('#fPlano').reset();$('#pVrid').value=vrid||'';$('#pRes').value=res||RES[0];$('#formT').textContent='Novo plano de ação';$('#pCancel').hidden=true;tab('planos');$('#pCausa').focus();}
 $('#pVrid').onchange=e=>{const a=A.find(a=>a.t.vrid===e.target.value);if(a)$('#pRes').value=a.res;};
 $('#fPlano').onsubmit=e=>{e.preventDefault();const L=planos(),p={id:S.edit||('p'+Date.now()),vrid:$('#pVrid').value.trim(),res:$('#pRes').value,causa:$('#pCausa').value.trim(),acao:$('#pAcao').value.trim(),resp:$('#pResp').value.trim(),prazo:$('#pPrazo').value,st:$('#pSt').value};
-  const i=L.findIndex(x=>x.id===p.id);if(i>=0)L[i]=p;else L.unshift(p);const ok=salvar(L);S.edit=null;$('#fPlano').reset();$('#pCancel').hidden=true;$('#formT').textContent='Novo plano de ação';
+  p.proc=$('#pProc').value.trim();const i=L.findIndex(x=>x.id===p.id);if(i>=0)L[i]=p;else L.unshift(p);const ok=salvar(L);S.edit=null;$('#fPlano').reset();$('#pCancel').hidden=true;$('#formT').textContent='Novo plano de ação';
   $('#pMsg').textContent=ok?'Plano salvo.':'Plano registrado só nesta sessão (o navegador não permitiu salvar).';if(!ok)SEED.splice(0,SEED.length,...L);planosV();};
 $('#pCancel').onclick=()=>{S.edit=null;$('#fPlano').reset();$('#pCancel').hidden=true;$('#formT').textContent='Novo plano de ação';};
+const passos=p=>(p.proc||'').split('\n').map(x=>x.trim()).filter(Boolean);
+function verPlano(res){const p=planos().find(p=>p.res===res);$('#mT').textContent='O que fazer · '+res;
+  $('#mBody').innerHTML=p?`${passos(p).length?`<ol style="margin:0;padding-left:20px;display:grid;gap:6px">${passos(p).map(x=>`<li>${esc(x)}</li>`).join('')}</ol>`:'<p class="mut">Plano sem passo a passo para o operador.</p>'}<p class="note"><b>Para não repetir:</b> ${esc(p.acao)}<br><span class="mut">${esc(p.resp)} · prazo ${p.prazo.split('-').reverse().join('/')} · ${p.st}</span></p>`
+    :`<p class="note">Ainda não há plano para este motivo.</p><button class="btn" type="button" id="mNovo">Cadastrar plano</button>`;
+  $('#modal').hidden=false;$('#mClose').focus();const n=$('#mNovo');if(n)n.onclick=()=>{$('#modal').hidden=true;novoPlano('',res);};}
+$('#mClose').onclick=()=>$('#modal').hidden=true;$('#modal').onclick=e=>{if(e.target.id==='modal')$('#modal').hidden=true;};
+addEventListener('keydown',e=>{if(e.key==='Escape')$('#modal').hidden=true;});
 function planosV(){const L=planos(),c=s=>L.filter(p=>p.st===s).length;
+  $('#guia').innerHTML=RES.filter(r=>A.some(a=>a.real&&a.res===r)).map(r=>{const p=L.find(p=>p.res===r);
+    return p?`<div class="gcard"><h3>${esc(r)}<span class="pill ${p.st==='Concluído'?'good':'warn'}">${p.st}</span></h3>${passos(p).length?`<ol>${passos(p).map(x=>`<li>${esc(x)}</li>`).join('')}</ol>`:'<p class="mut">Sem passo a passo.</p>'}</div>`
+      :`<div class="gcard pend"><h3>${esc(r)}<span class="pill bad">pendente</span></h3><p class="mut">Ainda não há o que fazer cadastrado para esta situação.</p><button class="btn sm" type="button" data-g="${esc(r)}">Cadastrar plano</button></div>`;}).join('');
+  $('#guia').querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>novoPlano('',b.dataset.g));
   $('#pStatus').innerHTML=[['Planejado','warn'],['Em andamento','warn'],['Concluído','good']].map(([s,k])=>`<div><span class="label">${s}</span><b class="${k}">${c(s)}</b></div>`).join('');
   const rep={};A.filter(a=>a.real&&inF(a.t)).forEach(a=>rep[a.res]=(rep[a.res]||0)+1);
   $('#tRep').innerHTML=Object.entries(rep).sort((a,b)=>b[1]-a[1]).map(([r,n])=>{const p=L.find(p=>p.res===r);return`<tr><td>${esc(r)}</td><td class="v">${n}</td><td>${p?`<span class="pill ${p.st==='Concluído'?'good':'warn'}">${p.st}</span>`:'<span class="pill bad">sem plano</span>'}</td><td>${p?'':`<button class="btn sm" type="button" data-r="${esc(r)}">Criar plano</button>`}</td></tr>`;}).join('');
   $('#tRep').querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>novoPlano('',b.dataset.r));
   $('#tPlanos').innerHTML=L.map(p=>`<tr><td class="mono">${esc(p.vrid||'por motivo')}</td><td>${esc(p.res)}${p.ex?'<span class="ex">exemplo</span>':''}</td><td style="white-space:normal;min-width:200px">${esc(p.causa)}</td><td style="white-space:normal;min-width:220px">${esc(p.acao)}</td><td>${esc(p.resp)}</td><td class="mono">${p.prazo?p.prazo.split('-').reverse().join('/'):''}</td><td><span class="pill ${p.st==='Concluído'?'good':'warn'}">${p.st}</span></td><td><button class="btn sm ghost" type="button" data-e="${p.id}">Editar</button></td></tr>`).join('');
-  $('#tPlanos').querySelectorAll('[data-e]').forEach(b=>b.onclick=()=>{const p=planos().find(x=>x.id===b.dataset.e);S.edit=p.id;$('#pVrid').value=p.vrid;$('#pRes').value=p.res;$('#pCausa').value=p.causa;$('#pAcao').value=p.acao;$('#pResp').value=p.resp;$('#pPrazo').value=p.prazo;$('#pSt').value=p.st;$('#formT').textContent='Editando plano';$('#pCancel').hidden=false;$('#pCausa').focus();});}
+  $('#tPlanos').querySelectorAll('[data-e]').forEach(b=>b.onclick=()=>{const p=planos().find(x=>x.id===b.dataset.e);S.edit=p.id;$('#pVrid').value=p.vrid;$('#pRes').value=p.res;$('#pCausa').value=p.causa;$('#pAcao').value=p.acao;$('#pResp').value=p.resp;$('#pPrazo').value=p.prazo;$('#pSt').value=p.st;$('#pProc').value=p.proc||'';$('#formT').textContent='Editando plano';$('#pCancel').hidden=false;$('#pCausa').focus();});}
 
 /* FATURAMENTO */
 ['rMeta','rMulta','rTeto','rBo','rBa'].forEach((id,i)=>{const k=['meta','multa','teto','bO','bA'][i];$('#'+id).value=R[k];$('#'+id).oninput=e=>{const v=parseFloat(e.target.value);if(!isNaN(v)){R[k]=v;render();}};});
-function fat(){const L=filt(),f=fech(L);
+function fat(){$('#fatLock').hidden=FAT_OK;$('#fatBody').hidden=!FAT_OK;if(!FAT_OK){setTimeout(()=>$('#pinIn').focus({preventScroll:true}),50);return;}
+  const L=filt(),f=fech(L);
   kpiRow('#kFat',[['Faturamento bruto',brl(f.fat),`${fi(f.n)} VRIDs executados`],['OTP Amazon',fp(f.pO),`<span class="pill ${stM(f.pO)}">meta ${R.meta}%</span>`],['OTA Amazon',fp(f.pA),`<span class="pill ${stM(f.pA)}">meta ${R.meta}%</span>`],
     ['Penalidade',brl(f.pen),`teto ${brl(f.teto)}`],['Bônus',brl(f.bon),f.bon?'meta atingida':'abaixo da meta'],['Líquido',brl(f.liq),`a disputa recupera ${brl(f.disp.liq-f.liq)}`,1]]);
   const LL=filt(true);$('#tFech').innerHTML=[7,8,9,10].map(m=>{const x=fech(LL.filter(t=>t.mes===m));return`<tr class="${S.mes===m?'sel':''}"><td>${MES[m]}${m===10?' (até 24)':''}</td><td class="v">${fi(x.n)}</td><td class="v">${brl(x.fat)}</td><td><span class="pill ${stM(x.pO)}">${fp(x.pO)}</span></td><td><span class="pill ${stM(x.pA)}">${fp(x.pA)}</span></td><td class="v bad">${brl(x.pen)}</td><td class="v good">${brl(x.bon)}</td><td class="v">${brl(x.liq)}</td><td class="v good">+${brl(x.disp.liq-x.liq)}</td></tr>`;}).join('');
@@ -447,18 +505,39 @@ function fat(){const L=filt(),f=fech(L);
     return`<tr class="${a.real?'hot':''}"><td class="mono">${a.t.vrid}</td><td class="mono">${dd(a.t.mes,a.t.dia)}</td><td>${a.ind}</td><td><span class="pill ${a.real?'bad':'good'}">${a.real?'Real':'Indevido'}</span></td><td>${D.lanes[a.t.lane].n}</td><td class="v">${brl(a.t.preco)}</td><td>${p<R.meta?(a.real?brl(R.multa):'em disputa'):'R$ 0 (na meta)'}</td></tr>`;}).join('');}
 
 /* ROTAS */
-function globe(){const cv=$('#globe'),dpr=Math.min(2,devicePixelRatio||1),W=cv.clientWidth,H=420;cv.width=W*dpr;cv.height=H*dpr;const c=cv.getContext('2d');c.scale(dpr,dpr);
-  const lat0=-21.6*Math.PI/180,lon0=-43.6*Math.PI/180,R0=Math.min(W*7.2,3600),cx=W/2,cy=H/2+20,rad=Math.PI/180;
-  const P=(la,lo)=>{la*=rad;lo*=rad;const x=R0*Math.cos(la)*Math.sin(lo-lon0),y=R0*(Math.cos(lat0)*Math.sin(la)-Math.sin(lat0)*Math.cos(la)*Math.cos(lo-lon0));return[cx+x,cy-y];};
-  const g=c.createLinearGradient(0,0,0,H*.55);g.addColorStop(0,'rgba(255,153,0,.22)');g.addColorStop(1,'rgba(255,153,0,0)');c.fillStyle=g;c.fillRect(0,0,W,H*.55);
-  c.fillStyle='#2a3644';for(let la=-27;la<=-15;la+=.22)for(let lo=-52;lo<=-35;lo+=.22){const[x,y]=P(la,lo);if(x>-4&&x<W+4&&y>-4&&y<H+4){c.beginPath();c.arc(x,y,1.05,0,7);c.fill();}}
+/* ROTAS: globo de pontos visto do alto, focado no RJ (versão leve do "Rotas" do Estúdio, em canvas 2D) */
+const UF={'Duque de Caxias':'RJ','Nova Iguaçu':'RJ','São Gonçalo':'RJ','Campos dos Goytacazes':'RJ','Cajamar':'SP','Betim':'MG','Serra':'ES'};
+const V3=(la,lo)=>{la*=Math.PI/180;lo*=Math.PI/180;return[Math.cos(la)*Math.cos(lo),Math.sin(la),Math.cos(la)*Math.sin(lo)];};
+const dot3=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2],sub3=(a,b)=>[a[0]-b[0],a[1]-b[1],a[2]-b[2]],mul3=(a,k)=>[a[0]*k,a[1]*k,a[2]*k],add3=(a,b)=>[a[0]+b[0],a[1]+b[1],a[2]+b[2]];
+const nrm=a=>mul3(a,1/Math.hypot(...a)),crs=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+const LAND=(()=>{const m=D.terra,bin=atob(m.b64),out=[];for(let i=0;i<m.rows;i++)for(let j=0;j<m.cols;j++){const k=i*m.cols+j;if(bin.charCodeAt(k>>3)>>(k&7)&1)out.push(V3(m.lat1-(i+.5)*m.passo,m.lon0+(j+.5)*m.passo));}return out;})();
+function globe(){const cv=$('#globe'),dpr=Math.min(2,devicePixelRatio||1),W=cv.clientWidth,H=440;cv.width=W*dpr;cv.height=H*dpr;const c=cv.getContext('2d');c.scale(dpr,dpr);
+  const C=mul3(V3(-27,-43.8),1.075),T=V3(-21.0,-43.6),f=nrm(sub3(T,C)),r=nrm(crs([0,1,0],f)),u=crs(f,r),F=(H/2)/Math.tan(26*Math.PI/180),Cn=Math.hypot(...C);
+  const P=v=>{const d=sub3(v,C),z=dot3(d,f);if(z<=0)return null;return[W/2+dot3(d,r)/z*F,H*.56-dot3(d,u)/z*F,z];};
+  // espaço
+  c.fillStyle='#07090c';c.fillRect(0,0,W,H);
+  // horizonte do planeta
+  const Ch=mul3(C,1/Cn),Q=mul3(Ch,1/Cn),rho=Math.sqrt(1-1/(Cn*Cn)),e1=nrm(crs(Ch,[0,1,0])),e2=crs(Ch,e1),hz=[];
+  for(let k=0;k<=720;k++){const t=k/720*Math.PI*2,p=P(add3(Q,add3(mul3(e1,rho*Math.cos(t)),mul3(e2,rho*Math.sin(t)))));if(p&&p[0]>-W&&p[0]<2*W&&p[1]>-H&&p[1]<2*H)hz.push(p);}
+  hz.sort((a,b)=>a[0]-b[0]);
+  if(hz.length){c.beginPath();hz.forEach((p,i)=>i?c.lineTo(p[0],p[1]):c.moveTo(p[0],p[1]));c.lineTo(W*2,H*2);c.lineTo(-W,H*2);c.closePath();
+    const og=c.createLinearGradient(0,Math.min(...hz.map(p=>p[1])),0,H);og.addColorStop(0,'#141b24');og.addColorStop(1,'#0b1016');c.fillStyle=og;c.fill();
+    c.save();c.beginPath();hz.forEach((p,i)=>i?c.lineTo(p[0],p[1]):c.moveTo(p[0],p[1]));c.strokeStyle='rgba(255,140,40,.9)';c.lineWidth=2;c.shadowColor='#ff8a1f';c.shadowBlur=28;c.stroke();c.shadowBlur=60;c.globalAlpha=.6;c.stroke();c.restore();}
+  // continente em pontos (mais claro perto do RJ)
+  const foco=V3(-22.6,-43.2);
+  LAND.forEach(v=>{if(dot3(v,C)<=1)return;const p=P(v);if(!p||p[0]<-4||p[0]>W+4||p[1]<-4||p[1]>H+4)return;const near=Math.max(0,1-Math.acos(Math.min(1,dot3(v,foco)))/.05)*.7;
+    c.fillStyle=near>0?`rgba(${Math.round(70+150*near)},${Math.round(80+70*near)},${Math.round(92-30*near)},${.55+.4*near})`:'rgba(70,82,96,.55)';c.beginPath();c.arc(p[0],p[1],Math.min(2.6,Math.max(.55,.0008*F/p[2])),0,7);c.fill();});
+  // lanes
   const L=filt(),st=D.lanes.map((ln,i)=>{const X=L.filter(t=>t.lane===i);return{n:X.length,ota:pct(X.filter(t=>!t.a3).length,X.length)};});
-  const col=v=>css('--'+stM(v));
-  D.lanes.forEach((ln,i)=>{if(!st[i].n)return;const a=D.cid[ln.o],b=D.cid[ln.d],sel=S.sel===i;c.beginPath();
-    for(let k=0;k<=40;k++){const f=k/40,la=a[0]+(b[0]-a[0])*f,lo=a[1]+(b[1]-a[1])*f,[x,y]=P(la,lo),h=Math.sin(Math.PI*f)*Math.hypot(b[0]-a[0],b[1]-a[1])*14;k?c.lineTo(x,y-h):c.moveTo(x,y-h);}
-    c.strokeStyle=col(st[i].ota);c.globalAlpha=S.sel<0||sel?1:.25;c.lineWidth=sel?3.2:2;c.shadowColor=c.strokeStyle;c.shadowBlur=sel?14:6;c.stroke();c.shadowBlur=0;c.globalAlpha=1;});
-  const OFF={'Duque de Caxias':[-8,-10,'right'],'Nova Iguaçu':[-8,16,'right'],'São Gonçalo':[8,16,'left']};
-  Object.entries(D.cid).forEach(([n,[la,lo]])=>{const[x,y]=P(la,lo),[dx,dy,al]=OFF[n]||[7,4,'left'];c.fillStyle=css('--accent');c.beginPath();c.arc(x,y,4,0,7);c.fill();c.fillStyle=css('--ink-2');c.font='11px JetBrains Mono, monospace';c.textAlign=al;c.fillText(n,x+dx,y+dy);c.textAlign='left';});
+  D.lanes.forEach((ln,i)=>{if(!st[i].n)return;const A3=V3(...D.cid[ln.o]),B3=V3(...D.cid[ln.d]),ang=Math.acos(Math.min(1,dot3(A3,B3))),sel=S.sel===i;c.beginPath();let first=1;
+    for(let k=0;k<=48;k++){const t=k/48,s0=Math.sin((1-t)*ang)/Math.sin(ang),s1=Math.sin(t*ang)/Math.sin(ang),v=mul3(add3(mul3(A3,s0),mul3(B3,s1)),1+Math.max(.0015,ang*.22)*Math.sin(Math.PI*t)),p=P(v);if(!p)continue;first?c.moveTo(p[0],p[1]):c.lineTo(p[0],p[1]);first=0;}
+    c.strokeStyle=css('--'+stM(st[i].ota));c.globalAlpha=S.sel<0||sel?1:.22;c.lineWidth=sel?3:1.8;c.shadowColor=c.strokeStyle;c.shadowBlur=sel?16:8;c.stroke();c.shadowBlur=0;c.globalAlpha=1;});
+  // bases com o estado
+  const OFF={'Duque de Caxias':[-9,-10,'right'],'Nova Iguaçu':[-9,14,'right'],'São Gonçalo':[9,14,'left']};
+  Object.entries(D.cid).forEach(([n,ll])=>{const p=P(V3(...ll));if(!p)return;const[dx,dy,al]=OFF[n]||[9,4,'left'];
+    c.strokeStyle='rgba(255,153,0,.55)';c.lineWidth=1;c.beginPath();c.arc(p[0],p[1],7,0,7);c.stroke();c.fillStyle=css('--accent');c.beginPath();c.arc(p[0],p[1],3.4,0,7);c.fill();
+    c.font='600 11.5px Archivo, system-ui, sans-serif';c.textAlign=al;c.fillStyle=css('--ink');c.fillText(n,p[0]+dx,p[1]+dy);
+    if(UF[n]!=='RJ'){c.font='11px JetBrains Mono, monospace';c.fillStyle=css('--accent-2');c.fillText(UF[n],p[0]+dx,p[1]+dy+13);}c.textAlign='left';});
   $('#tLanes').innerHTML=D.lanes.map((ln,i)=>{const X=L.filter(t=>t.lane===i),n=X.length;if(!n)return'';const a=st[i].ota,mm=(X.reduce((s,t)=>s+t.a3,0)/n).toFixed(1).replace('.',',');
     return`<tr data-lane="${i}" class="${S.sel===i?'sel':''}"><td><span class="dot" style="--c:var(--${stM(a)})"></span>${ln.n}</td><td class="v">${n}</td><td><span class="pill ${stM(a)}">${fp(a)}</span></td><td class="v">${mm}</td></tr>`;}).join('');
   document.querySelectorAll('#tLanes tr').forEach(tr=>tr.onclick=()=>{const i=+tr.dataset.lane;S.sel=S.sel===i?-1:i;globe();});}
@@ -466,10 +545,19 @@ function globe(){const cv=$('#globe'),dpr=Math.min(2,devicePixelRatio||1),W=cv.c
 /* DISPUTA */
 function copiar(b,txt,lab){navigator.clipboard.writeText(txt).then(()=>{b.textContent='Copiado';setTimeout(()=>b.textContent=lab,1800);}).catch(()=>{b.textContent='Não foi possível copiar';});}
 function disputa(){const C=A.filter(a=>!a.real&&inF(a.t)).sort((a,b)=>b.t.mes-a.t.mes||b.t.dia-a.t.dia),f=fech(filt());
-  $('#contNote').innerHTML=`<b>${C.length} indevidos</b> neste filtro. Se a disputa for aceita, o líquido sobe <b>${brl(f.disp.liq-f.liq)}</b>. ${C.filter(a=>a.t.evid===2).length} ainda estão com evidência pendente.`;
+  $('#contNote').innerHTML=`<b>${C.length} indevidos</b> neste filtro.${FAT_OK?` Se a disputa for aceita, o líquido sobe <b>${brl(f.disp.liq-f.liq)}</b>.`:''} ${C.filter(a=>a.t.evid===2).length} ainda estão com evidência pendente.`;
   $('#tCont').innerHTML=C.map(a=>`<tr><td class="mono">${a.t.vrid}</td><td class="mono">${dd(a.t.mes,a.t.dia)}</td><td>${a.ind}</td><td>${D.lanes[a.t.lane].n}</td><td class="v">${a.min}</td><td><span class="pill good">no horário</span></td><td>${esc(a.res)}</td><td>${a.t.evid===2?'<span class="pill warn">Pendente</span>':'OK'}</td></tr>`).join('')||'<tr><td colspan="8">Nenhum indevido neste filtro.</td></tr>';
   $('#btnCopy').onclick=()=>copiar($('#btnCopy'),'VRIDs para disputa (Amazon apontou atraso; nosso registro está no horário):\n'+C.map(a=>`${a.t.vrid} · ${dd(a.t.mes,a.t.dia)}/2026 · ${a.ind} · ${D.lanes[a.t.lane].n} · ${a.res}`).join('\n'),'Copiar lista para a disputa');}
 
+const sha=t=>crypto.subtle.digest('SHA-256',new TextEncoder().encode(t)).then(b=>[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join(''));
+const pinIn=$('#pinIn'),pinBox=$('#pin');
+function pinDraw(){[...pinBox.querySelectorAll('span')].forEach((s,i)=>{s.textContent=pinIn.value[i]?'•':'';s.classList.toggle('on',i===Math.min(pinIn.value.length,2));});}
+pinIn.addEventListener('input',async()=>{pinIn.value=pinIn.value.replace(/\D/g,'').slice(0,3);pinBox.classList.remove('err');pinDraw();
+  if(pinIn.value.length<3)return;let ok=false;try{ok=await sha(pinIn.value)===PIN_HASH;}catch(e){ok=pinIn.value==='123';}
+  if(ok){pinBox.classList.add('ok');$('#lockMsg').textContent='Acesso liberado';FAT_OK=true;try{sessionStorage.setItem('torreVitrineFat','1');}catch(e){}setTimeout(()=>{pinBox.classList.remove('ok');pinIn.value='';pinDraw();fat();},450);}
+  else{pinBox.classList.add('err');pinBox.classList.remove('shake');void pinBox.offsetWidth;pinBox.classList.add('shake');$('#lockMsg').textContent='Senha incorreta';setTimeout(()=>{pinIn.value='';pinDraw();},500);}});
+$('#fLock').onsubmit=e=>e.preventDefault();
+$('#btnSair').onclick=()=>{FAT_OK=false;try{sessionStorage.removeItem('torreVitrineFat');}catch(e){}$('#lockMsg').textContent='Demonstração: a senha é 123';fat();};
 function render(){({geral,atrasos,planos:planosV,fat,rotas:globe,disputa})[S.tab]();}
 seg();
 const h=(location.hash||'').slice(1);tab(TABS.some(([k])=>k===h)?h:'geral');
