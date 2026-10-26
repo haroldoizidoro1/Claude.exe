@@ -136,6 +136,18 @@ tbody tr[data-lane]{cursor:pointer}
 .fx .bar2{display:flex;height:22px;border-radius:6px;overflow:hidden;background:var(--surface-2)}
 .fx .bar2 i{display:block;height:100%}
 .fx .n{font-family:var(--display);font-weight:800;font-size:22px;text-align:right;font-variant-numeric:tabular-nums}
+.drop{display:grid;place-items:center;gap:8px;text-align:center;border:2px dashed var(--line);border-radius:14px;padding:30px 16px;cursor:pointer;transition:border-color .2s,background .2s}
+.drop:hover,.drop.on{border-color:var(--accent);background:rgba(255,153,0,.07)}
+.drop b{font-size:17px}
+.drop input{position:absolute;width:1px;height:1px;opacity:0}
+.steps{margin:0;padding-left:22px;display:grid;gap:8px;color:var(--ink-2)}
+.steps b{color:var(--ink)}
+.clock{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.clock div{border-radius:10px;padding:12px;background:var(--surface-2);display:grid;gap:2px}
+.clock div.auto{background:rgba(255,153,0,.1);border:1px solid rgba(255,153,0,.4)}
+.clock b{font-family:var(--display);font-size:26px;font-weight:800}
+.res-ok{border:1px solid rgba(60,196,138,.45);background:rgba(60,196,138,.08);border-radius:12px;padding:12px 14px;display:grid;gap:8px}
+.res-bad{border:1px solid rgba(255,95,82,.45);background:rgba(255,95,82,.08);border-radius:12px;padding:12px 14px}
 .ex{font-family:var(--mono);font-size:10px;border:1px dashed var(--muted);color:var(--muted);border-radius:5px;padding:0 5px;margin-left:6px}
 /* tela de senha do faturamento */
 .lock{display:grid;place-items:center;min-height:440px;border-radius:var(--r);border:1px solid var(--line);background:radial-gradient(70% 90% at 50% 0%,rgba(255,153,0,.12),transparent 70%),var(--surface)}
@@ -163,6 +175,7 @@ tbody tr[data-lane]{cursor:pointer}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="goo"><feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b"/><feColorMatrix in="b" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 20 -9"/></filter></svg>
 
 <main class="wrap">
@@ -172,7 +185,7 @@ tbody tr[data-lane]{cursor:pointer}
       <h1>Torre <span>Amazon</span></h1>
       <p><b id="empresa">Transportadora Exemplo</b> · line haul RJ, SP, MG e ES · 01/07 a 24/10/2026. OTP e OTA por VRID, atrasos com plano de ação, faturamento do mês e disputa dos indevidos.</p>
     </div>
-    <div class="agent" role="status"><div class="orb" aria-hidden="true"></div><div><b>Versão Essencial · atualização semanal</b><small id="agentSub"></small></div></div>
+    <div class="agent" role="status"><div class="orb" aria-hidden="true"></div><div><b>Versão Essencial · atualização diária por planilha</b><small id="agentSub"></small></div></div>
   </header>
 
   <div class="bar">
@@ -197,13 +210,48 @@ tbody tr[data-lane]{cursor:pointer}
       <div class="card s12">
         <div><h2>Este painel e o próximo degrau</h2><p class="sub">O que a versão Essencial já entrega e o que a versão com automação faria sozinha.</p></div>
         <div class="tbl"><table class="niveis"><thead><tr><th>Etapa</th><th>Essencial (este painel)</th><th>Automação integrada (sob proposta)</th></tr></thead><tbody>
-          <tr><td>Dados das viagens</td><td>A equipe baixa a planilha e envia uma vez por semana</td><td>Leitura direta do Relay e do BRLog, várias vezes ao dia</td></tr>
+          <tr><td>Dados das viagens</td><td>A equipe baixa a planilha do Relay e envia todo dia</td><td>Leitura direta do Relay e do BRLog, várias vezes ao dia</td></tr>
           <tr><td>Atraso encontrado</td><td>O painel aponta; a equipe confere no Relay</td><td>O painel confere no Relay e marca o atraso sozinho</td></tr>
           <tr><td>Ocorrência e evidência</td><td>A equipe verifica se foi lançada e se tem evidência</td><td>O painel cruza ocorrência e evidência e avisa o que falta</td></tr>
           <tr><td>Disputa dos indevidos</td><td>Lista pronta para copiar</td><td>Lista montada com a evidência anexada, pronta para enviar</td></tr>
           <tr><td>Alertas</td><td>Ao abrir o painel</td><td>Aviso no momento do atraso, antes de virar desconto</td></tr>
         </tbody></table></div>
         <p class="note">A versão com automação custa mais porque depende de integração com os sistemas do cliente. Em troca, a conferência manual some e o número fica mais preciso.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ENVIAR PLANILHA -->
+  <section class="view" id="v-enviar" hidden>
+    <div class="grid">
+      <div class="card s5">
+        <div><h2>Rotina diária da operação</h2><p class="sub">Na versão Essencial, quem alimenta o painel é a equipe. Todo dia de manhã:</p></div>
+        <ol class="steps">
+          <li><b>Entrar no Relay</b>, no site da Amazon.</li>
+          <li><b>Filtrar o dia anterior</b> na lista de viagens.</li>
+          <li><b>Exportar a planilha</b> de viagens (.xlsx ou .csv).</li>
+          <li><b>Arrastar a planilha aqui.</b> O painel reconhece o arquivo e calcula OTP e OTA de cada VRID.</li>
+          <li><b>Classificar o motivo</b> dos atrasos encontrados e seguir o plano de ação.</li>
+          <li>Quando chegar a devolutiva, <b>enviar a planilha de atrasos apontados pela Amazon</b> para separar real de indevido.</li>
+        </ol>
+        <div class="clock"><div><span class="label">Hoje, manual</span><b>~15 min</b><span class="sub">por dia · ~7 h por mês</span></div><div class="auto"><span class="label">Com automação</span><b>0 min</b><span class="sub">o painel busca no Relay e no BRLog sozinho</span></div></div>
+      </div>
+      <div class="card s7">
+        <div><h2>Enviar planilha</h2><p class="sub">O painel identifica o tipo de planilha pelas colunas e atualiza todas as abas.</p></div>
+        <label class="drop" id="drop" for="fileIn"><input type="file" id="fileIn" accept=".csv,.xlsx,.xls" multiple><b>Arraste a planilha aqui</b><span class="sub">ou clique para escolher · .xlsx ou .csv</span></label>
+        <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn ghost sm" type="button" id="exRelay">Testar com exemplo: viagens do Relay 25/10</button><button class="btn ghost sm" type="button" id="exAmz">Testar com exemplo: atrasos apontados pela Amazon 25/10</button></div>
+        <div id="impRes" role="status"></div>
+      </div>
+      <div class="card s7">
+        <h2>Planilhas que o painel reconhece</h2>
+        <div class="tbl"><table class="niveis"><thead><tr><th>Planilha</th><th>Como o painel reconhece</th><th>O que ele faz</th></tr></thead><tbody>
+          <tr><td>Viagens do Relay</td><td>Colunas de VRID, origem, destino e horários programados e reais (chegada na origem, CPT, STA e chegada no destino)</td><td>Calcula o atraso de cada ponto com tolerância zero, encontra os atrasos do dia e marca a evidência como pendente</td></tr>
+          <tr><td>Atrasos apontados pela Amazon</td><td>Colunas de VRID, indicador (OTP ou OTA) e minutos</td><td>Cruza com as viagens: se o nosso horário está dentro, vira Indevido e vai para a disputa; se não, é Real</td></tr>
+        </tbody></table></div>
+      </div>
+      <div class="card s5">
+        <div class="row-h"><h2>Histórico de envios</h2><button class="btn ghost sm" type="button" id="impUndo">Desfazer envios</button></div>
+        <div class="tbl"><table><thead><tr><th>Quando</th><th>Arquivo</th><th>Tipo</th><th>Resultado</th></tr></thead><tbody id="tHist"></tbody></table></div>
       </div>
     </div>
   </section>
@@ -354,15 +402,17 @@ const dd=(m,d)=>`${String(d).padStart(2,'0')}/${String(m).padStart(2,'0')}`;
 const T=D.v.map(r=>({vrid:r[0],mes:r[1],dia:r[2],lane:r[3],placa:D.placas[r[4]],a1:r[5],a2:r[6],a3:r[7],tO:r[8],tA:r[9],mO:r[10],mA:r[11],
   rO:r[12]<0?'':D.resumos[r[12]],rA:r[13]<0?'':D.resumos[r[13]],causa:r[14],frota:r[15],adhoc:r[16],op:D.ops[r[17]],evid:r[18],preco:r[19],truck:r[20]}));
 // cada atraso apontado pela Amazon vira uma linha (OTP e/ou OTA), como na Torre Amazon
-const A=[];T.forEach(t=>{[['OTP',t.tO,t.a1,t.mO,t.rO,D.lanes[t.lane].o],['OTA',t.tA,t.a3,t.mA,t.rA,D.lanes[t.lane].d]].forEach(([ind,tp,nosso,amz,res,onde])=>{
-  if(!tp)return;const real=tp===1;A.push({t,ind,real,min:real?nosso:amz,res,onde,hot:real||amz>=60});});});
+let A=[];
+function rebuildA(){A=[];T.forEach(t=>{[['OTP',t.tO,t.a1,t.mO,t.rO,D.lanes[t.lane].o],['OTA',t.tA,t.a3,t.mA,t.rA,D.lanes[t.lane].d]].forEach(([ind,tp,nosso,amz,res,onde])=>{
+  if(!tp)return;const real=tp===1;A.push({t,ind,real,min:real?nosso:amz,res,onde,hot:real||amz>=60});});});}
+rebuildA();
 const S={mes:0,lane:-1,tab:'geral',sel:-1,dia:0,fAtr:'todos',faixa:-1,edit:null};
 const FAIXAS=[[0,15,'Até 15 min'],[15,30,'15 a 30 min'],[30,60,'30 a 60 min'],[60,1e9,'60 min ou mais']];
 const R={meta:99,multa:100,teto:2,bO:.5,bA:1.5};
 // senha de demonstração do faturamento (123). Num painel real os valores ficam num banco com leitura restrita, não só atrás da tela.
 const PIN_HASH='a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3';
 let FAT_OK=false;try{FAT_OK=sessionStorage.getItem('torreVitrineFat')==='1';}catch(e){}
-$('#agentSub').textContent=`base atualizada 24/10 06:00 · ${fi(T.length)} VRIDs`;
+const agente=()=>{$('#agentSub').textContent=`${ULT?'planilha enviada '+ULT:'base atualizada 24/10 06:00'} · ${fi(T.length)} VRIDs`;};let ULT='';agente();
 const inF=t=>(!S.mes||t.mes===S.mes)&&(S.lane<0||t.lane===S.lane);
 const filt=all=>T.filter(t=>(all||!S.mes||t.mes===S.mes)&&(S.lane<0||t.lane===S.lane));
 
@@ -373,7 +423,7 @@ $('#fLane').innerHTML='<option value="-1">Todas as lanes</option>'+D.lanes.map((
 $('#fLane').onchange=e=>{S.lane=+e.target.value;S.sel=S.lane;render();};
 
 /* Menisco */
-const TABS=[['geral','Visão geral'],['atrasos','Atrasos'],['planos','Planos de ação'],['fat','Faturamento'],['rotas','Rotas'],['disputa','Disputa']];
+const TABS=[['geral','Visão geral'],['enviar','Enviar planilha'],['atrasos','Atrasos'],['planos','Planos de ação'],['fat','Faturamento'],['rotas','Rotas'],['disputa','Disputa']];
 const nav=$('#tabs');
 TABS.forEach(([k,n])=>{const b=document.createElement('button');b.type='button';b.setAttribute('role','tab');b.id='t-'+k;b.textContent=n;b.setAttribute('aria-controls','v-'+k);b.onclick=()=>tab(k);nav.appendChild(b);});
 function tab(k){S.tab=k;TABS.forEach(([x])=>{$('#t-'+x).setAttribute('aria-selected',x===k);$('#v-'+x).hidden=x!==k;});
@@ -457,7 +507,7 @@ const SEED=[
  {id:'ex5',vrid:'',proc:'Ligar para o motorista e corrigir a rota no GPS.\nAvisar o destino da nova previsão.\nRegistrar a ocorrência e marcar o motorista para o briefing de rota.',res:'Erro do condutor em trajeto',causa:'Rotas novas sem treinamento do motorista.',acao:'Briefing de rota no primeiro embarque e rota fixa no GPS.',resp:'Torre de controle',prazo:'2026-11-05',st:'Planejado',ex:1}];
 function planos(){try{const x=JSON.parse(localStorage.getItem(KEY)||'null');if(Array.isArray(x))return x;}catch(e){}return SEED.slice();}
 function salvar(L){try{localStorage.setItem(KEY,JSON.stringify(L));return true;}catch(e){return false;}}
-const RES=[...new Set(A.map(a=>a.res))].sort();
+const RES=[...new Set([...A.map(a=>a.res),'A classificar'])].sort();
 $('#pRes').innerHTML=RES.map(r=>`<option>${esc(r)}</option>`).join('');
 $('#vridList').innerHTML=A.filter(a=>a.real).slice(-400).map(a=>`<option value="${a.t.vrid}">`).join('');
 function novoPlano(vrid,res){S.edit=null;$('#fPlano').reset();$('#pVrid').value=vrid||'';$('#pRes').value=res||RES[0];$('#formT').textContent='Novo plano de ação';$('#pCancel').hidden=true;tab('planos');$('#pCausa').focus();}
@@ -556,7 +606,63 @@ pinIn.addEventListener('input',async()=>{pinIn.value=pinIn.value.replace(/\D/g,'
   else{pinBox.classList.add('err');pinBox.classList.remove('shake');void pinBox.offsetWidth;pinBox.classList.add('shake');$('#lockMsg').textContent='Senha incorreta';setTimeout(()=>{pinIn.value='';pinDraw();},500);}});
 $('#fLock').onsubmit=e=>e.preventDefault();
 $('#btnSair').onclick=()=>{FAT_OK=false;try{sessionStorage.removeItem('torreVitrineFat');}catch(e){}$('#lockMsg').textContent='Demonstração: a senha é 123';fat();};
-function render(){({geral,atrasos,planos:planosV,fat,rotas:globe,disputa})[S.tab]();}
+/* ENVIAR PLANILHA: reconhece o tipo pelas colunas, calcula e atualiza o painel (salvo neste navegador) */
+const IMP_KEY='torreAmazonVitrine.envios.v1';
+const norm=x=>String(x??'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
+const COLS={vrid:['vrid','id viagem','trip id','load id'],origem:['origem','origin'],destino:['destino','destination'],placa:['placa','plate'],equip:['equipamento','veiculo','tipologia','equipment'],
+  apP:['chegada origem programada','apresentacao programada','posicionamento planejado','planned origin arrival'],apR:['chegada na origem','chegada origem real','posicionamento real','actual origin arrival'],
+  std:['cpt','std','cpt std','partida planejada','planned departure'],atd:['saida real','atd','saida real atd','partida real','actual departure'],
+  sta:['sta','sta destino','chegada planejada destino','planned arrival'],ata:['ata','chegada real ata','chegada real','chegada real destino','actual arrival'],
+  ind:['indicador','metrica','tipo de atraso'],min:['minutos','minutos de atraso','atraso min','delay minutes'],mot:['motivo','resumo','reason']};
+function mapear(h){const H=h.map(norm),m={};for(const[k,al] of Object.entries(COLS)){const i=H.findIndex(x=>al.includes(x));if(i>=0)m[k]=i;}return m;}
+const tipoDe=m=>m.vrid!=null&&m.sta!=null&&m.ata!=null&&(m.apP!=null||m.std!=null)?'relay':m.vrid!=null&&m.ind!=null?'amazon':null;
+function dt(v){if(v instanceof Date)return v;if(typeof v==='number')return new Date(Math.round((v-25569)*864e5)+new Date().getTimezoneOffset()*6e4);
+  const s=String(v||'').trim(),b=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})[ T]?(\d{1,2})?:?(\d{2})?/);if(b)return new Date(+b[3],+b[2]-1,+b[1],+(b[4]||0),+(b[5]||0));const d=new Date(s);return isNaN(d)?null:d;}
+const dmin=(a,b)=>a&&b?Math.round((a-b)/6e4):0;
+function csvRows(txt){txt=txt.replace(/^﻿/,'');const sep=(txt.split('\n')[0].match(/;/g)||[]).length>=(txt.split('\n')[0].match(/,/g)||[]).length?';':',';
+  return txt.split(/\r?\n/).filter(l=>l.trim()).map(l=>l.split(sep).map(c=>c.replace(/^"|"$/g,'').trim()));}
+function salvos(){try{return JSON.parse(localStorage.getItem(IMP_KEY)||'null')||{viagens:[],marcas:[],log:[]};}catch(e){return{viagens:[],marcas:[],log:[]};}}
+function guardar(x){try{localStorage.setItem(IMP_KEY,JSON.stringify(x));return true;}catch(e){return false;}}
+function laneDe(o,d){const n=`${o} → ${d}`;let i=D.lanes.findIndex(l=>l.n===n);if(i<0){D.lanes.push({n,o:o.split('/')[0].trim(),d:d.split('/')[0].trim()});i=D.lanes.length-1;}return i;}
+function aplicarViagem(v){const i=T.findIndex(t=>t.vrid===v.vrid);if(i>=0)T[i]=v;else T.push(v);if(MES[v.mes])MD[v.mes]=Math.max(MD[v.mes],v.dia);}
+function aplicarMarca(m){const t=T.find(t=>t.vrid===m.vrid);if(!t)return null;const real=m.ind==='OTP'?t.a1>0:t.a3>0;
+  if(m.ind==='OTP'){t.tO=real?1:2;t.mO=real?t.a1:m.min;t.rO=m.mot||(real?(t.rO||'A classificar'):'Erro da base OTP');}else{t.tA=real?1:2;t.mA=real?t.a3:m.min;t.rA=m.mot||(real?(t.rA||'A classificar'):'Erro da base OTA');}
+  return real;}
+function lerRelay(rows,m){const out=[],fora=[];rows.forEach(r=>{const vr=String(r[m.vrid]||'').trim();if(!vr)return;
+  const apP=dt(r[m.apP]),apR=dt(r[m.apR]),std=dt(r[m.std]),atd=dt(r[m.atd]),sta=dt(r[m.sta]),ata=dt(r[m.ata]),ref=std||apP;if(!ref)return;
+  if(ref.getFullYear()!==2026||!MES[ref.getMonth()+1]){fora.push(vr);return;}
+  const lane=laneDe(String(r[m.origem]||'?'),String(r[m.destino]||'?')),X=T.filter(t=>t.lane===lane),preco=X.length?Math.round(X.reduce((s,t)=>s+t.preco,0)/X.length):2500;
+  const a1=Math.max(0,dmin(apR,apP)),a2=Math.max(0,dmin(atd,std)),a3=Math.max(0,dmin(ata,sta));
+  out.push({vrid:vr,mes:ref.getMonth()+1,dia:ref.getDate(),lane,placa:String(r[m.placa]||''),a1,a2,a3,tO:a1>0?1:0,tA:a3>0?1:0,mO:a1,mA:a3,rO:a1>0?'A classificar':'',rA:a3>0?'A classificar':'',
+    causa:a1>0||a2>0?0:a3>0?1:-1,frota:0,adhoc:0,op:'Planilha',evid:a1>0||a3>0?2:0,preco,truck:/truck|toco|vuc|van/i.test(String(r[m.equip]||''))?1:0});});return{out,fora};}
+function processar(nome,rows){const m=mapear(rows[0]||[]),tipo=tipoDe(m),body=rows.slice(1),box=$('#impRes'),db=salvos(),quando=new Date().toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+  if(!tipo){box.innerHTML=`<div class="res-bad"><b>Não reconheci esta planilha.</b> Procurei colunas de VRID com horários (viagens do Relay) ou VRID com indicador (atrasos da Amazon). Colunas encontradas: ${esc((rows[0]||[]).join(', ')||'nenhuma')}.</div>`;return;}
+  let html='';
+  if(tipo==='relay'){const{out,fora}=lerRelay(body,m);out.forEach(aplicarViagem);db.viagens=db.viagens.filter(v=>!out.some(o=>o.vrid===v.vrid)).concat(out);
+    const late=out.filter(v=>v.a1>0||v.a3>0),dias=[...new Set(out.map(v=>dd(v.mes,v.dia)))].join(', ');
+    html=`<div class="res-ok"><b>Viagens do Relay reconhecidas · ${dias||'sem data'}</b><span>${out.length} VRIDs lidos · <b>${late.length} com atraso</b> pela regra de tolerância zero${fora.length?` · ${fora.length} fora do período do painel`:''}.</span>
+      ${late.length?`<div class="tbl"><table><thead><tr><th>VRID</th><th>Onde</th><th>Atraso</th></tr></thead><tbody>${late.map(v=>`<tr><td class="mono">${esc(v.vrid)}</td><td>${v.a1>0?'Origem · '+D.lanes[v.lane].o:'Destino · '+D.lanes[v.lane].d}</td><td class="v">${v.a1>0?v.a1:v.a3} min</td></tr>`).join('')}</tbody></table></div>
+      <span class="sub">Próximo passo: classificar o motivo na aba Atrasos e seguir o plano. A evidência ficou pendente até a equipe conferir no Relay.</span>`:''}
+      <div><button class="btn sm" type="button" id="goAtr">Ver na aba Atrasos</button></div></div>`;
+    db.log.unshift({quando,nome,tipo:'Viagens do Relay',res:`${out.length} VRIDs · ${late.length} atrasos`});ULT=quando;}
+  else{const marcas=body.map(r=>({vrid:String(r[m.vrid]||'').trim(),ind:/ota/i.test(r[m.ind])?'OTA':'OTP',min:+r[m.min]||0,mot:m.mot!=null?String(r[m.mot]||'').trim():''})).filter(x=>x.vrid);
+    let re=0,ind=0,nf=0;marcas.forEach(x=>{const r=aplicarMarca(x);if(r===null)nf++;else if(r)re++;else ind++;});db.marcas=db.marcas.concat(marcas);
+    html=`<div class="res-ok"><b>Atrasos apontados pela Amazon reconhecidos</b><span>${marcas.length} apontamentos · <b>${re} reais</b> · <b>${ind} indevidos</b> (vão para a disputa)${nf?` · ${nf} VRIDs não encontrados: envie antes a planilha de viagens do Relay`:''}.</span><div><button class="btn sm" type="button" id="goAtr">Ver na aba Atrasos</button></div></div>`;
+    db.log.unshift({quando,nome,tipo:'Atrasos da Amazon',res:`${re} reais · ${ind} indevidos${nf?' · '+nf+' não encontrados':''}`});ULT=quando;}
+  guardar(db);rebuildA();agente();box.innerHTML=html;const g=$('#goAtr');if(g)g.onclick=()=>{const v=db.viagens[db.viagens.length-1];if(v){S.mes=v.mes;S.dia=v.dia;seg();}tab('atrasos');};historico();}
+function lerArquivo(f){const ext=f.name.split('.').pop().toLowerCase(),rd=new FileReader();
+  if(ext==='csv'){rd.onload=()=>processar(f.name,csvRows(rd.result));rd.readAsText(f,'utf-8');return;}
+  if(typeof XLSX==='undefined'){$('#impRes').innerHTML='<div class="res-bad">Para ler .xlsx o painel precisa de internet. Sem conexão, salve a planilha como .csv e envie de novo.</div>';return;}
+  rd.onload=()=>{const wb=XLSX.read(new Uint8Array(rd.result),{type:'array',cellDates:true}),ws=wb.Sheets[wb.SheetNames[0]];processar(f.name,XLSX.utils.sheet_to_json(ws,{header:1,raw:true,defval:''}));};rd.readAsArrayBuffer(f);}
+$('#fileIn').onchange=e=>{[...e.target.files].forEach(lerArquivo);e.target.value='';};
+const dz=$('#drop');['dragenter','dragover'].forEach(k=>dz.addEventListener(k,e=>{e.preventDefault();dz.classList.add('on');}));['dragleave','drop'].forEach(k=>dz.addEventListener(k,e=>{e.preventDefault();dz.classList.remove('on');}));
+dz.addEventListener('drop',e=>[...e.dataTransfer.files].forEach(lerArquivo));
+$('#exRelay').onclick=()=>processar('relay_viagens_25-10-2026.csv (exemplo)',csvRows(D.exemplos.relay));
+$('#exAmz').onclick=()=>processar('amazon_atrasos_apontados_25-10-2026.csv (exemplo)',csvRows(D.exemplos.amazon));
+function historico(){const L=salvos().log;$('#tHist').innerHTML=L.map(l=>`<tr><td class="mono">${esc(l.quando)}</td><td style="white-space:normal">${esc(l.nome)}</td><td>${esc(l.tipo)}</td><td style="white-space:normal">${esc(l.res)}</td></tr>`).join('')||'<tr><td colspan="4" class="mut">Nenhuma planilha enviada ainda.</td></tr>';}
+$('#impUndo').onclick=()=>{try{localStorage.removeItem(IMP_KEY);}catch(e){}location.reload();};
+(()=>{const db=salvos();db.viagens.forEach(v=>{if(v.lane>=D.lanes.length)v.lane=0;aplicarViagem(v);});db.marcas.forEach(aplicarMarca);if(db.log.length)ULT=db.log[0].quando;rebuildA();agente();})();
+function render(){({geral,enviar:historico,atrasos,planos:planosV,fat,rotas:globe,disputa})[S.tab]();}
 seg();
 const h=(location.hash||'').slice(1);tab(TABS.some(([k])=>k===h)?h:'geral');
 </script>

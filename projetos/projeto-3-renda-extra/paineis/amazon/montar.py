@@ -20,7 +20,8 @@ for r in R:
               res("Resumo OTP"), res("Resumo OTA"), CAUSA[r["Motivo do atraso"]],
               1 if r["Vínculo"] == "Frota" else 0, {"": 0, "ADHOC": 1, "Retorno": 2}[r["ADHOC/Retorno"]], idx(ops, r["Operador"]),
               {"": 0, "OK": 1, "Pendente": 2}[r["Evidência"]], int(r["Preço BID (R$)"]), 0 if r["Veículo"] == "Carreta" else 1])
-D = {"terra": json.load(open("terra_sudeste.json")), "lanes": lanes, "cid": CID, "placas": placas, "resumos": resumos, "ops": ops, "v": V}
+EX = "../../dados-ficticios/exemplos-envio/"
+D = {"exemplos": {"relay": open(EX + "relay_viagens_25-10-2026.csv", encoding="utf-8-sig").read(), "amazon": open(EX + "amazon_atrasos_apontados_25-10-2026.csv", encoding="utf-8-sig").read()}, "terra": json.load(open("terra_sudeste.json")), "lanes": lanes, "cid": CID, "placas": placas, "resumos": resumos, "ops": ops, "v": V}
 html = open("template.html", encoding="utf-8").read().replace("/*DATA*/null", json.dumps(D, ensure_ascii=False, separators=(",", ":")))
 open("torre-amazon.html", "w", encoding="utf-8").write(html)
 print(len(V), "VRIDs ·", len(lanes), "lanes ·", round(len(html) / 1024), "KB")
