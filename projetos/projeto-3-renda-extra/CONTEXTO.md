@@ -9,7 +9,7 @@ Atualizado em 26/10/2026. Leia isto + `PLANO.md` antes de continuar.
 3. **Contrato de trabalho sem exclusividade.** Pode vender por conta própria, mas NUNCA usar dados, painéis com números ou regras internas da empresa. Só dados fictícios.
 4. **Quem envia e negocia é o Haroldo.** O Claude prepara mensagens, propostas e rascunhos.
 5. **Agenda:** seg a sex 20h30–23h; sábado 4 h; domingo família.
-6. **O Haroldo desenha e monta os painéis.** O Claude junta dados, pesquisa e ajuda quando pedido.
+6. **Painéis: o Claude monta a 1ª versão, um por vez (para poupar uso), e o Haroldo ajusta.** Componentes do Estúdio Haroldo: Núcleo, Órbita, Vitral, Galeria, Esteira, Lâminas, Roda, Menisco, Rotas, Orbes.
 
 ## O que já existe
 - `dados-ficticios/`: bases Amazon (1.272), Shopee (1.164), J&T (1.046 viagens), jul–24/out/2026, com coluna Fase:
@@ -32,4 +32,4 @@ Atualizado em 26/10/2026. Leia isto + `PLANO.md` antes de continuar.
 - Nome do serviço/marca.
 - Subir as bases para o Google Sheets (oferecido, sem resposta).
 - Tarefa agendada de e-mail (ler e deixar rascunho): ligar só quando começar a prospecção.
-- Lista de 20 empresas para prospectar (passo 5 do plano).
+- Prospecção: `prospeccao.csv` pronto (20 contatos); falta a mensagem de abordagem (passo 6).
