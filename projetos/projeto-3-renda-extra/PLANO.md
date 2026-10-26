@@ -23,7 +23,7 @@ Vender painéis de performance e automações (Google Sheets, HTML offline) para
 3. Página de apresentação (HTML simples, Vercel) com as duas demonstrações e um contato.
 4. Definir 2 ou 3 pacotes e preços, com pesquisa de mercado.
 5. Lista de 20 empresas para prospectar: `prospeccao.csv` (feito em 26/10; prioridade A = transportadoras com agregados).
-6. Mensagem curta de abordagem (WhatsApp/LinkedIn) e modelo de proposta.
+6. Mensagens de abordagem em `abordagens/` (BeOn pronta em 26/10; depois R3 com painel Shopee/Mercado Livre e LN Flex com métricas de motoboy).
 7. Enviar as primeiras mensagens (eu envio) e registrar respostas.
 
 ## Pesquisa (25/10/2026, a validar)
