@@ -205,6 +205,11 @@ tbody tr[data-lane]{cursor:pointer}
   <!-- VISÃO GERAL -->
   <section class="view" id="v-geral">
     <div class="grid">
+      <div class="card s12" style="border-color:rgba(255,153,0,.45);background:linear-gradient(120deg,rgba(255,153,0,.10),transparent 60%),var(--surface)">
+        <div><span class="label">Comece por aqui</span><h2>Conheça o painel em 3 passos</h2>
+        <p class="sub">Exemplo montado para uma transportadora que roda para a Amazon, com dados fictícios. A mesma estrutura se adapta a SLA por cliente ou por seller, coleta e entrega no prazo e performance por agregado, com as regras e as cores da sua operação.</p></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" type="button" data-go="mes">1 · Como o mês fechou</button><button class="btn ghost" type="button" data-go="atrasos">2 · Cada atraso e onde aconteceu</button><button class="btn ghost" type="button" data-go="planos">3 · O que o operador faz na hora</button></div>
+      </div>
       <div class="kpis s12" id="kpis"></div>
       <div class="card s8">
         <div><h2>Antes e depois do controle</h2><p class="sub">OTP (chegada na origem) e OTA (chegada no destino) por mês, pelo nosso registro. A faixa laranja marca o período com o painel em uso.</p></div>
@@ -215,7 +220,7 @@ tbody tr[data-lane]{cursor:pointer}
       <div class="card s12">
         <div><h2>Este painel e o próximo degrau</h2><p class="sub">O que a versão Essencial já entrega e o que a versão com automação faria sozinha.</p></div>
         <div class="tbl"><table class="niveis"><thead><tr><th>Etapa</th><th>Essencial (este painel)</th><th>Automação integrada (sob proposta)</th></tr></thead><tbody>
-          <tr><td>Dados das viagens</td><td>A equipe baixa a planilha do Relay e envia todo dia</td><td>Leitura direta do Relay e do BRLog, várias vezes ao dia</td></tr>
+          <tr><td>Dados das viagens</td><td>A equipe baixa a planilha do Relay e envia todo dia</td><td>Leitura direta dos sistemas do cliente (ex.: Relay), várias vezes ao dia</td></tr>
           <tr><td>Atraso encontrado</td><td>O painel aponta; a equipe confere no Relay</td><td>O painel confere no Relay e marca o atraso sozinho</td></tr>
           <tr><td>Ocorrência e evidência</td><td>A equipe verifica se foi lançada e se tem evidência</td><td>O painel cruza ocorrência e evidência e avisa o que falta</td></tr>
           <tr><td>Disputa dos indevidos</td><td>Lista pronta para copiar</td><td>Lista montada com a evidência anexada, pronta para enviar</td></tr>
@@ -239,7 +244,7 @@ tbody tr[data-lane]{cursor:pointer}
           <li><b>Classificar o motivo</b> dos atrasos encontrados e seguir o plano de ação.</li>
           <li>Quando chegar a devolutiva, <b>enviar a planilha de atrasos apontados pela Amazon</b> para separar real de indevido.</li>
         </ol>
-        <div class="clock"><div><span class="label">Hoje, manual</span><b>~15 min</b><span class="sub">por dia · ~7 h por mês</span></div><div class="auto"><span class="label">Com automação</span><b>0 min</b><span class="sub">o painel busca no Relay e no BRLog sozinho</span></div></div>
+        <div class="clock"><div><span class="label">Hoje, manual</span><b>~15 min</b><span class="sub">por dia · ~7 h por mês</span></div><div class="auto"><span class="label">Com automação</span><b>0 min</b><span class="sub">o painel busca os dados nos sistemas sozinho</span></div></div>
       </div>
       <div class="card s7">
         <div><h2>Enviar planilha</h2><p class="sub">O painel identifica o tipo de planilha pelas colunas e atualiza todas as abas.</p></div>
@@ -450,7 +455,7 @@ function rebuildA(){A=[];T.forEach(t=>{[['OTP',t.tO,t.a1,t.mO,t.rO,D.lanes[t.lan
 rebuildA();
 const S={mes:0,lane:-1,tab:'geral',sel:-1,dia:0,fAtr:'todos',faixa:-1,edit:null};
 const FAIXAS=[[0,15,'Até 15 min'],[15,30,'15 a 30 min'],[30,60,'30 a 60 min'],[60,1e9,'60 min ou mais']];
-const R={meta:99,multa:100,teto:2,bO:.5,bA:1.5};
+const R={meta:99,multa:150,teto:3,bO:1,bA:1};
 // senha de demonstração do faturamento (123). Num painel real os valores ficam num banco com leitura restrita, não só atrás da tela.
 const PIN_HASH='a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3';
 let FAT_OK=false;try{FAT_OK=sessionStorage.getItem('torreVitrineFat')==='1';}catch(e){}
@@ -469,9 +474,10 @@ const TABS=[['geral','Visão geral'],['enviar','Enviar planilha'],['mes','Result
 const nav=$('#tabs');
 TABS.forEach(([k,n])=>{const b=document.createElement('button');b.type='button';b.setAttribute('role','tab');b.id='t-'+k;b.textContent=n;b.setAttribute('aria-controls','v-'+k);b.onclick=()=>tab(k);nav.appendChild(b);});
 function tab(k){S.tab=k;TABS.forEach(([x])=>{$('#t-'+x).setAttribute('aria-selected',x===k);$('#v-'+x).hidden=x!==k;});
-  const b=$('#t-'+k);$('#drop').style.left=b.offsetLeft+'px';$('#drop').style.width=b.offsetWidth+'px';$('#tail').style.left=(b.offsetLeft+b.offsetWidth/2-7)+'px';
+  const b=$('#t-'+k);$('#drop').style.left=b.offsetLeft+'px';$('#drop').style.width=b.offsetWidth+'px';$('#tail').style.left=(b.offsetLeft+b.offsetWidth/2-7)+'px';try{b.scrollIntoView({block:'nearest',inline:'nearest'});}catch(e){}
   try{history.replaceState(null,'','#'+k);}catch(e){}render();}
 addEventListener('resize',()=>tab(S.tab));
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>tab(S.tab));
 const kpiRow=(el,items)=>{$(el).innerHTML=items.map(([l,v,s,hl])=>`<div class="kpi${hl?' hl':''}"><span class="label">${l}</span><span class="v">${v}</span><span class="s">${s}</span></div>`).join('');};
 const stM=v=>v>=R.meta?'good':v>=R.meta-4?'warn':'bad';
 
@@ -749,6 +755,7 @@ function adhoc(){const L=filt(),AD=L.filter(t=>t.adhoc===1),FX=L.filter(t=>t.adh
   const Lt=AD.slice().sort((a,b)=>b.mes-a.mes||b.dia-a.dia);$('#adSub').textContent=`${fi(Lt.length)} viagens AdHoc neste filtro${Lt.length>200?' · mostrando as 200 mais recentes':''}.`;
   $('#tAd').innerHTML=Lt.slice(0,200).map(t=>`<tr class="${late(t)?'hot':''}"><td class="mono">${dd(t.mes,t.dia)}</td><td class="mono">${t.vrid}</td><td>${D.lanes[t.lane].n}</td><td class="mono">${t.placa}</td><td>${t.truck?'Truck':'Carreta'}</td><td>${t.a1?`<span class="pill bad">${t.a1} min</span>`:'<span class="mut">no horário</span>'}</td><td>${t.a3?`<span class="pill bad">${t.a3} min</span>`:'<span class="mut">no horário</span>'}</td><td>${late(t)?'<span class="pill bad">atraso real</span>':t.tO===2||t.tA===2?'<span class="pill good">indevido</span>':'<span class="pill good">ok</span>'}</td></tr>`).join('');}
 
+document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{tab(b.dataset.go);scrollTo({top:0,behavior:'smooth'});});
 function render(){({geral,enviar:historico,mes:resultadoMes,adhoc,atrasos,planos:planosV,fat,rotas:globe,disputa})[S.tab]();}
 seg();
 const h=(location.hash||'').slice(1);tab(TABS.some(([k])=>k===h)?h:'geral');

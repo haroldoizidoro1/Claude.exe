@@ -21,7 +21,7 @@ Atualizado em 26/10/2026. Leia isto + `PLANO.md` antes de continuar.
 - `paineis/amazon/`: Torre Amazon de demonstração (template + `montar.py`), publicada em https://claude.ai/artifact/77t8YBveTUdL7Az4VVXuiK. Alvo do pitch: Murici Logística.
 - `identidade-visual.md`: paletas de Amazon, Shopee e J&T e regras de uso de marca.
 - `PLANO.md`: preços (Essencial R$ 2.500–3.500 + R$ 400–600/mês · Automação R$ 5.000–8.000 + R$ 800–1.500/mês · Piloto R$ 1.500 + R$ 300/mês por 3 meses), canais e clientes-alvo.
-- `abordagens/beon-email.md` (e-mail pronto) · `contrato/contrato-painel-v0.md|.docx` (rascunho) · Apresentação: "especialista independente em performance logística".
+- `abordagens/beon-email.md` (e-mail pronto) · `contrato/contrato-painel-v1.md|.docx` (rascunho v1) · Apresentação: "especialista independente em performance logística".
 - MEI: TI não pode ser MEI (2026). Primeira venda por RPA (pessoa física) ou abrir ME no Simples; confirmar com contador.
 
 ## Finanças (Caixa do Casal, outubro)
@@ -30,7 +30,7 @@ Atualizado em 26/10/2026. Leia isto + `PLANO.md` antes de continuar.
 - Regras combinadas: todo Pix com descrição; lanche só no VR; Uber só à noite ou com chuva.
 
 ## Em aberto
-- **Retomar por `revisao-olhar-de-cliente.md`** (16 pontos e próximos passos de 27/10).
+- Revisão de cliente (`revisao-olhar-de-cliente.md`) aplicada em 26/10. Falta: decidir se manda a v3 com ou sem preço, publicar a vitrine com link público e enviar. Versão da vitrine para SLA de sellers: depois do diagnóstico da BeOn.
 - Próximos painéis, um por vez: Shopee, J&T, Mercado Livre (o Haroldo ajusta cada um).
 - Nome do serviço/marca.
 - Subir as bases para o Google Sheets (oferecido, sem resposta).

@@ -32,3 +32,16 @@ Lido como se eu fosse a Beatriz (BeOn) recebendo o e-mail, abrindo a vitrine e d
 3. Faixa "Comece por aqui" na vitrine e teste no celular (itens 6 e 7).
 4. Ajustes do contrato para o piloto (itens 10 e 11).
 5. Enviar para a BeOn.
+
+## Status (26/10/2026, aplicado)
+- 1 · Vitrine ganhou faixa "Comece por aqui" dizendo que é exemplo Amazon e que se adapta a SLA por seller/agregado; e-mail v3 não presume Amazon. **Não feito:** versão completa da vitrine para sellers (fazer depois do diagnóstico).
+- 2 · E-mail curto (v3, ~200 palavras) criado; v2 ficou como base.
+- 3 · "Há alguns anos" removido das duas versões.
+- 4 · Caso agora é "a demonstração simula"; o 88% saiu do e-mail (continua no painel).
+- 5 · Regras de faturamento trocadas por valores genéricos (R$ 150 por VRID, teto 3%, bônus 1% + 1%; meta 99% fica, pois é a meta pública da BeOn). "BRLog" removido da vitrine.
+- 6 · Faixa "Comece por aqui" com 3 botões.
+- 7 · Testado em 400 px: as 8 abas sem rolagem lateral; gota das abas corrigida no celular. **Não verificado:** abrir o link público sem login (só você consegue, depois de compartilhar).
+- 8 · v3 cita só "condição especial"; valores na chamada (v2 mantém os valores).
+- 10, 11, 14 · Contrato v1: canal de urgência (4 h, a qualquer hora), piloto de 3 meses sem renovação automática, hospedagem B marcada como recomendada.
+- 13 · Resposta pronta sobre IA e dados no arquivo do e-mail.
+- 15, 16 · Pessoais, sem ação de código.

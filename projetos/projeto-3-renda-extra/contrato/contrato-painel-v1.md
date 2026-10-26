@@ -1,6 +1,6 @@
 # CONTRATO DE PRESTAÇÃO DE SERVIÇOS DE DESENVOLVIMENTO, IMPLANTAÇÃO E SUPORTE DE PAINEL DE PERFORMANCE LOGÍSTICA
 
-> **Rascunho v0, para revisão.** Este modelo não substitui a análise de um advogado. Os trechos entre [colchetes] precisam ser preenchidos ou decididos. As opções marcadas com "OPÇÃO A / OPÇÃO B" exigem escolha.
+> **Rascunho v1, para revisão** (v1: canal de urgência, piloto de 3 meses sem renovação automática, hospedagem recomendada). Este modelo não substitui a análise de um advogado. Os trechos entre [colchetes] precisam ser preenchidos ou decididos. As opções marcadas com "OPÇÃO A / OPÇÃO B" exigem escolha.
 
 ---
 
@@ -81,6 +81,8 @@ c) pequenas melhorias de até **[4] horas por mês**, não cumulativas;
 d) atendimento a dúvidas de uso.
 
 5.2. **Canais e horários:** atendimento por [WhatsApp/e-mail], de segunda a sexta, das [19h às 22h], e aos sábados, das [9h às 13h]. Fora desses horários, as mensagens serão respondidas no período seguinte.
+
+5.2-A. **Continuidade e urgência:** o PAINEL funciona sem depender do horário de suporte; as planilhas e os arquivos entregues seguem utilizáveis a qualquer hora. Para erro que impeça o uso do PAINEL, a CONTRATANTE poderá acionar o canal de urgência [WhatsApp com a palavra "URGENTE"], com primeira resposta em até [4] horas, inclusive fora do horário do item 5.2, e solução de contorno (ex.: versão anterior do PAINEL ou planilha de apoio) até a correção definitiva.
 
 5.3. **Prazos de resposta (Anexo III):** primeira resposta em até [1] dia útil; correção de erro que impeça o uso do PAINEL em até [2] dias úteis; demais ajustes em prazo combinado.
 
@@ -165,9 +167,11 @@ OPÇÃO B, **cessão**: após o pagamento integral da implantação, o CONTRATAD
 
 ## CLÁUSULA 12 · VIGÊNCIA E RESCISÃO
 
-12.1. A implantação vigora até o aceite da entrega final. O suporte mensal vigora por **[12] meses**, renovando-se automaticamente por iguais períodos, salvo aviso contrário com [30] dias de antecedência.
+12.1. A implantação vigora até o aceite da entrega final. O suporte mensal vigora pelo prazo do Anexo II:
+OPÇÃO A, **piloto**: [3] meses, **sem renovação automática**. Ao fim, as partes decidem por escrito se seguem para o contrato anual (Opção B), com os preços cheios do Anexo II; sem acordo, o suporte termina e vale a Cláusula 12.5.
+OPÇÃO B, **anual**: [12] meses, renovando-se automaticamente por iguais períodos, salvo aviso contrário com [30] dias de antecedência.
 
-12.2. Qualquer parte pode encerrar o suporte mensal, sem multa, com aviso prévio de **[30] dias**, após o período mínimo de **[3] meses**. Antes disso, aplica-se multa de [1 mensalidade].
+12.2. No contrato anual, qualquer parte pode encerrar o suporte mensal, sem multa, com aviso prévio de **[30] dias**, após o período mínimo de **[3] meses**. Antes disso, aplica-se multa de [1 mensalidade]. No piloto não há multa; o aviso prévio é de [15] dias.
 
 12.3. O contrato poderá ser rescindido de imediato por descumprimento de cláusula não sanado em [10] dias após notificação, por falência/recuperação judicial ou por uso ilícito do PAINEL.
 
@@ -264,14 +268,15 @@ Testemunhas:
 | Mensalidade (suporte e manutenção) | R$ [ ] |
 | Desconto de cliente-piloto | [ ]% por [ ] meses |
 | Hora adicional (fora do escopo) | R$ [ ] |
-| Hospedagem (Cláusula 9) | [ ] Opção A · [ ] B · [ ] C · [ ] D |
+| Prazo do suporte (Cláusula 12.1) | [x] Piloto 3 meses · [ ] Anual |
+| Hospedagem (Cláusula 9) | [ ] Opção A · [x] B (recomendada: conta em nome da CONTRATANTE, com login no servidor para áreas restritas) · [ ] C · [ ] D |
 | Custos de terceiros incluídos | [ ] |
 
 ## ANEXO III · NÍVEL DE SERVIÇO (SUPORTE)
 
 | Tipo de chamado | Primeira resposta | Solução |
 |---|---|---|
-| Erro que impede o uso | até [1] dia útil | até [2] dias úteis |
+| Erro que impede o uso (canal de urgência) | até [4] horas, a qualquer hora | contorno imediato; correção até [2] dias úteis |
 | Erro sem impedir o uso | até [1] dia útil | até [5] dias úteis |
 | Ajuste de regra existente | até [1] dia útil | até [5] dias úteis |
 | Melhoria (até as horas do mês) | até [2] dias úteis | prazo combinado |
