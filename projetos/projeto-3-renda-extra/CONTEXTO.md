@@ -17,6 +17,8 @@ Atualizado em 26/10/2026. Leia isto + `PLANO.md` antes de continuar.
   - Shopee: origem/destino de ~62%/61% em jul → 88%/86% em out.
   - J&T: uso do app 46% em jul (R$ 15.200 de desconto por app) → 94% em out (R$ 1.350).
   - Gerador: `gerar_bases.py`. Regras conferidas por código (0 erros).
+- `dados-ficticios/base_ficticia_mercado_livre.xlsx`: 1.276 rotas last mile + 12 planos de ação (indicadores genéricos, confirmar os oficiais com o cliente). Gerador: `gerar_base_meli.py`.
+- `paineis/amazon/`: Torre Amazon de demonstração (template + `montar.py`), publicada em https://claude.ai/artifact/77t8YBveTUdL7Az4VVXuiK. Alvo do pitch: Murici Logística.
 - `identidade-visual.md`: paletas de Amazon, Shopee e J&T e regras de uso de marca.
 - `PLANO.md`: pacotes e preços sugeridos (Essencial R$ 1.200 · Painel + automação R$ 2.000 · atualização R$ 300/mês), canais e clientes-alvo.
 
@@ -26,6 +28,7 @@ Atualizado em 26/10/2026. Leia isto + `PLANO.md` antes de continuar.
 - Regras combinadas: todo Pix com descrição; lanche só no VR; Uber só à noite ou com chuva.
 
 ## Em aberto
+- Próximos painéis, um por vez: Shopee, J&T, Mercado Livre (o Haroldo ajusta cada um).
 - Nome do serviço/marca.
 - Subir as bases para o Google Sheets (oferecido, sem resposta).
 - Tarefa agendada de e-mail (ler e deixar rascunho): ligar só quando começar a prospecção.

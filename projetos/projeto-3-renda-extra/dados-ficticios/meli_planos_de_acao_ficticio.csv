@@ -1,0 +1,13 @@
+﻿#;Tema;Problema / causa;Ação;Responsável;Prazo;Status
+1;Saída;Carregamento atrasado na base;Janela de carregamento por onda, com rota pronta 30 min antes;Supervisor da base;set/2026;Concluído
+2;Saída;Motorista chegou atrasado;Check-in do motorista às 7h30 com alerta automático aos 10 min de atraso;Torre de controle;set/2026;Concluído
+3;Saída;Roteirização liberada tarde;Roteirização fechada na noite anterior;Planejamento;out/2026;Em andamento
+4;Rota;Rota mal sequenciada;Revisar sequência das 3 rotas com pior % no prazo toda segunda;Analista de performance;out/2026;Em andamento
+5;Rota;Trânsito intenso;Antecipar saída das rotas Barra e Campo Grande em 20 min;Planejamento;out/2026;Concluído
+6;Insucesso;Cliente ausente;Mensagem ao cliente 1 h antes da entrega;Atendimento;out/2026;Em andamento
+7;Insucesso;Endereço não localizado;"Motorista registra ponto de referência no app; lista de endereços problemáticos";Torre de controle;set/2026;Concluído
+8;Insucesso;Área de risco;Mapa de áreas de risco com janela de entrega diurna;Supervisor da base;nov/2026;Planejado
+9;Insucesso;Avaria;Conferência de pacotes frágeis no carregamento;Supervisor da base;nov/2026;Planejado
+10;Gestão;Falta de visibilidade dos números;Painel diário com % no prazo, insucesso e atraso de saída por rota;Analista de performance;set/2026;Concluído
+11;Gestão;Motoristas sem retorno do desempenho;Ranking semanal de motoristas enviado no grupo;Torre de controle;out/2026;Em andamento
+12;Gestão;Reincidência das mesmas falhas;Reunião de 15 min toda sexta com os 3 piores pontos da semana;Gerente de operações;out/2026;Em andamento
