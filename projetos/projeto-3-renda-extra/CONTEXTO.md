@@ -13,7 +13,7 @@ Atualizado em 26/10/2026. Leia isto + `PLANO.md` antes de continuar.
 
 ## O que já existe
 - `dados-ficticios/`: bases Amazon (1.272), Shopee (1.164), J&T (1.046 viagens), jul–24/out/2026, com coluna Fase:
-  - Amazon: média OTP 79,4% / OTA 89,6% (jul 74/86 → out 88,8/95,9).
+  - Amazon: atrasos apontados (OTP+OTA) jul 56 · ago 53 · set 45 · out 26 (out: 8 reais, 18 indevidos = 69%). OTP nosso 91,3% → 98,1%; OTA 94,0% → 98,9%. VRIDs fictícios mascarados (`11XXXX***`).
   - Shopee: origem/destino de ~62%/61% em jul → 88%/86% em out.
   - J&T: uso do app 46% em jul (R$ 15.200 de desconto por app) → 94% em out (R$ 1.350).
   - Gerador: `gerar_bases.py`. Regras conferidas por código (0 erros).

@@ -49,10 +49,10 @@ def salva(nome, cab, linhas):
     with open(f"{OUT}/{nome}.csv", "w", newline="", encoding="utf-8-sig") as f:
         w = csv.writer(f, delimiter=";"); w.writerow(cab); w.writerows(linhas)
 
-# ---------------- AMAZON: OTP ~80% e OTA ~90% no período, melhorando a partir de setembro ----------------
+# ---------------- AMAZON: atrasos apontados por mês caindo (jul 56 · ago 53 · set 45 · out 26), outubro com 70% indevidos ----------------
 A_LANES = {"Duque de Caxias/RJ → Cajamar/SP":420,"Duque de Caxias/RJ → Betim/MG":390,"Duque de Caxias/RJ → Serra/ES":480,
  "Nova Iguaçu/RJ → São Gonçalo/RJ":75,"Nova Iguaçu/RJ → Campos dos Goytacazes/RJ":240,"Cajamar/SP → Duque de Caxias/RJ":420,"Betim/MG → Duque de Caxias/RJ":390}
-A_OTP = {7: .74, 8: .76, 9: .81, 10: .89}; A_OTA = {7: .86, 8: .87, 9: .91, 10: .96}
+A_ATRASOS = {7: 56, 8: 53, 9: 45, 10: 26}; A_REAL = {7: .88, 8: .87, 9: .65, 10: .30}
 cab_a = ["ID Viagem","Mês","Data","Fase","Lane","Tipo de rota","Motorista","Placa","Veículo","Apresentação programada","Chegada na origem","CPT (STD)","Saída real (ATD)","STA destino","Chegada real (ATA)",
  "Transit time (min)","Atraso chegada origem (min)","Atraso saída (min)","Atraso destino (min)","OTP","OTA","Status nosso","Status Amazon","Divergência","Motivo do atraso","Detalhe do motivo",
  "VRID","Vínculo","ADHOC/Retorno","Operador","Evidência","Amazon OTP","Amazon OTA","Tipo OTP","Tipo OTA","Min. Amazon OTP","Min. Amazon OTA","Resumo OTP","Resumo OTA","Preço BID (R$)"]
@@ -73,18 +73,11 @@ def resumo_ind(t, ind, causa):
     if t == "Indevido": return R2.choice(RESUMO_INDEV[ind])
     if t == "Real": return R2.choice(RESUMO_REAL[causa or "Trânsito"])
     return ""
-def extras(lane, veic, mes, a1, a3, nosso, cli):
-    amz_o, amz_a, min_o, min_a = a1 > 0, a3 > 0, a1, a3
-    if nosso == "Atrasado" and cli == "No prazo": amz_o = amz_a = False; min_o = min_a = 0
-    if nosso == "No prazo" and cli == "Atrasado":
-        if R2.random() < .5: amz_o, min_o = True, R2.randint(3, 45)
-        else: amz_a, min_a = True, R2.randint(3, 45)
+def extras(lane, veic, mes, a1, a3, amz_o, amz_a):
+    min_o = a1 if a1 > 0 else (R2.randint(3, 45) if amz_o else 0)
+    min_a = a3 if a3 > 0 else (R2.randint(3, 45) if amz_a else 0)
     tipo = lambda amz, nosso_min: ("Real" if nosso_min > 0 else "Indevido") if amz else ""
     t_o, t_a = tipo(amz_o, a1), tipo(amz_a, a3)
-    def resumo(t, ind, causa):
-        if t == "Indevido": return R2.choice(RESUMO_INDEV[ind])
-        if t == "Real": return R2.choice(RESUMO_REAL[causa or "Trânsito"])
-        return ""
     adhoc = "ADHOC" if ("MG" in lane.split("→")[1] or "ES" in lane.split("→")[1]) else ("Retorno" if lane.endswith("Duque de Caxias/RJ") else "")
     evid = "" if not (amz_o or amz_a) else ("OK" if R2.random() < (.97 if mes == 10 else .85) else "Pendente")
     preco = round(BID[lane] * (1 if veic == "Carreta" else .7))
@@ -92,11 +85,16 @@ def extras(lane, veic, mes, a1, a3, nosso, cli):
             "Atrasado" if amz_o else "No prazo", "Atrasado" if amz_a else "No prazo", t_o, t_a, min_o, min_a, preco], (t_o, t_a)
 LA = []; n = 26000
 for mes, lst in base_viagens(A_LANES, 11):
-    otp_late = marca(len(lst), 1 - A_OTP[mes]); ota_late = marca(len(lst), 1 - A_OTA[mes])
-    for v, ol, dl in zip(lst, otp_late, ota_late):
+    # atrasos apontados pela Amazon no mês (linhas OTP + OTA) e parte que é nossa (Real)
+    tot = A_ATRASOS[mes]; reais = round(tot * A_REAL[mes]); indev = tot - reais
+    r_otp = round(reais * .6); r_ota = reais - r_otp; i_otp = (indev + 1) // 2; i_ota = indev // 2
+    nv = len(lst); ix1 = list(range(nv)); ix2 = list(range(nv)); random.shuffle(ix1); random.shuffle(ix2)
+    otpR, otaR = set(ix1[:r_otp]), set(ix2[:r_ota])
+    indO = set([i for i in ix2 if i not in otpR][:i_otp]); indA = set([i for i in ix1 if i not in otaR and i not in indO][:i_ota])
+    for i, v in enumerate(lst):
+        ol, dl = i in otpR, i in otaR
         apres = v["apres_prog"] + (M(random.randint(3, 75)) if ol else -M(random.randint(0, 50)))
-        # saída atrasa em parte das viagens com motorista atrasado ou carregamento lento
-        sai_late = (ol and random.random() < .55) or (not ol and random.random() < .05)
+        sai_late = (ol and random.random() < .55) or (not ol and random.random() < .01)
         atd = v["std"] + (M(random.randint(3, 60)) if sai_late else -M(random.randint(0, 8)))
         a2 = max(0, mins(atd, v["std"]))
         if dl:
@@ -105,14 +103,14 @@ for mes, lst in base_viagens(A_LANES, 11):
         else:
             ata = v["sta"] - M(random.randint(0, 25)); causa = ""
         a1 = max(0, mins(apres, v["apres_prog"])); a3 = max(0, mins(ata, v["sta"]))
-        late = a1 > 0 or a2 > 0 or a3 > 0  # Amazon: tolerância ZERO nos três pontos
-        if late and not causa: causa = "Origem"
-        nosso = "Atrasado" if late else "No prazo"; cli = cli_status(nosso, ["Atrasado", "No prazo"])
+        if ol and not causa: causa = "Origem"
+        amz_o, amz_a = ol or i in indO, dl or i in indA
+        nosso = "Atrasado" if (a1 > 0 or a3 > 0) else "No prazo"; cli = "Atrasado" if (amz_o or amz_a) else "No prazo"
         LA.append([f"AMZ-{n}", mes, v["std"].strftime("%d/%m/%Y"), FASE[mes], v["lane"], "Ad hoc" if ("MG" in v["lane"] or "ES" in v["lane"]) else "Fixa",
                    v["mot"][0], v["mot"][1], random.choice(VEIC[:2]), fmt(v["apres_prog"]), fmt(apres), fmt(v["std"]), fmt(atd), fmt(v["sta"]), fmt(ata), v["tt"],
                    a1, a2, a3, "Atrasado" if a1 > 0 else "No prazo", "Atrasado" if a3 > 0 else "No prazo", nosso, cli, "Sim" if cli != nosso else "Não",
                    causa, random.choice(MOTIVOS[causa]) if causa else ""]); n += 1
-        ex, (t_o, t_a) = extras(v["lane"], LA[-1][8], mes, a1, a3, nosso, cli)
+        ex, (t_o, t_a) = extras(v["lane"], LA[-1][8], mes, a1, a3, amz_o, amz_a)
         LA[-1] += ex[:11] + [resumo_ind(t_o, "OTP", causa), resumo_ind(t_a, "OTA", causa), ex[11]]
 salva("amazon_viagens_ficticio", cab_a, LA)
 
