@@ -148,6 +148,11 @@ tbody tr[data-lane]{cursor:pointer}
 .clock b{font-family:var(--display);font-size:26px;font-weight:800}
 .res-ok{border:1px solid rgba(60,196,138,.45);background:rgba(60,196,138,.08);border-radius:12px;padding:12px 14px;display:grid;gap:8px}
 .res-bad{border:1px solid rgba(255,95,82,.45);background:rgba(255,95,82,.08);border-radius:12px;padding:12px 14px}
+.big{font-family:var(--display);font-weight:800;font-stretch:85%;font-size:clamp(30px,4vw,44px);line-height:1}
+.resumo-mes{font-size:15px;color:var(--ink-2);max-width:90ch}.resumo-mes b{color:var(--ink)}
+.peso{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.peso div{background:var(--surface-2);border-radius:10px;padding:12px;display:grid;gap:2px}
+@media (max-width:640px){.peso{grid-template-columns:1fr}}
 .ex{font-family:var(--mono);font-size:10px;border:1px dashed var(--muted);color:var(--muted);border-radius:5px;padding:0 5px;margin-left:6px}
 /* tela de senha do faturamento */
 .lock{display:grid;place-items:center;min-height:440px;border-radius:var(--r);border:1px solid var(--line);background:radial-gradient(70% 90% at 50% 0%,rgba(255,153,0,.12),transparent 70%),var(--surface)}
@@ -253,6 +258,43 @@ tbody tr[data-lane]{cursor:pointer}
         <div class="row-h"><h2>Histórico de envios</h2><button class="btn ghost sm" type="button" id="impUndo">Desfazer envios</button></div>
         <div class="tbl"><table><thead><tr><th>Quando</th><th>Arquivo</th><th>Tipo</th><th>Resultado</th></tr></thead><tbody id="tHist"></tbody></table></div>
       </div>
+    </div>
+  </section>
+
+  <!-- RESULTADO DO MÊS -->
+  <section class="view" id="v-mes" hidden>
+    <div class="grid">
+      <div class="card s12">
+        <div class="row-h"><div><span class="label" id="mesTag"></span><h2 id="mesT" style="font-size:26px">Resultado do mês</h2></div><div class="seg" id="segMes2" role="group" aria-label="Escolher mês do fechamento"></div></div>
+        <p class="resumo-mes" id="mesResumo"></p>
+        <p class="sub">Como a Amazon pontua: OTP (chegada na origem) e OTA (chegada no destino) = VRIDs sem atraso ÷ total. Só derruba o resultado o atraso real; o indevido abonado na disputa não conta. Meta de exemplo: 99%.</p>
+      </div>
+      <div class="kpis s12" id="kMes"></div>
+      <div class="card s6">
+        <div><h2>Quanto cada atraso pesa</h2><p class="sub">Peso de um atraso no resultado do mês e quantos ainda cabem para ficar na meta.</p></div>
+        <div class="peso" id="peso"></div>
+      </div>
+      <div class="card s6">
+        <div><h2>Planos de ação e disputa no mês</h2><p class="sub">Se a operação agiu antes de o atraso virar desconto.</p></div>
+        <div class="peso" id="pdMes"></div>
+      </div>
+      <div class="card s7"><div><h2>Resultado por base</h2><p class="sub">OTP pela base de origem e OTA pela base de destino, só atrasos reais.</p></div><div class="tbl"><table><thead><tr><th>Base</th><th>Saídas</th><th>OTP</th><th>Chegadas</th><th>OTA</th><th>Atrasos reais</th></tr></thead><tbody id="tBase"></tbody></table></div></div>
+      <div class="card s5"><div><h2>Semanas do mês</h2><p class="sub">Domingo a sábado, como o cliente fecha a semana.</p></div><div class="tbl"><table><thead><tr><th>Semana</th><th>VRIDs</th><th>OTP</th><th>OTA</th><th>Atrasos</th></tr></thead><tbody id="tSem"></tbody></table></div></div>
+    </div>
+  </section>
+
+  <!-- ADHOC -->
+  <section class="view" id="v-adhoc" hidden>
+    <div class="grid">
+      <div class="kpis s12" id="kAd"></div>
+      <div class="card s7">
+        <div><h2>AdHoc × lanes fixas</h2><p class="sub">AdHoc é a viagem fora da grade programada, feita sem ser dono da lane. Ela pontua no OTP e no OTA como as fixas.</p></div>
+        <div class="tbl"><table><thead><tr><th>Tipo</th><th>VRIDs</th><th>OTP</th><th>OTA</th><th>Atrasos reais</th><th>Atrasos por 100 VRIDs</th></tr></thead><tbody id="tDono"></tbody></table></div>
+        <h3 style="font-size:15px">AdHoc por mês</h3>
+        <svg class="chart" id="chAd" viewBox="0 0 640 200" role="img" aria-label="Viagens AdHoc por mês"></svg>
+      </div>
+      <div class="card s5"><div><h2>AdHoc por placa</h2><p class="sub">Placas que mais rodaram fora da grade.</p></div><div class="tbl"><table><thead><tr><th>Placa</th><th>AdHoc</th><th>Com atraso</th><th>Vínculo</th></tr></thead><tbody id="tAdPl"></tbody></table></div></div>
+      <div class="card s12"><div><h2>Todas as viagens AdHoc</h2><p class="sub" id="adSub"></p></div><div class="tbl"><table><thead><tr><th>Data</th><th>VRID</th><th>Lane</th><th>Placa</th><th>Equip.</th><th>Origem</th><th>Destino</th><th>Situação</th></tr></thead><tbody id="tAd"></tbody></table></div></div>
     </div>
   </section>
 
@@ -423,7 +465,7 @@ $('#fLane').innerHTML='<option value="-1">Todas as lanes</option>'+D.lanes.map((
 $('#fLane').onchange=e=>{S.lane=+e.target.value;S.sel=S.lane;render();};
 
 /* Menisco */
-const TABS=[['geral','Visão geral'],['enviar','Enviar planilha'],['atrasos','Atrasos'],['planos','Planos de ação'],['fat','Faturamento'],['rotas','Rotas'],['disputa','Disputa']];
+const TABS=[['geral','Visão geral'],['enviar','Enviar planilha'],['mes','Resultado do mês'],['atrasos','Atrasos'],['planos','Planos de ação'],['adhoc','AdHoc'],['fat','Faturamento'],['rotas','Rotas'],['disputa','Disputa']];
 const nav=$('#tabs');
 TABS.forEach(([k,n])=>{const b=document.createElement('button');b.type='button';b.setAttribute('role','tab');b.id='t-'+k;b.textContent=n;b.setAttribute('aria-controls','v-'+k);b.onclick=()=>tab(k);nav.appendChild(b);});
 function tab(k){S.tab=k;TABS.forEach(([x])=>{$('#t-'+x).setAttribute('aria-selected',x===k);$('#v-'+x).hidden=x!==k;});
@@ -498,13 +540,13 @@ function resumos(AF){const c={};AF.forEach(a=>{c[a.res]=c[a.res]||[0,0];c[a.res]
   $('#tRes').innerHTML=Object.entries(c).sort((a,b)=>b[1][0]+b[1][1]-a[1][0]-a[1][1]).map(([k,[re,ind]])=>`<tr><td>${esc(k)}</td><td class="v">${re}</td><td class="v">${ind}</td></tr>`).join('');}
 
 /* PLANOS DE AÇÃO (salvos neste navegador) */
-const KEY='torreAmazonVitrine.planos.v2';
+const KEY='torreAmazonVitrine.planos.v3';
 const SEED=[
- {id:'ex1',vrid:'',proc:'Ligar para o motorista e confirmar onde está e a previsão de chegada.\nRegistrar a ocorrência de trânsito com print do mapa ou do rastreador.\nAvisar o destino da nova previsão antes do horário.',res:'Trânsito',causa:'Saída no horário de pico na Dutra e na Av. Brasil.',acao:'Antecipar o CPT das lanes para SP em 40 min e monitorar a rota pelo rastreador.',resp:'Planejamento',prazo:'2026-09-20',st:'Concluído',ex:1},
- {id:'ex2',vrid:'',proc:'Pedir ao motorista a foto da chegada (placa + doca) pelo WhatsApp.\nRegistrar a chegada no app da Amazon na hora.\nSe não houver evidência em 10 min, avisar o supervisor.',res:'Condutor sem evidência',causa:'Motorista não registrava a chegada no app e não guardava foto.',acao:'Checklist de chegada com foto obrigatória; torre cobra em 10 min.',resp:'Torre de controle',prazo:'2026-09-15',st:'Concluído',ex:1},
- {id:'ex3',vrid:'',proc:'Avisar a Amazon pelo canal oficial que a documentação está atrasada, antes do CPT.\nAcionar a base para liberar a nota fiscal.\nRegistrar a ocorrência com o horário em que a nota foi liberada.',res:'Documentação',causa:'Nota fiscal liberada depois da chegada do motorista.',acao:'Conferir documentação 2 h antes do CPT e escalar para a base.',resp:'Supervisor de pátio',prazo:'2026-10-10',st:'Em andamento',ex:1},
- {id:'ex4',vrid:'',proc:'Garantir a segurança: motorista e veículo em local seguro.\nAcionar o guincho e o veículo reserva mais próximo.\nAvisar a Amazon e registrar a ocorrência com fotos.',res:'Quebra mecânica',causa:'Preventiva dos agregados sem controle.',acao:'Agenda de preventiva por placa e bloqueio de veículo vencido.',resp:'Manutenção',prazo:'2026-10-30',st:'Em andamento',ex:1},
- {id:'ex5',vrid:'',proc:'Ligar para o motorista e corrigir a rota no GPS.\nAvisar o destino da nova previsão.\nRegistrar a ocorrência e marcar o motorista para o briefing de rota.',res:'Erro do condutor em trajeto',causa:'Rotas novas sem treinamento do motorista.',acao:'Briefing de rota no primeiro embarque e rota fixa no GPS.',resp:'Torre de controle',prazo:'2026-11-05',st:'Planejado',ex:1}];
+ {id:'ex1',criado:'2026-09-05',vrid:'',proc:'Ligar para o motorista e confirmar onde está e a previsão de chegada.\nRegistrar a ocorrência de trânsito com print do mapa ou do rastreador.\nAvisar o destino da nova previsão antes do horário.',res:'Trânsito',causa:'Saída no horário de pico na Dutra e na Av. Brasil.',acao:'Antecipar o CPT das lanes para SP em 40 min e monitorar a rota pelo rastreador.',resp:'Planejamento',prazo:'2026-09-20',st:'Concluído',ex:1},
+ {id:'ex2',criado:'2026-09-03',vrid:'',proc:'Pedir ao motorista a foto da chegada (placa + doca) pelo WhatsApp.\nRegistrar a chegada no app da Amazon na hora.\nSe não houver evidência em 10 min, avisar o supervisor.',res:'Condutor sem evidência',causa:'Motorista não registrava a chegada no app e não guardava foto.',acao:'Checklist de chegada com foto obrigatória; torre cobra em 10 min.',resp:'Torre de controle',prazo:'2026-09-15',st:'Concluído',ex:1},
+ {id:'ex3',criado:'2026-09-25',vrid:'',proc:'Avisar a Amazon pelo canal oficial que a documentação está atrasada, antes do CPT.\nAcionar a base para liberar a nota fiscal.\nRegistrar a ocorrência com o horário em que a nota foi liberada.',res:'Documentação',causa:'Nota fiscal liberada depois da chegada do motorista.',acao:'Conferir documentação 2 h antes do CPT e escalar para a base.',resp:'Supervisor de pátio',prazo:'2026-10-10',st:'Em andamento',ex:1},
+ {id:'ex4',criado:'2026-10-02',vrid:'',proc:'Garantir a segurança: motorista e veículo em local seguro.\nAcionar o guincho e o veículo reserva mais próximo.\nAvisar a Amazon e registrar a ocorrência com fotos.',res:'Quebra mecânica',causa:'Preventiva dos agregados sem controle.',acao:'Agenda de preventiva por placa e bloqueio de veículo vencido.',resp:'Manutenção',prazo:'2026-10-30',st:'Em andamento',ex:1},
+ {id:'ex5',criado:'2026-10-08',vrid:'',proc:'Ligar para o motorista e corrigir a rota no GPS.\nAvisar o destino da nova previsão.\nRegistrar a ocorrência e marcar o motorista para o briefing de rota.',res:'Erro do condutor em trajeto',causa:'Rotas novas sem treinamento do motorista.',acao:'Briefing de rota no primeiro embarque e rota fixa no GPS.',resp:'Torre de controle',prazo:'2026-11-05',st:'Planejado',ex:1}];
 function planos(){try{const x=JSON.parse(localStorage.getItem(KEY)||'null');if(Array.isArray(x))return x;}catch(e){}return SEED.slice();}
 function salvar(L){try{localStorage.setItem(KEY,JSON.stringify(L));return true;}catch(e){return false;}}
 const RES=[...new Set([...A.map(a=>a.res),'A classificar'])].sort();
@@ -513,7 +555,7 @@ $('#vridList').innerHTML=A.filter(a=>a.real).slice(-400).map(a=>`<option value="
 function novoPlano(vrid,res){S.edit=null;$('#fPlano').reset();$('#pVrid').value=vrid||'';$('#pRes').value=res||RES[0];$('#formT').textContent='Novo plano de ação';$('#pCancel').hidden=true;tab('planos');$('#pCausa').focus();}
 $('#pVrid').onchange=e=>{const a=A.find(a=>a.t.vrid===e.target.value);if(a)$('#pRes').value=a.res;};
 $('#fPlano').onsubmit=e=>{e.preventDefault();const L=planos(),p={id:S.edit||('p'+Date.now()),vrid:$('#pVrid').value.trim(),res:$('#pRes').value,causa:$('#pCausa').value.trim(),acao:$('#pAcao').value.trim(),resp:$('#pResp').value.trim(),prazo:$('#pPrazo').value,st:$('#pSt').value};
-  p.proc=$('#pProc').value.trim();const i=L.findIndex(x=>x.id===p.id);if(i>=0)L[i]=p;else L.unshift(p);const ok=salvar(L);S.edit=null;$('#fPlano').reset();$('#pCancel').hidden=true;$('#formT').textContent='Novo plano de ação';
+  p.proc=$('#pProc').value.trim();const old=L.find(x=>x.id===p.id);p.criado=old&&old.criado?old.criado:new Date().toISOString().slice(0,10);const i=L.findIndex(x=>x.id===p.id);if(i>=0)L[i]=p;else L.unshift(p);const ok=salvar(L);S.edit=null;$('#fPlano').reset();$('#pCancel').hidden=true;$('#formT').textContent='Novo plano de ação';
   $('#pMsg').textContent=ok?'Plano salvo.':'Plano registrado só nesta sessão (o navegador não permitiu salvar).';if(!ok)SEED.splice(0,SEED.length,...L);planosV();};
 $('#pCancel').onclick=()=>{S.edit=null;$('#fPlano').reset();$('#pCancel').hidden=true;$('#formT').textContent='Novo plano de ação';};
 const passos=p=>(p.proc||'').split('\n').map(x=>x.trim()).filter(Boolean);
@@ -662,7 +704,52 @@ $('#exAmz').onclick=()=>processar('amazon_atrasos_apontados_25-10-2026.csv (exem
 function historico(){const L=salvos().log;$('#tHist').innerHTML=L.map(l=>`<tr><td class="mono">${esc(l.quando)}</td><td style="white-space:normal">${esc(l.nome)}</td><td>${esc(l.tipo)}</td><td style="white-space:normal">${esc(l.res)}</td></tr>`).join('')||'<tr><td colspan="4" class="mut">Nenhuma planilha enviada ainda.</td></tr>';}
 $('#impUndo').onclick=()=>{try{localStorage.removeItem(IMP_KEY);}catch(e){}location.reload();};
 (()=>{const db=salvos();db.viagens.forEach(v=>{if(v.lane>=D.lanes.length)v.lane=0;aplicarViagem(v);});db.marcas.forEach(aplicarMarca);if(db.log.length)ULT=db.log[0].quando;rebuildA();agente();})();
-function render(){({geral,enviar:historico,atrasos,planos:planosV,fat,rotas:globe,disputa})[S.tab]();}
+/* RESULTADO DO MÊS */
+const NOME_MES={7:'Julho',8:'Agosto',9:'Setembro',10:'Outubro'};
+function resultadoMes(){const m=S.mes||10,X=T.filter(t=>t.mes===m&&(S.lane<0||t.lane===S.lane)),n=X.length,AM=A.filter(a=>a.t.mes===m&&(S.lane<0||a.t.lane===S.lane));
+  $('#segMes2').innerHTML=[7,8,9,10].map(k=>`<button type="button" data-m="${k}" aria-pressed="${m===k}">${MES[k]}</button>`).join('');
+  $('#segMes2').querySelectorAll('button').forEach(b=>b.onclick=()=>{S.mes=+b.dataset.m;S.dia=0;seg();render();});
+  const parcial=m===10,ro=X.filter(t=>t.tO===1).length,ra=X.filter(t=>t.tA===1).length,io=X.filter(t=>t.tO===2).length,ia=X.filter(t=>t.tA===2).length;
+  const otp=100-pct(ro,n),ota=100-pct(ra,n),vAtr=X.filter(t=>t.tO===1||t.tA===1).length,reais=AM.filter(a=>a.real),ind=AM.filter(a=>!a.real);
+  const ant=T.filter(t=>t.mes===m-1&&(S.lane<0||t.lane===S.lane)),aO=ant.length?100-pct(ant.filter(t=>t.tO===1).length,ant.length):NaN,aA=ant.length?100-pct(ant.filter(t=>t.tA===1).length,ant.length):NaN;
+  const dl=(v,a)=>isNaN(a)?'':`<span class="delta ${v>=a?'up':'down'}">${v>=a?'+':''}${(v-a).toFixed(1).replace('.',',')} p.p. vs ${MES[m-1]}</span>`;
+  $('#mesTag').textContent=`${FASE_TXT[m]} · ${parcial?'parcial até 24/10':'mês fechado'}`;$('#mesT').textContent=`Resultado de ${NOME_MES[m].toLowerCase()}/2026`;
+  kpiRow('#kMes',[['OTP oficial',fp(otp),`<span class="pill ${stM(otp)}">meta ${R.meta}%</span> ${dl(otp,aO)}`],['OTA oficial',fp(ota),`<span class="pill ${stM(ota)}">meta ${R.meta}%</span> ${dl(ota,aA)}`],
+    ['VRIDs',fi(n),parcial?'até 24/10':'no mês'],['VRIDs atrasados',fi(vAtr),`${fp(pct(vAtr,n))} dos VRIDs`],['Atrasos apontados',fi(AM.length),`${reais.length} reais · ${ind.length} indevidos`],
+    FAT_OK?['Penalidade',brl(fech(X).pen),'abra Faturamento para detalhes',1]:['Indevidos abonáveis',fi(ind.length),'não contam se a disputa passar',1]]);
+  const peso=100/(n||1),lim=Math.floor(n*(1-R.meta/100)),cabem=k=>lim-k,cx=(k,ind)=>cabem(k)>=0?`<b class="big good">${cabem(k)}</b><span class="sub">atrasos até sair da meta (${k} de ${lim} usados)</span>`:`<b class="big bad">+${-cabem(k)}</b><span class="sub">atrasos acima do limite de ${lim} para a meta</span>`;
+  $('#peso').innerHTML=`<div><span class="label">1 atraso vale</span><b class="big">${peso.toFixed(2).replace('.',',')}</b><span class="sub">p.p. no OTP ou no OTA</span></div>
+    <div><span class="label">Margem no OTP</span>${cx(ro)}</div>
+    <div><span class="label">Margem no OTA</span>${cx(ra)}</div>`;
+  const P=planos(),dIso=a=>`2026-${String(a.t.mes).padStart(2,'0')}-${String(a.t.dia).padStart(2,'0')}`,vig=(p,a)=>(p.res===a.res||p.vrid===a.t.vrid)&&(p.criado||'2000-01-01')<=dIso(a),comPlano=reais.filter(a=>P.some(p=>vig(p,a))).length,conc=reais.filter(a=>P.some(p=>vig(p,a)&&p.st==='Concluído')).length,evOk=ind.filter(a=>a.t.evid!==2).length;
+  $('#pdMes').innerHTML=`<div><span class="label">Atrasos reais com plano já existente</span><b class="big ${pct(comPlano,reais.length)>=80?'good':'warn'}">${reais.length?fp(pct(comPlano,reais.length)):'–'}</b><span class="sub">${comPlano} de ${reais.length} · ${conc} com plano concluído</span></div>
+    <div><span class="label">Indevidos em disputa</span><b class="big">${ind.length}</b><span class="sub">${evOk} com evidência pronta</span></div>
+    <div><span class="label">Disputa pronta</span><b class="big ${pct(evOk,ind.length)>=90?'good':'warn'}">${ind.length?fp(pct(evOk,ind.length)):'–'}</b><span class="sub">indevidos com evidência OK</span></div>`;
+  $('#mesResumo').innerHTML=`${NOME_MES[m]}${parcial?' (até dia 24)':''}: <b>OTP ${fp(otp)}</b> e <b>OTA ${fp(ota)}</b> em ${fi(n)} VRIDs. ${fi(AM.length)} atrasos apontados pela Amazon, <b>${reais.length} reais</b> e <b>${ind.length} indevidos</b> que vão para a disputa. ${reais.length?`Em ${fp(pct(comPlano,reais.length))} dos atrasos reais a operação já tinha um plano de ação para seguir.`:''}`;
+  const cid=Object.keys(D.cid),base=cid.map(c=>{const S_=X.filter(t=>D.lanes[t.lane].o===c),C_=X.filter(t=>D.lanes[t.lane].d===c);return{c,s:S_.length,ch:C_.length,o:S_.length?100-pct(S_.filter(t=>t.tO===1).length,S_.length):NaN,a:C_.length?100-pct(C_.filter(t=>t.tA===1).length,C_.length):NaN,at:S_.filter(t=>t.tO===1).length+C_.filter(t=>t.tA===1).length};}).filter(b=>b.s||b.ch).sort((a,b)=>b.at-a.at);
+  $('#tBase').innerHTML=base.map(b=>`<tr><td>${b.c}${UF[b.c]&&UF[b.c]!=='RJ'?' · '+UF[b.c]:''}</td><td class="v">${b.s}</td><td>${isNaN(b.o)?'–':`<span class="pill ${stM(b.o)}">${fp(b.o)}</span>`}</td><td class="v">${b.ch}</td><td>${isNaN(b.a)?'–':`<span class="pill ${stM(b.a)}">${fp(b.a)}</span>`}</td><td class="v">${b.at}</td></tr>`).join('');
+  const f1=new Date(2026,m-1,1).getDay(),sem={};X.forEach(t=>{const w=Math.floor((t.dia-1+f1)/7);(sem[w]??=[]).push(t);});
+  $('#tSem').innerHTML=Object.entries(sem).map(([w,Y])=>{const ini=Math.max(1,w*7-f1+1),fim=Math.min(MD[m],w*7-f1+7),o=100-pct(Y.filter(t=>t.tO===1).length,Y.length),a=100-pct(Y.filter(t=>t.tA===1).length,Y.length);
+    return`<tr><td class="mono">${dd(m,ini)} a ${dd(m,fim)}</td><td class="v">${Y.length}</td><td><span class="pill ${stM(o)}">${fp(o)}</span></td><td><span class="pill ${stM(a)}">${fp(a)}</span></td><td class="v">${Y.filter(t=>t.tO===1||t.tA===1).length}</td></tr>`;}).join('');}
+const FASE_TXT={7:'Antes do serviço',8:'Antes do serviço',9:'Implantação do controle',10:'Com controle'};
+
+/* ADHOC */
+function adhoc(){const L=filt(),AD=L.filter(t=>t.adhoc===1),FX=L.filter(t=>t.adhoc!==1),late=t=>t.tO===1||t.tA===1;
+  const ind=X=>({n:X.length,o:100-pct(X.filter(t=>t.tO===1).length,X.length),a:100-pct(X.filter(t=>t.tA===1).length,X.length),r:X.filter(late).length});
+  const a=ind(AD),f=ind(FX),pl=new Set(AD.map(t=>t.placa)).size;
+  kpiRow('#kAd',[['AdHoc no período',fi(a.n),`${fp(pct(a.n,L.length))} dos VRIDs`],['Com atraso real',fi(a.r),`${fp(pct(a.r,a.n))} das AdHoc`],['OTP AdHoc',fp(a.o),`fixas: ${fp(f.o)}`],['OTA AdHoc',fp(a.a),`fixas: ${fp(f.a)}`],['Placas em AdHoc',fi(pl),'veículos diferentes'],
+    FAT_OK?['Faturamento AdHoc',brl(AD.reduce((s,t)=>s+t.preco,0)),'pelo BID',1]:['Lanes AdHoc',fi(new Set(AD.map(t=>t.lane)).size),'fora da grade',1]]);
+  $('#tDono').innerHTML=[['Dono da lane (fixa)',f],['AdHoc (fora da grade)',a]].map(([nm,x])=>`<tr><td>${nm}</td><td class="v">${fi(x.n)}</td><td><span class="pill ${stM(x.o)}">${fp(x.o)}</span></td><td><span class="pill ${stM(x.a)}">${fp(x.a)}</span></td><td class="v">${x.r}</td><td class="v">${x.n?(100*x.r/x.n).toFixed(1).replace('.',','):'–'}</td></tr>`).join('');
+  const LL=filt(true).filter(t=>t.adhoc===1),W=640,H=200,l=40,r=10,tp=16,b=28,ms=[7,8,9,10],gw=(W-l-r)/4,bw=gw*.46,cnt=ms.map(m=>[LL.filter(t=>t.mes===m).length,LL.filter(t=>t.mes===m&&late(t)).length]),mx=Math.max(1,...cnt.map(c=>c[0])),top=Math.ceil(mx/20)*20,Y=v=>H-b-v/top*(H-tp-b);
+  let g='';for(let v=0;v<=top;v+=top/4)g+=`<line x1="${l}" x2="${W-r}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--line)"/><text x="${l-6}" y="${Y(v)+4}" text-anchor="end">${v}</text>`;
+  ms.forEach((m,i)=>{const cx=l+gw*i+gw/2,[n,lt]=cnt[i],on=!S.mes||S.mes===m;g+=`<rect x="${cx-bw/2}" y="${Y(n)}" width="${bw}" height="${H-b-Y(n)}" rx="3" fill="var(--accent)" opacity="${on?.9:.35}"><title>${MES[m]}: ${n} AdHoc</title></rect><rect x="${cx-bw/2}" y="${Y(lt)}" width="${bw}" height="${H-b-Y(lt)}" rx="3" fill="var(--bad)" opacity="${on?1:.35}"><title>${MES[m]}: ${lt} com atraso real</title></rect><text x="${cx}" y="${Y(n)-6}" text-anchor="middle" fill="var(--ink-2)">${n}</text><text x="${cx}" y="${H-8}" text-anchor="middle" fill="${on?'var(--ink)':'var(--muted)'}">${MES[m]}</text>`;});
+  $('#chAd').innerHTML=g+`<text x="${W-r}" y="12" text-anchor="end" fill="var(--bad)">vermelho: com atraso real</text>`;
+  const pp={};AD.forEach(t=>{pp[t.placa]=pp[t.placa]||{n:0,l:0,fr:t.frota};pp[t.placa].n++;if(late(t))pp[t.placa].l++;});
+  $('#tAdPl').innerHTML=Object.entries(pp).sort((a,b)=>b[1].n-a[1].n).slice(0,12).map(([p,x])=>`<tr><td class="mono">${p}</td><td class="v">${x.n}</td><td class="v ${x.l?'bad':''}">${x.l}</td><td>${x.fr?'Frota':'Agregado'}</td></tr>`).join('');
+  const Lt=AD.slice().sort((a,b)=>b.mes-a.mes||b.dia-a.dia);$('#adSub').textContent=`${fi(Lt.length)} viagens AdHoc neste filtro${Lt.length>200?' · mostrando as 200 mais recentes':''}.`;
+  $('#tAd').innerHTML=Lt.slice(0,200).map(t=>`<tr class="${late(t)?'hot':''}"><td class="mono">${dd(t.mes,t.dia)}</td><td class="mono">${t.vrid}</td><td>${D.lanes[t.lane].n}</td><td class="mono">${t.placa}</td><td>${t.truck?'Truck':'Carreta'}</td><td>${t.a1?`<span class="pill bad">${t.a1} min</span>`:'<span class="mut">no horário</span>'}</td><td>${t.a3?`<span class="pill bad">${t.a3} min</span>`:'<span class="mut">no horário</span>'}</td><td>${late(t)?'<span class="pill bad">atraso real</span>':t.tO===2||t.tA===2?'<span class="pill good">indevido</span>':'<span class="pill good">ok</span>'}</td></tr>`).join('');}
+
+function render(){({geral,enviar:historico,mes:resultadoMes,adhoc,atrasos,planos:planosV,fat,rotas:globe,disputa})[S.tab]();}
 seg();
 const h=(location.hash||'').slice(1);tab(TABS.some(([k])=>k===h)?h:'geral');
 </script>
