@@ -30,6 +30,7 @@ Atualizado em 26/10/2026. Leia isto + `PLANO.md` antes de continuar.
 - Regras combinadas: todo Pix com descrição; lanche só no VR; Uber só à noite ou com chuva.
 
 ## Em aberto
+- **Retomar por `revisao-olhar-de-cliente.md`** (16 pontos e próximos passos de 27/10).
 - Próximos painéis, um por vez: Shopee, J&T, Mercado Livre (o Haroldo ajusta cada um).
 - Nome do serviço/marca.
 - Subir as bases para o Google Sheets (oferecido, sem resposta).
