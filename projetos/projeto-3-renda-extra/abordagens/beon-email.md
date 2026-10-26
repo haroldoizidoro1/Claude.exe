@@ -14,7 +14,7 @@
 
 Olá, Beatriz, tudo bem?
 
-Meu nome é Haroldo Turetta. Trabalho há alguns anos no dia a dia de transportadoras que rodam para Amazon, Shopee e J&T, olhando atraso por atraso. Conheço bem aquela sensação de fechar o mês e descobrir, só na fatura, que um atraso de madrugada virou desconto. Ou de ver a equipe se esforçando muito e, mesmo assim, o número não refletir esse esforço.
+Meu nome é Haroldo Turetta, moro no Rio de Janeiro e trabalho há alguns anos no dia a dia de transportadoras que rodam para Amazon, Shopee e J&T, olhando atraso por atraso. Conheço bem aquela sensação de fechar o mês e descobrir, só na fatura, que um atraso de madrugada virou desconto. Ou de ver a equipe se esforçando muito e, mesmo assim, o número não refletir esse esforço.
 
 Conheci a BeOn pelo site e me chamou a atenção a história: começar com uma Kombi e hoje ter mais de 200 agregados, com meta de 99% de SLA. Uma operação desse tamanho depende de gente que conhece cada rota e cada motorista. O que eu faço é dar a essa equipe uma forma de enxergar os números com clareza, no dia a dia.
 
@@ -31,9 +31,9 @@ Na demonstração você vai ver:
 - os atrasos indevidos separados, prontos para contestar;
 - o fechamento do mês, com quantos atrasos ainda cabem na meta.
 
-Tudo se adapta à realidade da BeOn e começa com as planilhas que vocês já usam hoje.
+E o mais importante: nada disso é um modelo fechado. O painel é montado do zero para a BeOn, com as regras e as metas de cada cliente de vocês, os indicadores que fizerem sentido para a operação, o formato e até as cores que vocês preferirem. Antes de construir, eu quero entender onde está a dor de vocês, para entregar algo simples, direto e que a equipe realmente use. Ele começa com as planilhas que vocês já têm hoje e, se um dia fizer sentido, pode evoluir para uma versão automática, integrada aos sistemas (aí o escopo e o investimento mudam).
 
-Se fizer sentido, eu adoraria te mostrar com calma: 20 minutos por vídeo ou um café aí em Guarulhos, como você preferir. Se quiser ver na prática antes, me envie uma semana de viagens e eu devolvo um diagnóstico de pontualidade por rota e por agregado, sem custo e sem compromisso.
+Se fizer sentido, eu adoraria te mostrar com calma numa videochamada de 20 minutos, no dia e horário que for melhor para você. Se quiser ver na prática antes, me envie uma semana de viagens e eu devolvo um diagnóstico de pontualidade por rota e por agregado, sem custo e sem compromisso.
 
 Obrigado pelo seu tempo. Será um prazer conversar.
 
