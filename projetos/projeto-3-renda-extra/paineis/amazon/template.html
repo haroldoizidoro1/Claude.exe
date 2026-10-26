@@ -5,7 +5,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 /* Layout: torre de controle escura (marinho + laranja, inspirado na paleta Amazon, sem logo).
-   Topo: identidade + orbe do agente. Abas líquidas (Menisco) trocam as vistas: Visão geral, Rotas (globo de pontos), Viagens (órbita de pontos), Motivos, Contestar.
+   Abas líquidas (Menisco): Visão geral · Atrasos · Planos de ação · Faturamento · Rotas · Disputa.
    Visual único escuro de propósito: cores fixas nos dois temas. */
 :root{
   --bg:#0F151C; --surface:#18212C; --surface-2:#1F2A37; --line:#2B3846;
@@ -16,26 +16,25 @@
   --display:"Archivo","Arial Narrow",system-ui,sans-serif;
   --body:"Archivo",system-ui,-apple-system,"Segoe UI",sans-serif;
   --mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
-  --r:14px; --spring:cubic-bezier(.34,1.56,.64,1); --ease:cubic-bezier(.22,1,.36,1);
+  --r:14px; --spring:cubic-bezier(.34,1.56,.64,1);
   color-scheme:dark;
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:14.5px;line-height:1.5;-webkit-font-smoothing:antialiased}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
-.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 56px;display:grid;gap:18px}
+.wrap{max-width:1280px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 56px;display:grid;gap:18px}
 h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.01em;text-wrap:balance}
 p{margin:0}
-.mono,.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
 .label{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
-button,select,input{font:inherit;color:inherit}
+button,select,input,textarea{font:inherit;color:inherit}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
-/* topo */
 .top{display:flex;gap:16px 24px;align-items:center;justify-content:space-between;flex-wrap:wrap}
 .id{display:grid;gap:6px;min-width:0}
 .id h1{font-size:clamp(28px,4.4vw,44px);font-weight:800;font-stretch:85%;line-height:1;text-transform:uppercase}
 .id h1 span{color:var(--accent)}
-.id p{color:var(--ink-2);font-size:13.5px;max-width:62ch}
+.id p{color:var(--ink-2);font-size:13.5px;max-width:64ch}
 .badge{justify-self:start;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:4px 10px;border-radius:6px;border:1px dashed var(--accent);color:var(--accent)}
 .agent{display:flex;align-items:center;gap:12px;padding:10px 16px 10px 10px;border-radius:999px;background:var(--surface);border:1px solid var(--line)}
 .orb{width:42px;height:42px;border-radius:50%;flex:none;background:radial-gradient(circle,var(--accent) 1.1px,transparent 1.7px) 0 0/6px 6px;
@@ -44,17 +43,17 @@ button,select,input{font:inherit;color:inherit}
 .agent b{display:block;font-size:13.5px;font-weight:600}
 .agent small{font-family:var(--mono);font-size:11px;color:var(--muted)}
 
-/* filtros */
-.bar{display:flex;gap:10px 16px;align-items:flex-end;flex-wrap:wrap;justify-content:space-between}
-.filters{display:flex;gap:10px 14px;flex-wrap:wrap;align-items:flex-end}
+.bar{display:flex;gap:10px 16px;align-items:flex-end;flex-wrap:wrap}
 .field{display:grid;gap:4px;min-width:0}
 .seg{display:inline-flex;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:3px;gap:2px;flex-wrap:wrap}
-.seg button{border:0;background:none;color:var(--ink-2);padding:6px 12px;border-radius:8px;cursor:pointer;font-weight:500}
-.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
-select,input[type=number]{height:38px;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:0 10px;min-width:0}
-input[type=number]{width:120px;font-family:var(--mono)}
+.seg button,.chips button{border:0;background:none;color:var(--ink-2);padding:6px 12px;border-radius:8px;cursor:pointer;font-weight:500}
+.seg button[aria-pressed="true"],.chips button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chips button{border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:13px}
+select,input,textarea{border:1px solid var(--line);background:var(--surface-2);border-radius:10px;padding:0 10px;min-width:0;height:38px}
+textarea{height:auto;min-height:64px;padding:8px 10px;resize:vertical}
+input[type=number]{font-family:var(--mono)}
 
-/* Menisco: abas líquidas (a gota desliza e a barra "derrete" em volta) */
 .menisco{position:relative;display:flex;gap:2px;padding:6px;border-radius:999px;background:var(--surface);border:1px solid var(--line);overflow-x:auto;scrollbar-width:none;max-width:100%}
 .menisco::-webkit-scrollbar{display:none}
 .menisco .goo{position:absolute;inset:0;filter:url(#goo);pointer-events:none}
@@ -63,25 +62,24 @@ input[type=number]{width:120px;font-family:var(--mono)}
 .menisco button{position:relative;z-index:1;border:0;background:none;color:var(--ink-2);padding:8px 16px;border-radius:999px;cursor:pointer;font-weight:600;white-space:nowrap;transition:color .2s}
 .menisco button[aria-selected="true"]{color:var(--on-accent)}
 
-/* cards */
 .grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:16px}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;display:grid;gap:12px;align-content:start;min-width:0}
 .card h2{font-size:20px;font-weight:700}
 .card .sub{font-size:13px;color:var(--muted)}
-.s12{grid-column:span 12}.s8{grid-column:span 8}.s7{grid-column:span 7}.s5{grid-column:span 5}.s4{grid-column:span 4}
-@media (max-width:920px){.s8,.s7,.s5,.s4{grid-column:span 12}}
+.s12{grid-column:span 12}.s8{grid-column:span 8}.s7{grid-column:span 7}.s6{grid-column:span 6}.s5{grid-column:span 5}.s4{grid-column:span 4}
+@media (max-width:920px){.s8,.s7,.s6,.s5,.s4{grid-column:span 12}}
 .kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
 .kpi{background:var(--surface);padding:14px 16px;display:grid;gap:2px;align-content:start}
-.kpi .v{font-family:var(--display);font-weight:800;font-stretch:90%;font-size:32px;line-height:1.05;font-variant-numeric:tabular-nums}
+.kpi .v{font-family:var(--display);font-weight:800;font-stretch:80%;font-size:clamp(22px,2.3vw,30px);white-space:nowrap;line-height:1.05;font-variant-numeric:tabular-nums}
 .kpi .s{font-size:12.5px;color:var(--ink-2)}
-.kpi.hl{background:linear-gradient(160deg,rgba(255,153,0,.18),rgba(255,153,0,.04));}
+.kpi.hl{background:linear-gradient(160deg,rgba(255,153,0,.18),rgba(255,153,0,.04))}
 .kpi.hl .v{color:var(--accent)}
 @media (max-width:980px){.kpis{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media (max-width:520px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .delta{font-family:var(--mono);font-size:12px}
 .delta.up{color:var(--good)}.delta.down{color:var(--bad)}
 .pill{display:inline-block;font-family:var(--mono);font-size:11px;padding:1px 8px;border-radius:999px;border:1px solid currentColor;white-space:nowrap}
-.good{color:var(--good)}.warn{color:var(--warn)}.bad{color:var(--bad)}
+.good{color:var(--good)}.warn{color:var(--warn)}.bad{color:var(--bad)}.mut{color:var(--muted)}
 .note{font-size:13.5px;color:var(--ink-2);background:var(--surface-2);border-radius:10px;padding:10px 12px}
 .note b{color:var(--ink)}
 svg text{font-family:var(--mono);font-size:11px;fill:var(--muted)}
@@ -91,20 +89,45 @@ svg text{font-family:var(--mono);font-size:11px;fill:var(--muted)}
 canvas{display:block;width:100%;max-width:100%}
 .cv{position:relative;border-radius:12px;overflow:hidden;background:radial-gradient(120% 80% at 50% 0%,#1d2733,#0c1117 70%)}
 .tip{position:absolute;pointer-events:none;z-index:3;background:rgba(10,14,19,.95);border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:12.5px;white-space:nowrap;transform:translate(-50%,calc(-100% - 12px))}
-.tip b{font-family:var(--mono);font-weight:500}
-.tbl{overflow-x:auto}
-table{width:100%;border-collapse:collapse;font-size:13.5px}
-th{text-align:left;font-weight:500;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:8px;border-bottom:1px solid var(--line);white-space:nowrap}
-td{padding:9px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+.tbl{overflow-x:auto;max-height:520px;overflow-y:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{position:sticky;top:0;background:var(--surface);text-align:left;font-weight:500;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:8px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:8px;border-bottom:1px solid var(--line);white-space:nowrap}
 td.v{text-align:right;font-family:var(--mono)}
 tr:last-child td{border-bottom:0}
+tr.hot td:first-child{box-shadow:inset 3px 0 0 var(--bad)}
+tr.dim td{opacity:.55}
 tbody tr.sel{background:rgba(255,153,0,.08)}
 tbody tr[data-lane]{cursor:pointer}
 .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--c);margin-right:7px}
 .btn{height:36px;border:0;border-radius:9px;padding:0 14px;background:var(--accent);color:var(--on-accent);font-weight:700;cursor:pointer}
+.btn.ghost{background:none;border:1px solid var(--line);color:var(--ink)}
+.btn.sm{height:28px;padding:0 10px;font-size:12.5px}
 .row-h{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}
 .view[hidden]{display:none}
 .foot{font-size:12px;color:var(--muted);text-align:center}
+
+/* calendário (vem da Torre Amazon) */
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.cal .dow{font-family:var(--mono);font-size:10.5px;color:var(--muted);text-align:center;padding-bottom:2px}
+.day{position:relative;min-height:54px;border-radius:9px;border:1px solid var(--line);background:var(--surface-2);padding:5px 6px;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;text-align:left}
+.day .d{font-family:var(--mono);font-size:12px;color:var(--ink-2)}
+.day .c{align-self:flex-end;font-weight:800;font-size:12px;padding:1px 7px;border-radius:99px}
+.day.real .c{background:rgba(255,95,82,.18);color:var(--bad)}
+.day.ind .c{background:rgba(60,196,138,.16);color:var(--good)}
+.day .p{position:absolute;top:6px;right:6px;width:7px;height:7px;border-radius:50%;background:var(--warn)}
+.day.out{visibility:hidden}
+.day[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+
+/* planos */
+.form{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.form .full{grid-column:1/-1}
+.status{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.status div{background:var(--surface-2);border-radius:10px;padding:10px 12px;display:grid}
+.status b{font-family:var(--display);font-size:26px;font-weight:800}
+.niveis td{white-space:normal;min-width:160px;vertical-align:top}
+.niveis td:last-child{color:var(--accent-2)}
+.ex{font-family:var(--mono);font-size:10px;border:1px dashed var(--muted);color:var(--muted);border-radius:5px;padding:0 5px;margin-left:6px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
@@ -115,214 +138,339 @@ tbody tr[data-lane]{cursor:pointer}
     <div class="id">
       <span class="badge">Demonstração · dados fictícios</span>
       <h1>Torre <span>Amazon</span></h1>
-      <p><b id="empresa">Transportadora Exemplo</b> · line haul RJ, SP, MG e ES · 01/07 a 24/10/2026. Os três pontos da Amazon (chegada na origem, saída no CPT e chegada no destino), medidos por nós, com tolerância zero.</p>
+      <p><b id="empresa">Transportadora Exemplo</b> · line haul RJ, SP, MG e ES · 01/07 a 24/10/2026. OTP e OTA por VRID, atrasos com plano de ação, faturamento do mês e disputa dos indevidos.</p>
     </div>
-    <div class="agent" role="status"><div class="orb" aria-hidden="true"></div><div><b id="agentTxt">Agente de performance · em dia</b><small id="agentSub"></small></div></div>
+    <div class="agent" role="status"><div class="orb" aria-hidden="true"></div><div><b>Versão Essencial · atualização semanal</b><small id="agentSub"></small></div></div>
   </header>
 
   <div class="bar">
-    <div class="filters">
-      <div class="field"><span class="label">Mês</span><div class="seg" id="segMes" role="group" aria-label="Filtrar mês"></div></div>
-      <div class="field"><label class="label" for="fLane">Lane</label><select id="fLane"></select></div>
-    </div>
-    <div class="field"><label class="label" for="rpm">Desconto por minuto (R$)</label><input type="number" id="rpm" min="0" step="0.01" placeholder="pendente"></div>
+    <div class="field"><span class="label">Mês</span><div class="seg" id="segMes" role="group" aria-label="Filtrar mês"></div></div>
+    <div class="field"><label class="label" for="fLane">Lane</label><select id="fLane"></select></div>
   </div>
 
   <nav class="menisco" id="tabs" role="tablist" aria-label="Vistas do painel">
     <div class="goo" aria-hidden="true"><span class="drop" id="drop"></span><span class="tail" id="tail"></span></div>
   </nav>
 
+  <!-- VISÃO GERAL -->
   <section class="view" id="v-geral">
     <div class="grid">
       <div class="kpis s12" id="kpis"></div>
       <div class="card s8">
-        <div><h2>Antes e depois do controle</h2><p class="sub">OTP (chegada na origem) e OTA (chegada no destino) por mês. A faixa laranja marca o período com o painel em uso.</p></div>
+        <div><h2>Antes e depois do controle</h2><p class="sub">OTP (chegada na origem) e OTA (chegada no destino) por mês, pelo nosso registro. A faixa laranja marca o período com o painel em uso.</p></div>
         <svg class="chart" id="chMes" viewBox="0 0 640 260" role="img" aria-label="OTP e OTA por mês"></svg>
         <div class="legend"><span><i style="--c:var(--accent-2)"></i>OTP</span><span><i style="--c:var(--accent)"></i>OTA</span></div>
       </div>
-      <div class="card s4">
-        <div><h2>O que mudou</h2><p class="sub">Julho e agosto contra outubro.</p></div>
-        <div id="mudou" style="display:grid;gap:10px"></div>
+      <div class="card s4"><div><h2>O que mudou</h2><p class="sub">Julho e agosto contra outubro.</p></div><div id="mudou" style="display:grid;gap:10px"></div></div>
+      <div class="card s12">
+        <div><h2>Este painel e o próximo degrau</h2><p class="sub">O que a versão Essencial já entrega e o que a versão com automação faria sozinha.</p></div>
+        <div class="tbl"><table class="niveis"><thead><tr><th>Etapa</th><th>Essencial (este painel)</th><th>Automação integrada (sob proposta)</th></tr></thead><tbody>
+          <tr><td>Dados das viagens</td><td>A equipe baixa a planilha e envia uma vez por semana</td><td>Leitura direta do Relay e do BRLog, várias vezes ao dia</td></tr>
+          <tr><td>Atraso encontrado</td><td>O painel aponta; a equipe confere no Relay</td><td>O painel confere no Relay e marca o atraso sozinho</td></tr>
+          <tr><td>Ocorrência e evidência</td><td>A equipe verifica se foi lançada e se tem evidência</td><td>O painel cruza ocorrência e evidência e avisa o que falta</td></tr>
+          <tr><td>Disputa dos indevidos</td><td>Lista pronta para copiar</td><td>Lista montada com a evidência anexada, pronta para enviar</td></tr>
+          <tr><td>Alertas</td><td>Ao abrir o painel</td><td>Aviso no momento do atraso, antes de virar desconto</td></tr>
+        </tbody></table></div>
+        <p class="note">A versão com automação custa mais porque depende de integração com os sistemas do cliente. Em troca, a conferência manual some e o número fica mais preciso.</p>
       </div>
     </div>
   </section>
 
+  <!-- ATRASOS -->
+  <section class="view" id="v-atrasos" hidden>
+    <div class="grid">
+      <div class="kpis s12" id="kAtr"></div>
+      <div class="card s5">
+        <div class="row-h"><div><h2 id="calT">Calendário</h2><p class="sub">Clique num dia para filtrar a lista.</p></div></div>
+        <div class="legend"><span><i style="--c:var(--bad)"></i>atraso real</span><span><i style="--c:var(--good)"></i>só indevido</span><span><i style="--c:var(--warn)"></i>evidência pendente</span></div>
+        <div class="cal" id="cal"></div>
+      </div>
+      <div class="card s7">
+        <div><h2>Tempo de atraso</h2><p class="sub">Cada ponto é um atraso apontado. Altura = minutos. Vermelho: responsabilidade nossa ou 60 min ou mais.</p></div>
+        <div class="cv"><canvas id="orbita" height="300" aria-label="Tempo de atraso por dia"></canvas><div class="tip" id="tip" hidden></div></div>
+        <div class="legend"><span><i style="--c:var(--bad)"></i>Real (nosso)</span><span><i style="--c:var(--good)"></i>Indevido (Amazon/base)</span></div>
+      </div>
+      <div class="card s12">
+        <div class="row-h">
+          <div><h2>Atrasos apontados</h2><p class="sub" id="atrSub"></p></div>
+          <div class="chips" id="chipsAtr"></div>
+        </div>
+        <div class="tbl"><table><thead><tr><th>Data</th><th>VRID</th><th>Ind.</th><th>Tipo</th><th>Onde atrasou</th><th>Min.</th><th>Resumo</th><th>Agreg./Frota</th><th>Equip.</th><th>ADHOC</th><th>Evidência</th><th>Operador</th><th>Plano</th></tr></thead><tbody id="tAtr"></tbody></table></div>
+        <div class="row-h"><p class="note" id="atrNote" style="flex:1"></p><button class="btn ghost" id="btnCopyAtr" type="button">Copiar VRIDs da lista</button></div>
+      </div>
+      <div class="card s7">
+        <div><h2>Onde o atraso nasce</h2><p class="sub">Atrasos reais por causa principal, mês a mês.</p></div>
+        <svg class="chart" id="chCausa" viewBox="0 0 640 240" role="img" aria-label="Causas por mês"></svg>
+        <div class="legend"><span><i style="--c:var(--c-orig)"></i>Origem</span><span><i style="--c:var(--c-trans)"></i>Trânsito</span><span><i style="--c:var(--c-dest)"></i>Destino</span></div>
+      </div>
+      <div class="card s5"><h2>Resumos mais frequentes</h2><div class="tbl"><table><thead><tr><th>Resumo</th><th>Real</th><th>Indevido</th></tr></thead><tbody id="tRes"></tbody></table></div></div>
+    </div>
+  </section>
+
+  <!-- PLANOS DE AÇÃO -->
+  <section class="view" id="v-planos" hidden>
+    <div class="grid">
+      <div class="card s5">
+        <div><h2 id="formT">Novo plano de ação</h2><p class="sub">Um plano por atraso (VRID) ou por motivo que se repete. Fica salvo neste navegador.</p></div>
+        <form class="form" id="fPlano" autocomplete="off">
+          <div class="field"><label class="label" for="pVrid">VRID (opcional)</label><input id="pVrid" list="vridList" placeholder="ex.: 11Q7S6***"><datalist id="vridList"></datalist></div>
+          <div class="field"><label class="label" for="pRes">Resumo do atraso</label><select id="pRes" required></select></div>
+          <div class="field full"><label class="label" for="pCausa">Causa raiz</label><textarea id="pCausa" required placeholder="Por que aconteceu? Pergunte 'por quê' até chegar no processo."></textarea></div>
+          <div class="field full"><label class="label" for="pAcao">Ação</label><textarea id="pAcao" required placeholder="O que muda para não repetir"></textarea></div>
+          <div class="field"><label class="label" for="pResp">Responsável</label><input id="pResp" required></div>
+          <div class="field"><label class="label" for="pPrazo">Prazo</label><input id="pPrazo" type="date" required></div>
+          <div class="field"><label class="label" for="pSt">Status</label><select id="pSt"><option>Planejado</option><option>Em andamento</option><option>Concluído</option></select></div>
+          <div class="full" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><button class="btn" type="submit" id="pSave">Salvar plano</button><button class="btn ghost" type="button" id="pCancel" hidden>Cancelar edição</button><span class="mut" id="pMsg" role="status"></span></div>
+        </form>
+      </div>
+      <div class="card s7">
+        <h2>Situação dos planos</h2>
+        <div class="status" id="pStatus"></div>
+        <h3 style="font-size:15px">Motivos que se repetem</h3>
+        <p class="sub">Atrasos reais no filtro atual por resumo e se já existe plano para o motivo.</p>
+        <div class="tbl"><table><thead><tr><th>Resumo</th><th>Atrasos reais</th><th>Plano</th><th></th></tr></thead><tbody id="tRep"></tbody></table></div>
+      </div>
+      <div class="card s12">
+        <h2>Planos cadastrados</h2>
+        <div class="tbl"><table><thead><tr><th>VRID</th><th>Resumo</th><th>Causa raiz</th><th>Ação</th><th>Responsável</th><th>Prazo</th><th>Status</th><th></th></tr></thead><tbody id="tPlanos"></tbody></table></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FATURAMENTO -->
+  <section class="view" id="v-fat" hidden>
+    <div class="grid">
+      <div class="kpis s12" id="kFat"></div>
+      <div class="card s12">
+        <div><h2>Fechamento por mês</h2><p class="sub">VRIDs executados × preço BID por carga. Penalidade e bônus pela regra ao lado, com os atrasos que a Amazon apontou.</p></div>
+        <div class="tbl"><table><thead><tr><th>Mês</th><th>VRIDs</th><th>Faturamento</th><th>OTP Amazon</th><th>OTA Amazon</th><th>Penalidade</th><th>Bônus</th><th>Líquido</th><th>Se a disputa passar</th></tr></thead><tbody id="tFech"></tbody></table></div>
+        <p class="note" id="fatNote"></p>
+      </div>
+      <div class="card s4">
+        <div><h2>Regras do contrato</h2><p class="sub">Valores de exemplo. Ajuste para o contrato do cliente e tudo recalcula.</p></div>
+        <div class="form">
+          <div class="field"><label class="label" for="rMeta">Meta OTP/OTA (%)</label><input type="number" id="rMeta" step="0.1"></div>
+          <div class="field"><label class="label" for="rMulta">R$ por VRID atrasado</label><input type="number" id="rMulta"></div>
+          <div class="field"><label class="label" for="rTeto">Teto da penalidade (% fat.)</label><input type="number" id="rTeto" step="0.1"></div>
+          <div class="field"><label class="label" for="rBo">Bônus OTP (% fat.)</label><input type="number" id="rBo" step="0.1"></div>
+          <div class="field"><label class="label" for="rBa">Bônus OTA (% fat.)</label><input type="number" id="rBa" step="0.1"></div>
+        </div>
+        <p class="note">Abaixo da meta: R$ por VRID atrasado no indicador, limitado ao teto. Na meta ou acima: bônus sobre o faturamento.</p>
+      </div>
+      <div class="card s8"><h2>Faturamento por lane</h2><div class="tbl"><table><thead><tr><th>Lane</th><th>VRIDs</th><th>Faturamento</th><th>Atrasos Amazon</th></tr></thead><tbody id="tFatLane"></tbody></table></div></div>
+      <div class="card s4"><h2>Faturamento por tipologia</h2><div class="tbl"><table><thead><tr><th>Tipologia</th><th>VRIDs</th><th>Preço médio</th><th>Faturamento</th></tr></thead><tbody id="tTipo"></tbody></table></div></div>
+      <div class="card s8"><h2>VRIDs atrasados que contam</h2><p class="sub" id="contamSub"></p><div class="tbl"><table><thead><tr><th>VRID</th><th>Data</th><th>Indicador</th><th>Tipo</th><th>Lane</th><th>Preço da carga</th><th>Efeito</th></tr></thead><tbody id="tContam"></tbody></table></div></div>
+    </div>
+  </section>
+
+  <!-- ROTAS -->
   <section class="view" id="v-rotas" hidden>
     <div class="grid">
       <div class="card s7">
-        <div><h2>Rotas</h2><p class="sub">Cada arco é uma lane. A cor mostra o OTA: verde a partir de 95%, âmbar de 90% a 95%, vermelho abaixo de 90%. Clique numa lane da tabela para destacar.</p></div>
+        <div><h2>Rotas</h2><p class="sub">Cada arco é uma lane. Cor pelo OTA em relação à meta: verde na meta, âmbar até 4 p.p. abaixo, vermelho abaixo disso. Clique numa lane para destacar.</p></div>
         <div class="cv"><canvas id="globe" height="420" aria-label="Mapa de rotas"></canvas></div>
       </div>
-      <div class="card s5">
-        <h2>Lanes</h2>
-        <div class="tbl"><table><thead><tr><th>Lane</th><th>Viagens</th><th>OTA</th><th>Min. médio</th></tr></thead><tbody id="tLanes"></tbody></table></div>
-      </div>
+      <div class="card s5"><h2>Pontualidade por lane</h2><div class="tbl"><table><thead><tr><th>Lane</th><th>VRIDs</th><th>OTA</th><th>Min. médio</th></tr></thead><tbody id="tLanes"></tbody></table></div></div>
     </div>
   </section>
 
-  <section class="view" id="v-viagens" hidden>
-    <div class="card">
-      <div><h2>Órbita das viagens</h2><p class="sub">Cada ponto é uma viagem. Acima da linha, os minutos de atraso na chegada ao destino; abaixo, as que chegaram no prazo. Passe o mouse para ver a viagem.</p></div>
-      <div class="cv" id="orbBox"><canvas id="orbita" height="380" aria-label="Dispersão das viagens"></canvas><div class="tip" id="tip" hidden></div></div>
-      <div class="legend"><span><i style="--c:var(--c-orig)"></i>Atraso na origem</span><span><i style="--c:var(--c-trans)"></i>Trânsito</span><span><i style="--c:var(--c-dest)"></i>Destino</span><span><i style="--c:#56606B"></i>No prazo</span></div>
-    </div>
-  </section>
-
-  <section class="view" id="v-motivos" hidden>
-    <div class="grid">
-      <div class="card s7">
-        <div><h2>Onde o atraso nasce</h2><p class="sub">Viagens atrasadas por causa principal, mês a mês.</p></div>
-        <svg class="chart" id="chCausa" viewBox="0 0 640 260" role="img" aria-label="Causas de atraso por mês"></svg>
-        <div class="legend"><span><i style="--c:var(--c-orig)"></i>Origem</span><span><i style="--c:var(--c-trans)"></i>Trânsito</span><span><i style="--c:var(--c-dest)"></i>Destino</span></div>
-      </div>
-      <div class="card s5">
-        <h2>Motivos mais frequentes</h2>
-        <div class="tbl"><table><thead><tr><th>Motivo</th><th>Causa</th><th>Viagens</th></tr></thead><tbody id="tMot"></tbody></table></div>
-        <p class="note" id="motNote"></p>
-      </div>
-    </div>
-  </section>
-
-  <section class="view" id="v-contestar" hidden>
+  <!-- DISPUTA -->
+  <section class="view" id="v-disputa" hidden>
     <div class="card">
       <div class="row-h">
-        <div><h2>Para contestar</h2><p class="sub">A Amazon marcou atraso, mas os nossos três horários estão dentro do programado.</p></div>
-        <button class="btn" id="btnCopy" type="button">Copiar lista</button>
+        <div><h2>Disputa dos indevidos</h2><p class="sub">A Amazon apontou atraso, mas o nosso registro mostra o ponto no horário.</p></div>
+        <button class="btn" id="btnCopy" type="button">Copiar lista para a disputa</button>
       </div>
       <p class="note" id="contNote"></p>
-      <div class="tbl"><table><thead><tr><th>Viagem</th><th>Data</th><th>Lane</th><th>Placa</th><th>Origem</th><th>CPT</th><th>Destino</th></tr></thead><tbody id="tCont"></tbody></table></div>
+      <div class="tbl"><table><thead><tr><th>VRID</th><th>Data</th><th>Indicador</th><th>Lane</th><th>Min. apontados</th><th>Nosso registro</th><th>Resumo</th><th>Evidência</th></tr></thead><tbody id="tCont"></tbody></table></div>
     </div>
   </section>
 
-  <p class="foot">Demonstração com dados fictícios gerados por código. Não é afiliado à Amazon. O desconto por minuto fica em branco até a regra do contrato ser confirmada.</p>
+  <p class="foot">Demonstração com dados fictícios gerados por código: VRIDs mascarados, preços BID e regras de exemplo. Não é afiliado à Amazon.</p>
 </main>
 
 <script>
 const D=/*DATA*/null;
-const MES={7:'Jul',8:'Ago',9:'Set',10:'Out'}, FASE={7:0,8:0,9:1,10:1};
-const CAUSAS=['Origem','Trânsito','Destino'], CC=['--c-orig','--c-trans','--c-dest'];
+const MES={7:'Jul',8:'Ago',9:'Set',10:'Out'},MD={7:31,8:31,9:30,10:24};
+const CAUSAS=['Origem','Trânsito','Destino'],CC=['--c-orig','--c-trans','--c-dest'];
 const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
-const $=s=>document.querySelector(s);
+const $=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const pct=(a,b)=>b?100*a/b:NaN;
 const fp=v=>isNaN(v)?'–':v.toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})+'%';
 const fi=v=>v.toLocaleString('pt-BR');
-const brl=v=>'R$ '+v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
-// viagem: [id, mes, dia, lane, placa, a1, a2, a3, amazonAtrasado(0/1), causa(-1..2), motivo]
-const T=D.v.map(r=>({id:r[0],mes:r[1],dia:r[2],lane:r[3],placa:D.placas[r[4]],a1:r[5],a2:r[6],a3:r[7],amz:r[8],causa:r[9],mot:r[10]<0?'':D.motivos[r[10]]}));
-T.forEach(t=>{t.late=t.a1+t.a2+t.a3>0;t.min=t.a1+t.a2+t.a3;});
-const S={mes:0,lane:-1,tab:'geral',sel:-1};
-let rpm=NaN;
-
-$('#agentSub').textContent=`base atualizada 24/10 06:00 · ${fi(T.length)} viagens`;
-function filt(ignoreMes){return T.filter(t=>(ignoreMes||!S.mes||t.mes===S.mes)&&(S.lane<0||t.lane===S.lane));}
+const brl=v=>'R$ '+Math.round(v).toLocaleString('pt-BR');
+const dd=(m,d)=>`${String(d).padStart(2,'0')}/${String(m).padStart(2,'0')}`;
+// VRID: [vrid,mes,dia,lane,placa,a1,a2,a3,tipoOTP,tipoOTA,minAmzOTP,minAmzOTA,resOTP,resOTA,causa,frota,adhoc,op,evid,preco,truck]
+const T=D.v.map(r=>({vrid:r[0],mes:r[1],dia:r[2],lane:r[3],placa:D.placas[r[4]],a1:r[5],a2:r[6],a3:r[7],tO:r[8],tA:r[9],mO:r[10],mA:r[11],
+  rO:r[12]<0?'':D.resumos[r[12]],rA:r[13]<0?'':D.resumos[r[13]],causa:r[14],frota:r[15],adhoc:r[16],op:D.ops[r[17]],evid:r[18],preco:r[19],truck:r[20]}));
+// cada atraso apontado pela Amazon vira uma linha (OTP e/ou OTA), como na Torre Amazon
+const A=[];T.forEach(t=>{[['OTP',t.tO,t.a1,t.mO,t.rO,D.lanes[t.lane].o],['OTA',t.tA,t.a3,t.mA,t.rA,D.lanes[t.lane].d]].forEach(([ind,tp,nosso,amz,res,onde])=>{
+  if(!tp)return;const real=tp===1;A.push({t,ind,real,min:real?nosso:amz,res,onde,hot:real||amz>=60});});});
+const S={mes:0,lane:-1,tab:'geral',sel:-1,dia:0,fAtr:'todos',edit:null};
+const R={meta:99,multa:100,teto:2,bO:.5,bA:1.5};
+$('#agentSub').textContent=`base atualizada 24/10 06:00 · ${fi(T.length)} VRIDs`;
+const inF=t=>(!S.mes||t.mes===S.mes)&&(S.lane<0||t.lane===S.lane);
+const filt=all=>T.filter(t=>(all||!S.mes||t.mes===S.mes)&&(S.lane<0||t.lane===S.lane));
 
 /* filtros */
 function seg(){$('#segMes').innerHTML=[[0,'Todos'],...Object.entries(MES).map(([k,v])=>[+k,v])].map(([k,v])=>`<button type="button" data-m="${k}" aria-pressed="${S.mes===k}">${v}</button>`).join('');
-  $('#segMes').querySelectorAll('button').forEach(b=>b.onclick=()=>{S.mes=+b.dataset.m;seg();render();});}
+  $('#segMes').querySelectorAll('button').forEach(b=>b.onclick=()=>{S.mes=+b.dataset.m;S.dia=0;seg();render();});}
 $('#fLane').innerHTML='<option value="-1">Todas as lanes</option>'+D.lanes.map((l,i)=>`<option value="${i}">${l.n}</option>`).join('');
 $('#fLane').onchange=e=>{S.lane=+e.target.value;S.sel=S.lane;render();};
-$('#rpm').oninput=e=>{rpm=parseFloat(e.target.value);render();};
 
 /* Menisco */
-const TABS=[['geral','Visão geral'],['rotas','Rotas'],['viagens','Viagens'],['motivos','Motivos'],['contestar','Contestar']];
+const TABS=[['geral','Visão geral'],['atrasos','Atrasos'],['planos','Planos de ação'],['fat','Faturamento'],['rotas','Rotas'],['disputa','Disputa']];
 const nav=$('#tabs');
-TABS.forEach(([k,n])=>{const b=document.createElement('button');b.type='button';b.role='tab';b.id='t-'+k;b.textContent=n;b.setAttribute('aria-controls','v-'+k);b.onclick=()=>tab(k);nav.appendChild(b);});
+TABS.forEach(([k,n])=>{const b=document.createElement('button');b.type='button';b.setAttribute('role','tab');b.id='t-'+k;b.textContent=n;b.setAttribute('aria-controls','v-'+k);b.onclick=()=>tab(k);nav.appendChild(b);});
 function tab(k){S.tab=k;TABS.forEach(([x])=>{$('#t-'+x).setAttribute('aria-selected',x===k);$('#v-'+x).hidden=x!==k;});
-  const b=$('#t-'+k),drop=$('#drop'),tail=$('#tail');drop.style.left=b.offsetLeft+'px';drop.style.width=b.offsetWidth+'px';tail.style.left=(b.offsetLeft+b.offsetWidth/2-7)+'px';
-  try{location.hash!=='#'+k&&history.replaceState(null,'','#'+k);}catch(e){}
-  render();}
+  const b=$('#t-'+k);$('#drop').style.left=b.offsetLeft+'px';$('#drop').style.width=b.offsetWidth+'px';$('#tail').style.left=(b.offsetLeft+b.offsetWidth/2-7)+'px';
+  try{history.replaceState(null,'','#'+k);}catch(e){}render();}
 addEventListener('resize',()=>tab(S.tab));
+const kpiRow=(el,items)=>{$(el).innerHTML=items.map(([l,v,s,hl])=>`<div class="kpi${hl?' hl':''}"><span class="label">${l}</span><span class="v">${v}</span><span class="s">${s}</span></div>`).join('');};
+const stM=v=>v>=R.meta?'good':v>=R.meta-4?'warn':'bad';
 
-/* visão geral */
-function kpis(L){const n=L.length,otp=L.filter(t=>!t.a1).length,cpt=L.filter(t=>!t.a2).length,ota=L.filter(t=>!t.a3).length,late=L.filter(t=>t.late).length;
-  const mins=L.reduce((a,t)=>a+t.min,0),cont=L.filter(t=>t.amz&&!t.late).length;
-  const st=v=>v>=95?'good':v>=85?'warn':'bad';
-  $('#kpis').innerHTML=[
-    ['Viagens',fi(n),S.mes?MES[S.mes]+'/2026':'jul a 24/out'],
-    ['OTP · origem',fp(pct(otp,n)),`<span class="pill ${st(pct(otp,n))}">chegada no horário</span>`],
-    ['Saída no CPT',fp(pct(cpt,n)),'saiu no horário programado'],
-    ['OTA · destino',fp(pct(ota,n)),`<span class="pill ${st(pct(ota,n))}">chegada no STA</span>`],
-    ['Com atraso',fi(late),`${fi(mins)} min somados nos 3 pontos`],
-  ].map(([l,v,s])=>`<div class="kpi"><span class="label">${l}</span><span class="v">${v}</span><span class="s">${s}</span></div>`).join('')+
-  `<div class="kpi hl"><span class="label">Desconto estimado</span><span class="v">${isNaN(rpm)?'Pendente':brl(mins*rpm)}</span><span class="s">${isNaN(rpm)?'informe o R$ por minuto do contrato':fi(mins)+' min × '+brl(rpm)}</span></div>`;
-  return cont;}
-function chMes(){const L=filt(true),W=640,H=260,l=40,r=10,t=16,b=30,ms=[7,8,9,10],gw=(W-l-r)/4,bw=gw*.28,y0=50;
-  const Y=v=>t+(100-Math.max(v,y0))*(H-t-b)/(100-y0);let g='';
-  g+=`<rect x="${l+gw*2}" y="2" width="${gw*2}" height="${H-b-2}" fill="var(--accent)" opacity=".07"/><text x="${l+gw*2+8}" y="12" fill="var(--accent)">painel em uso</text>`;
+/* faturamento: cálculo por mês */
+function fech(X){const n=X.length,fat=X.reduce((s,t)=>s+t.preco,0),lo=X.filter(t=>t.tO).length,la=X.filter(t=>t.tA).length;
+  const io=X.filter(t=>t.tO===2).length,ia=X.filter(t=>t.tA===2).length;
+  const calc=(lo,la)=>{const pO=100-pct(lo,n),pA=100-pct(la,n);let pen=(pO<R.meta?lo:0)*R.multa+(pA<R.meta?la:0)*R.multa;const teto=fat*R.teto/100;pen=Math.min(pen,teto);
+    const bon=(pO>=R.meta?fat*R.bO/100:0)+(pA>=R.meta?fat*R.bA/100:0);return{pO,pA,pen,bon,liq:fat-pen+bon,teto};};
+  const c=calc(lo,la),d=calc(lo-io,la-ia);return{n,fat,lo,la,io,ia,...c,disp:d};}
+
+/* VISÃO GERAL */
+function geral(){const L=filt(),n=L.length,f=fech(L);
+  kpiRow('#kpis',[['VRIDs',fi(n),S.mes?MES[S.mes]+'/2026':'jul a 24/out'],['OTP · origem',fp(pct(L.filter(t=>!t.a1).length,n)),'pelo nosso registro'],
+    ['OTA · destino',fp(pct(L.filter(t=>!t.a3).length,n)),'pelo nosso registro'],['Atrasos reais',fi(A.filter(a=>a.real&&inF(a.t)).length),'responsabilidade nossa'],
+    ['Indevidos',fi(A.filter(a=>!a.real&&inF(a.t)).length),'vão para a disputa'],['Penalidade estimada',brl(f.pen),`regra de exemplo · ${brl(f.fat)} faturados`,1]]);
+  const W=640,H=260,l=40,r=10,t=16,b=30,ms=[7,8,9,10],gw=(W-l-r)/4,bw=gw*.28,y0=50,LL=filt(true);
+  const Y=v=>t+(100-Math.max(v,y0))*(H-t-b)/(100-y0);let g=`<rect x="${l+gw*2}" y="2" width="${gw*2}" height="${H-b-2}" fill="var(--accent)" opacity=".07"/><text x="${l+gw*2+8}" y="12" fill="var(--accent)">painel em uso</text>`;
   [50,60,70,80,90,100].forEach(v=>g+=`<line x1="${l}" x2="${W-r}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--line)"/><text x="${l-6}" y="${Y(v)+4}" text-anchor="end">${v}%</text>`);
-  ms.forEach((m,i)=>{const X=L.filter(x=>x.mes===m),n=X.length,o=pct(X.filter(x=>!x.a1).length,n),a=pct(X.filter(x=>!x.a3).length,n),cx=l+gw*i+gw/2,on=!S.mes||S.mes===m;
+  ms.forEach((m,i)=>{const X=LL.filter(x=>x.mes===m),n=X.length,o=pct(X.filter(x=>!x.a1).length,n),a=pct(X.filter(x=>!x.a3).length,n),cx=l+gw*i+gw/2,on=!S.mes||S.mes===m;
     [[o,'var(--accent-2)',-bw-2],[a,'var(--accent)',2]].forEach(([v,c,dx])=>{g+=`<rect x="${cx+dx}" y="${Y(v)}" width="${bw}" height="${H-b-Y(v)}" rx="3" fill="${c}" opacity="${on?1:.35}"><title>${MES[m]}: ${fp(v)}</title></rect><text x="${cx+dx+bw/2}" y="${Y(v)-6}" text-anchor="middle" fill="var(--ink-2)">${Math.round(v)}</text>`;});
     g+=`<text x="${cx}" y="${H-10}" text-anchor="middle" fill="${on?'var(--ink)':'var(--muted)'}">${MES[m]}</text>`;});
-  $('#chMes').innerHTML=g;}
-function mudou(){const L=filt(true),A=L.filter(t=>t.mes<=8),B=L.filter(t=>t.mes===10);
-  const m=(X,f)=>pct(X.filter(f).length,X.length);
-  const rows=[['OTP',t=>!t.a1],['Saída no CPT',t=>!t.a2],['OTA',t=>!t.a3],['Viagens sem nenhum atraso',t=>!t.late]];
-  $('#mudou').innerHTML=rows.map(([n,f])=>{const a=m(A,f),b=m(B,f),d=b-a;return`<div class="note"><span class="label">${n}</span><br><b class="num" style="font-size:20px">${fp(a)} → ${fp(b)}</b> <span class="delta ${d>=0?'up':'down'}">${d>=0?'+':''}${d.toFixed(1).replace('.',',')} p.p.</span></div>`;}).join('');}
+  $('#chMes').innerHTML=g;
+  const B=LL.filter(t=>t.mes<=8),Z=LL.filter(t=>t.mes===10),m=(X,fn)=>pct(X.filter(fn).length,X.length);
+  $('#mudou').innerHTML=[['OTP',t=>!t.a1],['OTA',t=>!t.a3],['Atrasos reais por 100 VRIDs',t=>t.tO===1||t.tA===1,1]].map(([nm,fn,inv])=>{const a=m(B,fn),z=m(Z,fn),d=z-a,good=inv?d<=0:d>=0;
+    return`<div class="note"><span class="label">${nm}</span><br><b class="mono" style="font-size:20px">${inv?a.toFixed(1).replace('.',','):fp(a)} → ${inv?z.toFixed(1).replace('.',','):fp(z)}</b> <span class="delta ${good?'up':'down'}">${d>=0?'+':''}${d.toFixed(1).replace('.',',')}${inv?'':' p.p.'}</span></div>`;}).join('')+
+    (()=>{const fb=fech(LL.filter(t=>t.mes===7)),fz=fech(Z);return`<div class="note"><span class="label">Penalidade do mês</span><br><b class="mono" style="font-size:20px">${brl(fb.pen)} → ${brl(fz.pen)}</b> <span class="delta up">jul → out</span></div>`;})();}
 
-/* rotas: globo de pontos */
-function globe(){const cv=$('#globe'),dpr=Math.min(2,devicePixelRatio||1),W=cv.clientWidth,H=420;cv.width=W*dpr;cv.height=H*dpr;const c=cv.getContext('2d');c.scale(dpr,dpr);
-  const lat0=-21.6*Math.PI/180,lon0=-43.6*Math.PI/180,R=Math.min(W*7.2,3600),cx=W/2,cy=H/2+20,rad=Math.PI/180;
-  const P=(la,lo)=>{la*=rad;lo*=rad;const x=R*Math.cos(la)*Math.sin(lo-lon0),y=R*(Math.cos(lat0)*Math.sin(la)-Math.sin(lat0)*Math.cos(la)*Math.cos(lo-lon0));return[cx+x,cy-y];};
-  const g=c.createLinearGradient(0,0,0,H*.55);g.addColorStop(0,'rgba(255,153,0,.22)');g.addColorStop(1,'rgba(255,153,0,0)');c.fillStyle=g;c.fillRect(0,0,W,H*.55);
-  c.fillStyle='#2a3644';for(let la=-27;la<=-15;la+=.22)for(let lo=-52;lo<=-35;lo+=.22){const[x,y]=P(la,lo);if(x>-4&&x<W+4&&y>-4&&y<H+4){c.beginPath();c.arc(x,y,1.05,0,7);c.fill();}}
-  const L=filt(false),st=D.lanes.map((ln,i)=>{const X=L.filter(t=>t.lane===i);return{n:X.length,ota:pct(X.filter(t=>!t.a3).length,X.length)};});
-  const col=v=>v>=95?css('--good'):v>=90?css('--warn'):css('--bad');
-  D.lanes.forEach((ln,i)=>{if(!st[i].n)return;const a=D.cid[ln.o],b=D.cid[ln.d],sel=S.sel===i;c.beginPath();
-    for(let k=0;k<=40;k++){const f=k/40,la=a[0]+(b[0]-a[0])*f,lo=a[1]+(b[1]-a[1])*f,[x,y]=P(la,lo),h=Math.sin(Math.PI*f)*Math.hypot(b[0]-a[0],b[1]-a[1])*14;k?c.lineTo(x,y-h):c.moveTo(x,y-h);}
-    c.strokeStyle=col(st[i].ota);c.globalAlpha=S.sel<0||sel?1:.25;c.lineWidth=sel?3.2:2;c.shadowColor=c.strokeStyle;c.shadowBlur=sel?14:6;c.stroke();c.shadowBlur=0;c.globalAlpha=1;});
-  const OFF={'Duque de Caxias':[-8,-10,'right'],'Nova Iguaçu':[-8,16,'right'],'São Gonçalo':[8,16,'left']};Object.entries(D.cid).forEach(([n,[la,lo]])=>{const[x,y]=P(la,lo),[dx,dy,al]=OFF[n]||[7,4,'left'];c.fillStyle=css('--accent');c.beginPath();c.arc(x,y,4,0,7);c.fill();c.fillStyle=css('--ink-2');c.font='11px JetBrains Mono, monospace';c.textAlign=al;c.fillText(n,x+dx,y+dy);c.textAlign='left';});
-  $('#tLanes').innerHTML=D.lanes.map((ln,i)=>{const X=L.filter(t=>t.lane===i),n=X.length;if(!n)return'';const o=pct(X.filter(t=>!t.a1).length,n),a=st[i].ota,mm=Math.round(X.reduce((s,t)=>s+t.a3,0)/n*10)/10;
-    const k=a>=95?'good':a>=90?'warn':'bad';return`<tr data-lane="${i}" class="${S.sel===i?'sel':''}"><td><span class="dot" style="--c:var(--${k})"></span>${ln.n}</td><td class="v">${n}</td><td class="v"><span class="pill ${k}">${fp(a)}</span></td><td class="v">${String(mm).replace('.',',')}</td></tr>`;}).join('');
-  document.querySelectorAll('#tLanes tr').forEach(tr=>tr.onclick=()=>{const i=+tr.dataset.lane;S.sel=S.sel===i?-1:i;globe();});}
-
-/* viagens: órbita de pontos */
+/* ATRASOS */
+const planoDe=a=>planos().find(p=>p.vrid&&p.vrid===a.t.vrid);
+function atrasos(){const mesCal=S.mes||10,AF=A.filter(a=>inF(a.t)),reais=AF.filter(a=>a.real);
+  const mm=k=>{const X=reais.filter(a=>a.ind===k);return X.length?Math.round(X.reduce((s,a)=>s+a.min,0)/X.length):0;};
+  kpiRow('#kAtr',[['Atrasos apontados',fi(AF.length),'OTP + OTA'],['Reais',fi(reais.length),'responsabilidade nossa'],['Indevidos',fi(AF.length-reais.length),'Amazon ou base'],
+    ['Média OTP real',mm('OTP')+' min','atraso na origem'],['Média OTA real',mm('OTA')+' min','atraso no destino'],['Evidência pendente',fi(AF.filter(a=>a.t.evid===2).length),'resolver antes da disputa',1]]);
+  // calendário
+  $('#calT').textContent=`Calendário · ${MES[mesCal]}/2026${S.mes?'':' (mês atual)'}`;
+  const first=new Date(2026,mesCal-1,1).getDay(),days=new Date(2026,mesCal,0).getDate();
+  let h=['D','S','T','Q','Q','S','S'].map(d=>`<span class="dow">${d}</span>`).join('');for(let i=0;i<first;i++)h+='<span class="day out"></span>';
+  for(let d=1;d<=days;d++){const X=A.filter(a=>a.t.mes===mesCal&&a.t.dia===d&&(S.lane<0||a.t.lane===S.lane)),re=X.filter(a=>a.real).length,pend=X.some(a=>a.t.evid===2);
+    h+=`<button type="button" class="day ${re?'real':X.length?'ind':''}" data-d="${d}" aria-pressed="${S.dia===d}" ${d>MD[mesCal]?'disabled':''}><span class="d">${d}</span>${X.length?`<span class="c">${re||X.length}</span>`:''}${pend?'<span class="p" title="evidência pendente"></span>':''}</button>`;}
+  $('#cal').innerHTML=h;$('#cal').querySelectorAll('.day[data-d]').forEach(b=>b.onclick=()=>{const d=+b.dataset.d;if(!S.mes){S.mes=mesCal;seg();}S.dia=S.dia===d?0:d;render();});
+  // chips
+  const CH=[['todos','Todos'],['real','Reais'],['ind','Indevidos'],['60','60 min ou mais'],['sem','Sem plano'],['pend','Evidência pendente']];
+  $('#chipsAtr').innerHTML=CH.map(([k,n])=>`<button type="button" data-f="${k}" aria-pressed="${S.fAtr===k}">${n}</button>`).join('');
+  $('#chipsAtr').querySelectorAll('button').forEach(b=>b.onclick=()=>{S.fAtr=b.dataset.f;atrasos();});
+  const fx={todos:()=>1,real:a=>a.real,ind:a=>!a.real,'60':a=>a.min>=60,sem:a=>a.real&&!planoDe(a)&&!planos().some(p=>!p.vrid&&p.res===a.res),pend:a=>a.t.evid===2}[S.fAtr];
+  const L=AF.filter(a=>(!S.dia||a.t.dia===S.dia)&&fx(a)).sort((a,b)=>b.t.mes-a.t.mes||b.t.dia-a.t.dia||b.min-a.min);
+  $('#atrSub').textContent=`${fi(L.length)} atrasos${S.dia?' em '+dd(S.mes,S.dia):''}. Vermelho na borda: responsabilidade nossa ou 60 min ou mais.`;
+  $('#tAtr').innerHTML=L.slice(0,300).map((a,i)=>{const t=a.t,p=planoDe(a)||planos().find(p=>!p.vrid&&p.res===a.res);
+    return`<tr class="${a.hot?'hot':''}"><td class="mono">${dd(t.mes,t.dia)}</td><td class="mono">${t.vrid}</td><td>${a.ind}</td><td><span class="pill ${a.real?'bad':'good'}">${a.real?'Real':'Indevido'}</span></td><td>${a.ind==='OTP'?'Origem':'Destino'} · ${a.onde}</td><td class="v">${a.min}</td><td>${esc(a.res)}</td><td>${t.frota?'Frota':'Agregado'}</td><td>${t.truck?'Truck':'Carreta'}</td><td>${['–','ADHOC','Retorno'][t.adhoc]}</td><td>${t.evid===2?'<span class="pill warn">Pendente</span>':'OK'}</td><td>${t.op}</td>
+    <td>${p?`<span class="pill ${p.st==='Concluído'?'good':'warn'}">${p.st}</span>`:a.real?`<button class="btn sm" type="button" data-plan="${i}">Criar plano</button>`:'<span class="mut">disputa</span>'}</td></tr>`;}).join('')||'<tr><td colspan="13">Nenhum atraso neste filtro.</td></tr>';
+  $('#tAtr').querySelectorAll('[data-plan]').forEach(b=>b.onclick=()=>{const a=L[+b.dataset.plan];novoPlano(a.t.vrid,a.res);});
+  $('#atrNote').innerHTML=L.length>300?`Mostrando os 300 mais recentes de ${fi(L.length)}.`:`<b>${fi(L.filter(a=>a.hot).length)}</b> de ${fi(L.length)} pedem atenção (nossa responsabilidade ou 60 min ou mais).`;
+  $('#btnCopyAtr').onclick=()=>copiar($('#btnCopyAtr'),L.map(a=>`${a.t.vrid}\t${a.ind}\t${a.real?'Real':'Indevido'}\t${a.min} min\t${a.res}`).join('\n'),'Copiar VRIDs da lista');
+  orbita(AF);causas();resumos(AF);}
 let pts=[];
-function orbita(){const cv=$('#orbita'),dpr=Math.min(2,devicePixelRatio||1),W=cv.clientWidth,H=380;cv.width=W*dpr;cv.height=H*dpr;const c=cv.getContext('2d');c.scale(dpr,dpr);
-  const L=filt(false),l=44,r=12,top=16,base=H*.68,bot=H-26,days=[[7,31],[8,31],[9,30],[10,24]],off={7:0,8:31,9:62,10:92},N=116;
-  const X=t=>l+(off[t.mes]+t.dia-.5)/N*(W-l-r),Yl=m=>base-Math.sqrt(Math.min(m,150)/150)*(base-top);
-  c.fillStyle='rgba(255,153,0,.06)';c.fillRect(l+62/N*(W-l-r),top-8,(W-l-r)*54/N,bot-top+8);
-  c.strokeStyle='#2b3846';c.fillStyle='#8C98A6';c.font='11px JetBrains Mono, monospace';
-  [0,10,30,60,120].forEach(m=>{const y=Yl(m);c.beginPath();c.moveTo(l,y);c.lineTo(W-r,y);c.stroke();c.fillText(m?m+'m':'STA',4,y+4);});
-  c.fillText('no prazo',4,(base+bot)/2+4);
-  days.forEach(([m])=>c.fillText(MES[m],X({mes:m,dia:1}),H-6));
-  const seed=s=>{let x=Math.sin(s)*1e4;return x-Math.floor(x);};
-  pts=L.map(t=>{const x=X(t)+(seed(t.id.length*97+t.dia*7+t.a1)-.5)*4;const late=t.a3>0;const y=late?Yl(t.a3):base+8+seed(+t.id.slice(4))*(bot-base-14);
-    return{x,y,t,c:late?css(CC[t.causa<0?1:t.causa]):'#56606B'};});
-  pts.forEach(p=>{c.fillStyle=p.c;c.globalAlpha=p.t.a3>0?.95:.5;c.beginPath();c.arc(p.x,p.y,p.t.a3>0?2.6:1.7,0,7);c.fill();});c.globalAlpha=1;}
+function orbita(AF){const cv=$('#orbita'),dpr=Math.min(2,devicePixelRatio||1),W=cv.clientWidth,H=300;cv.width=W*dpr;cv.height=H*dpr;const c=cv.getContext('2d');c.scale(dpr,dpr);
+  const l=40,r=10,top=14,bot=H-24,off={7:0,8:31,9:62,10:92},N=116,X=t=>l+(off[t.mes]+t.dia-.5)/N*(W-l-r),Y=m=>bot-Math.sqrt(Math.min(m,150)/150)*(bot-top);
+  c.fillStyle='rgba(255,153,0,.06)';c.fillRect(l+62/N*(W-l-r),top-6,(W-l-r)*54/N,bot-top+6);c.strokeStyle='#2b3846';c.fillStyle='#8C98A6';c.font='11px JetBrains Mono, monospace';
+  [0,10,30,60,120].forEach(m=>{const y=Y(m);c.beginPath();c.moveTo(l,y);c.lineTo(W-r,y);c.stroke();c.fillText(m+'m',4,y+4);});
+  Object.keys(MES).forEach(m=>c.fillText(MES[m],X({mes:+m,dia:1}),H-6));
+  c.strokeStyle='rgba(255,95,82,.5)';c.setLineDash([4,4]);c.beginPath();c.moveTo(l,Y(60));c.lineTo(W-r,Y(60));c.stroke();c.setLineDash([]);
+  pts=AF.map((a,i)=>({x:X(a.t)+((i*37)%7-3),y:Y(a.min),a}));
+  pts.forEach(p=>{c.fillStyle=p.a.real?css('--bad'):css('--good');c.globalAlpha=p.a.hot?.95:.6;c.beginPath();c.arc(p.x,p.y,p.a.hot?3:2.2,0,7);c.fill();});c.globalAlpha=1;}
 $('#orbita').addEventListener('mousemove',e=>{const r=e.target.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;let best=null,bd=64;
-  pts.forEach(p=>{const d=(p.x-x)**2+(p.y-y)**2;if(d<bd){bd=d;best=p;}});const tip=$('#tip');
-  if(!best){tip.hidden=true;return;}const t=best.t;tip.hidden=false;tip.style.left=best.x+'px';tip.style.top=best.y+'px';
-  tip.innerHTML=`<b>${t.id}</b> · ${String(t.dia).padStart(2,'0')}/${String(t.mes).padStart(2,'0')}<br>${D.lanes[t.lane].n}<br>origem ${t.a1} · CPT ${t.a2} · destino ${t.a3} min${t.mot?'<br>'+t.mot:''}`;});
+  pts.forEach(p=>{const d=(p.x-x)**2+(p.y-y)**2;if(d<bd){bd=d;best=p;}});const tip=$('#tip');if(!best){tip.hidden=true;return;}
+  const a=best.a;tip.hidden=false;tip.style.left=best.x+'px';tip.style.top=best.y+'px';
+  tip.innerHTML=`<b class="mono">${a.t.vrid}</b> · ${dd(a.t.mes,a.t.dia)}<br>${a.ind} ${a.real?'real':'indevido'} · ${a.min} min em ${a.onde}<br>${esc(a.res)}`;});
 $('#orbita').addEventListener('mouseleave',()=>$('#tip').hidden=true);
-
-/* motivos */
-function motivos(){const L=filt(true),W=640,H=260,l=40,r=10,t=16,b=30,ms=[7,8,9,10],gw=(W-l-r)/4,bw=gw*.5;
-  const cnt=ms.map(m=>[0,1,2].map(k=>L.filter(x=>x.mes===m&&x.late&&x.causa===k).length)),mx=Math.max(...cnt.map(a=>a[0]+a[1]+a[2]),1),top=Math.ceil(mx/20)*20;
-  const Y=v=>H-b-v/top*(H-t-b);let g='';
+function causas(){const W=640,H=240,l=40,r=10,t=16,b=30,ms=[7,8,9,10],gw=(W-l-r)/4,bw=gw*.5,LL=filt(true).filter(x=>x.tO===1||x.tA===1);
+  const cnt=ms.map(m=>[0,1,2].map(k=>LL.filter(x=>x.mes===m&&(x.causa<0?1:x.causa)===k).length)),mx=Math.max(...cnt.map(a=>a[0]+a[1]+a[2]),1),top=Math.ceil(mx/20)*20,Y=v=>H-b-v/top*(H-t-b);let g='';
   for(let v=0;v<=top;v+=top/4)g+=`<line x1="${l}" x2="${W-r}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--line)"/><text x="${l-6}" y="${Y(v)+4}" text-anchor="end">${v}</text>`;
   ms.forEach((m,i)=>{let acc=0;const cx=l+gw*i+gw/2,on=!S.mes||S.mes===m;cnt[i].forEach((v,k)=>{g+=`<rect x="${cx-bw/2}" y="${Y(acc+v)}" width="${bw}" height="${Y(acc)-Y(acc+v)}" fill="var(${CC[k]})" opacity="${on?1:.35}"><title>${MES[m]} · ${CAUSAS[k]}: ${v}</title></rect>`;acc+=v;});
     g+=`<text x="${cx}" y="${Y(acc)-6}" text-anchor="middle" fill="var(--ink-2)">${acc}</text><text x="${cx}" y="${H-10}" text-anchor="middle" fill="${on?'var(--ink)':'var(--muted)'}">${MES[m]}</text>`;});
-  $('#chCausa').innerHTML=g;
-  const F=filt(false).filter(x=>x.late),c={};F.forEach(x=>{const k=x.mot+'|'+x.causa;c[k]=(c[k]||0)+1;});
-  const top5=Object.entries(c).sort((a,b)=>b[1]-a[1]).slice(0,6);
-  $('#tMot').innerHTML=top5.map(([k,v])=>{const[m,ca]=k.split('|');return`<tr><td>${m}</td><td><span class="dot" style="--c:var(${CC[ca]})"></span>${CAUSAS[ca]}</td><td class="v">${v}</td></tr>`;}).join('')||'<tr><td colspan="3">Sem atrasos neste filtro.</td></tr>';
-  const by=[0,1,2].map(k=>F.filter(x=>x.causa===k).length),k=by.indexOf(Math.max(...by));
-  $('#motNote').innerHTML=F.length?`<b>${CAUSAS[k]}</b> responde por ${fp(pct(by[k],F.length))} das viagens com atraso neste filtro. É por aqui que o plano de ação começa.`:'Sem atrasos neste filtro.';}
+  $('#chCausa').innerHTML=g;}
+function resumos(AF){const c={};AF.forEach(a=>{c[a.res]=c[a.res]||[0,0];c[a.res][a.real?0:1]++;});
+  $('#tRes').innerHTML=Object.entries(c).sort((a,b)=>b[1][0]+b[1][1]-a[1][0]-a[1][1]).map(([k,[re,ind]])=>`<tr><td>${esc(k)}</td><td class="v">${re}</td><td class="v">${ind}</td></tr>`).join('');}
 
-/* contestar */
-function contestar(){const L=filt(false),C=L.filter(t=>t.amz&&!t.late),R=L.filter(t=>!t.amz&&t.late);
-  $('#contNote').innerHTML=`<b>${C.length} viagens</b> para contestar neste filtro. No sentido contrário, ${R.length} viagens com atraso no nosso registro que a Amazon não apontou: vale conferir antes de enviar.`;
-  const d=t=>`${String(t.dia).padStart(2,'0')}/${String(t.mes).padStart(2,'0')}`;
-  $('#tCont').innerHTML=C.map(t=>`<tr><td class="mono">${t.id}</td><td class="mono">${d(t)}</td><td>${D.lanes[t.lane].n}</td><td class="mono">${t.placa}</td><td><span class="pill good">no horário</span></td><td><span class="pill good">no horário</span></td><td><span class="pill good">no STA</span></td></tr>`).join('')||'<tr><td colspan="7">Nenhuma divergência neste filtro.</td></tr>';
-  $('#btnCopy').onclick=()=>{const txt='Viagens para revisão (Amazon marcou atraso; nosso registro mostra os três pontos no horário):\n'+C.map(t=>`${t.id} · ${d(t)}/2026 · ${D.lanes[t.lane].n} · ${t.placa}`).join('\n');
-    const b=$('#btnCopy');navigator.clipboard.writeText(txt).then(()=>{b.textContent='Lista copiada';setTimeout(()=>b.textContent='Copiar lista',1800);}).catch(()=>{b.textContent='Não foi possível copiar';});};}
+/* PLANOS DE AÇÃO (salvos neste navegador) */
+const KEY='torreAmazonVitrine.planos.v1';
+const SEED=[
+ {id:'ex1',vrid:'',res:'Trânsito',causa:'Saída no horário de pico na Dutra e na Av. Brasil.',acao:'Antecipar o CPT das lanes para SP em 40 min e monitorar a rota pelo rastreador.',resp:'Planejamento',prazo:'2026-09-20',st:'Concluído',ex:1},
+ {id:'ex2',vrid:'',res:'Condutor sem evidência',causa:'Motorista não registrava a chegada no app e não guardava foto.',acao:'Checklist de chegada com foto obrigatória; torre cobra em 10 min.',resp:'Torre de controle',prazo:'2026-09-15',st:'Concluído',ex:1},
+ {id:'ex3',vrid:'',res:'Documentação',causa:'Nota fiscal liberada depois da chegada do motorista.',acao:'Conferir documentação 2 h antes do CPT e escalar para a base.',resp:'Supervisor de pátio',prazo:'2026-10-10',st:'Em andamento',ex:1},
+ {id:'ex4',vrid:'',res:'Quebra mecânica',causa:'Preventiva dos agregados sem controle.',acao:'Agenda de preventiva por placa e bloqueio de veículo vencido.',resp:'Manutenção',prazo:'2026-10-30',st:'Em andamento',ex:1},
+ {id:'ex5',vrid:'',res:'Erro do condutor em trajeto',causa:'Rotas novas sem treinamento do motorista.',acao:'Briefing de rota no primeiro embarque e rota fixa no GPS.',resp:'Torre de controle',prazo:'2026-11-05',st:'Planejado',ex:1}];
+function planos(){try{const x=JSON.parse(localStorage.getItem(KEY)||'null');if(Array.isArray(x))return x;}catch(e){}return SEED.slice();}
+function salvar(L){try{localStorage.setItem(KEY,JSON.stringify(L));return true;}catch(e){return false;}}
+const RES=[...new Set(A.map(a=>a.res))].sort();
+$('#pRes').innerHTML=RES.map(r=>`<option>${esc(r)}</option>`).join('');
+$('#vridList').innerHTML=A.filter(a=>a.real).slice(-400).map(a=>`<option value="${a.t.vrid}">`).join('');
+function novoPlano(vrid,res){S.edit=null;$('#fPlano').reset();$('#pVrid').value=vrid||'';$('#pRes').value=res||RES[0];$('#formT').textContent='Novo plano de ação';$('#pCancel').hidden=true;tab('planos');$('#pCausa').focus();}
+$('#pVrid').onchange=e=>{const a=A.find(a=>a.t.vrid===e.target.value);if(a)$('#pRes').value=a.res;};
+$('#fPlano').onsubmit=e=>{e.preventDefault();const L=planos(),p={id:S.edit||('p'+Date.now()),vrid:$('#pVrid').value.trim(),res:$('#pRes').value,causa:$('#pCausa').value.trim(),acao:$('#pAcao').value.trim(),resp:$('#pResp').value.trim(),prazo:$('#pPrazo').value,st:$('#pSt').value};
+  const i=L.findIndex(x=>x.id===p.id);if(i>=0)L[i]=p;else L.unshift(p);const ok=salvar(L);S.edit=null;$('#fPlano').reset();$('#pCancel').hidden=true;$('#formT').textContent='Novo plano de ação';
+  $('#pMsg').textContent=ok?'Plano salvo.':'Plano registrado só nesta sessão (o navegador não permitiu salvar).';if(!ok)SEED.splice(0,SEED.length,...L);planosV();};
+$('#pCancel').onclick=()=>{S.edit=null;$('#fPlano').reset();$('#pCancel').hidden=true;$('#formT').textContent='Novo plano de ação';};
+function planosV(){const L=planos(),c=s=>L.filter(p=>p.st===s).length;
+  $('#pStatus').innerHTML=[['Planejado','warn'],['Em andamento','warn'],['Concluído','good']].map(([s,k])=>`<div><span class="label">${s}</span><b class="${k}">${c(s)}</b></div>`).join('');
+  const rep={};A.filter(a=>a.real&&inF(a.t)).forEach(a=>rep[a.res]=(rep[a.res]||0)+1);
+  $('#tRep').innerHTML=Object.entries(rep).sort((a,b)=>b[1]-a[1]).map(([r,n])=>{const p=L.find(p=>p.res===r);return`<tr><td>${esc(r)}</td><td class="v">${n}</td><td>${p?`<span class="pill ${p.st==='Concluído'?'good':'warn'}">${p.st}</span>`:'<span class="pill bad">sem plano</span>'}</td><td>${p?'':`<button class="btn sm" type="button" data-r="${esc(r)}">Criar plano</button>`}</td></tr>`;}).join('');
+  $('#tRep').querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>novoPlano('',b.dataset.r));
+  $('#tPlanos').innerHTML=L.map(p=>`<tr><td class="mono">${esc(p.vrid||'por motivo')}</td><td>${esc(p.res)}${p.ex?'<span class="ex">exemplo</span>':''}</td><td style="white-space:normal;min-width:200px">${esc(p.causa)}</td><td style="white-space:normal;min-width:220px">${esc(p.acao)}</td><td>${esc(p.resp)}</td><td class="mono">${p.prazo?p.prazo.split('-').reverse().join('/'):''}</td><td><span class="pill ${p.st==='Concluído'?'good':'warn'}">${p.st}</span></td><td><button class="btn sm ghost" type="button" data-e="${p.id}">Editar</button></td></tr>`).join('');
+  $('#tPlanos').querySelectorAll('[data-e]').forEach(b=>b.onclick=()=>{const p=planos().find(x=>x.id===b.dataset.e);S.edit=p.id;$('#pVrid').value=p.vrid;$('#pRes').value=p.res;$('#pCausa').value=p.causa;$('#pAcao').value=p.acao;$('#pResp').value=p.resp;$('#pPrazo').value=p.prazo;$('#pSt').value=p.st;$('#formT').textContent='Editando plano';$('#pCancel').hidden=false;$('#pCausa').focus();});}
 
-function render(){const L=filt(false);kpis(L);
-  if(S.tab==='geral'){chMes();mudou();}
-  if(S.tab==='rotas')globe();
-  if(S.tab==='viagens')orbita();
-  if(S.tab==='motivos')motivos();
-  if(S.tab==='contestar')contestar();}
+/* FATURAMENTO */
+['rMeta','rMulta','rTeto','rBo','rBa'].forEach((id,i)=>{const k=['meta','multa','teto','bO','bA'][i];$('#'+id).value=R[k];$('#'+id).oninput=e=>{const v=parseFloat(e.target.value);if(!isNaN(v)){R[k]=v;render();}};});
+function fat(){const L=filt(),f=fech(L);
+  kpiRow('#kFat',[['Faturamento bruto',brl(f.fat),`${fi(f.n)} VRIDs executados`],['OTP Amazon',fp(f.pO),`<span class="pill ${stM(f.pO)}">meta ${R.meta}%</span>`],['OTA Amazon',fp(f.pA),`<span class="pill ${stM(f.pA)}">meta ${R.meta}%</span>`],
+    ['Penalidade',brl(f.pen),`teto ${brl(f.teto)}`],['Bônus',brl(f.bon),f.bon?'meta atingida':'abaixo da meta'],['Líquido',brl(f.liq),`a disputa recupera ${brl(f.disp.liq-f.liq)}`,1]]);
+  const LL=filt(true);$('#tFech').innerHTML=[7,8,9,10].map(m=>{const x=fech(LL.filter(t=>t.mes===m));return`<tr class="${S.mes===m?'sel':''}"><td>${MES[m]}${m===10?' (até 24)':''}</td><td class="v">${fi(x.n)}</td><td class="v">${brl(x.fat)}</td><td><span class="pill ${stM(x.pO)}">${fp(x.pO)}</span></td><td><span class="pill ${stM(x.pA)}">${fp(x.pA)}</span></td><td class="v bad">${brl(x.pen)}</td><td class="v good">${brl(x.bon)}</td><td class="v">${brl(x.liq)}</td><td class="v good">+${brl(x.disp.liq-x.liq)}</td></tr>`;}).join('');
+  const j=fech(LL.filter(t=>t.mes===7)),o=fech(LL.filter(t=>t.mes===10));
+  $('#fatNote').innerHTML=`A penalidade caiu de <b>${brl(j.pen)}</b> em julho para <b>${brl(o.pen)}</b> em outubro (até dia 24). Abaixo de ${R.meta}%, cada VRID atrasado custa ${brl(R.multa)}; os indevidos que forem aceitos na disputa saem da conta.`;
+  const tp={};L.forEach(t=>{const k=t.truck?'Truck':'Carreta';tp[k]=tp[k]||[0,0];tp[k][0]++;tp[k][1]+=t.preco;});
+  $('#tTipo').innerHTML=Object.entries(tp).map(([k,[n,v]])=>`<tr><td>${k}</td><td class="v">${fi(n)}</td><td class="v">${brl(v/n)}</td><td class="v">${brl(v)}</td></tr>`).join('');
+  $('#tFatLane').innerHTML=D.lanes.map((ln,i)=>{const X=L.filter(t=>t.lane===i);if(!X.length)return'';const v=X.reduce((s,t)=>s+t.preco,0),at=X.filter(t=>t.tO||t.tA).length;return[v,`<tr><td>${ln.n}</td><td class="v">${fi(X.length)}</td><td class="v">${brl(v)}</td><td class="v">${at}</td></tr>`];}).filter(Boolean).sort((a,b)=>b[0]-a[0]).map(x=>x[1]).join('');
+  const C=A.filter(a=>inF(a.t)).sort((a,b)=>b.t.mes-a.t.mes||b.t.dia-a.t.dia);
+  $('#contamSub').textContent=`${fi(C.length)} atrasos apontados pela Amazon neste filtro. Unidade = VRID por indicador. Indevidos saem da conta se a disputa for aceita.`;
+  $('#tContam').innerHTML=C.slice(0,200).map(a=>{const x=fech(T.filter(t=>t.mes===a.t.mes&&(S.lane<0||t.lane===S.lane))),p=a.ind==='OTP'?x.pO:x.pA;
+    return`<tr class="${a.real?'hot':''}"><td class="mono">${a.t.vrid}</td><td class="mono">${dd(a.t.mes,a.t.dia)}</td><td>${a.ind}</td><td><span class="pill ${a.real?'bad':'good'}">${a.real?'Real':'Indevido'}</span></td><td>${D.lanes[a.t.lane].n}</td><td class="v">${brl(a.t.preco)}</td><td>${p<R.meta?(a.real?brl(R.multa):'em disputa'):'R$ 0 (na meta)'}</td></tr>`;}).join('');}
+
+/* ROTAS */
+function globe(){const cv=$('#globe'),dpr=Math.min(2,devicePixelRatio||1),W=cv.clientWidth,H=420;cv.width=W*dpr;cv.height=H*dpr;const c=cv.getContext('2d');c.scale(dpr,dpr);
+  const lat0=-21.6*Math.PI/180,lon0=-43.6*Math.PI/180,R0=Math.min(W*7.2,3600),cx=W/2,cy=H/2+20,rad=Math.PI/180;
+  const P=(la,lo)=>{la*=rad;lo*=rad;const x=R0*Math.cos(la)*Math.sin(lo-lon0),y=R0*(Math.cos(lat0)*Math.sin(la)-Math.sin(lat0)*Math.cos(la)*Math.cos(lo-lon0));return[cx+x,cy-y];};
+  const g=c.createLinearGradient(0,0,0,H*.55);g.addColorStop(0,'rgba(255,153,0,.22)');g.addColorStop(1,'rgba(255,153,0,0)');c.fillStyle=g;c.fillRect(0,0,W,H*.55);
+  c.fillStyle='#2a3644';for(let la=-27;la<=-15;la+=.22)for(let lo=-52;lo<=-35;lo+=.22){const[x,y]=P(la,lo);if(x>-4&&x<W+4&&y>-4&&y<H+4){c.beginPath();c.arc(x,y,1.05,0,7);c.fill();}}
+  const L=filt(),st=D.lanes.map((ln,i)=>{const X=L.filter(t=>t.lane===i);return{n:X.length,ota:pct(X.filter(t=>!t.a3).length,X.length)};});
+  const col=v=>css('--'+stM(v));
+  D.lanes.forEach((ln,i)=>{if(!st[i].n)return;const a=D.cid[ln.o],b=D.cid[ln.d],sel=S.sel===i;c.beginPath();
+    for(let k=0;k<=40;k++){const f=k/40,la=a[0]+(b[0]-a[0])*f,lo=a[1]+(b[1]-a[1])*f,[x,y]=P(la,lo),h=Math.sin(Math.PI*f)*Math.hypot(b[0]-a[0],b[1]-a[1])*14;k?c.lineTo(x,y-h):c.moveTo(x,y-h);}
+    c.strokeStyle=col(st[i].ota);c.globalAlpha=S.sel<0||sel?1:.25;c.lineWidth=sel?3.2:2;c.shadowColor=c.strokeStyle;c.shadowBlur=sel?14:6;c.stroke();c.shadowBlur=0;c.globalAlpha=1;});
+  const OFF={'Duque de Caxias':[-8,-10,'right'],'Nova Iguaçu':[-8,16,'right'],'São Gonçalo':[8,16,'left']};
+  Object.entries(D.cid).forEach(([n,[la,lo]])=>{const[x,y]=P(la,lo),[dx,dy,al]=OFF[n]||[7,4,'left'];c.fillStyle=css('--accent');c.beginPath();c.arc(x,y,4,0,7);c.fill();c.fillStyle=css('--ink-2');c.font='11px JetBrains Mono, monospace';c.textAlign=al;c.fillText(n,x+dx,y+dy);c.textAlign='left';});
+  $('#tLanes').innerHTML=D.lanes.map((ln,i)=>{const X=L.filter(t=>t.lane===i),n=X.length;if(!n)return'';const a=st[i].ota,mm=(X.reduce((s,t)=>s+t.a3,0)/n).toFixed(1).replace('.',',');
+    return`<tr data-lane="${i}" class="${S.sel===i?'sel':''}"><td><span class="dot" style="--c:var(--${stM(a)})"></span>${ln.n}</td><td class="v">${n}</td><td><span class="pill ${stM(a)}">${fp(a)}</span></td><td class="v">${mm}</td></tr>`;}).join('');
+  document.querySelectorAll('#tLanes tr').forEach(tr=>tr.onclick=()=>{const i=+tr.dataset.lane;S.sel=S.sel===i?-1:i;globe();});}
+
+/* DISPUTA */
+function copiar(b,txt,lab){navigator.clipboard.writeText(txt).then(()=>{b.textContent='Copiado';setTimeout(()=>b.textContent=lab,1800);}).catch(()=>{b.textContent='Não foi possível copiar';});}
+function disputa(){const C=A.filter(a=>!a.real&&inF(a.t)).sort((a,b)=>b.t.mes-a.t.mes||b.t.dia-a.t.dia),f=fech(filt());
+  $('#contNote').innerHTML=`<b>${C.length} indevidos</b> neste filtro. Se a disputa for aceita, o líquido sobe <b>${brl(f.disp.liq-f.liq)}</b>. ${C.filter(a=>a.t.evid===2).length} ainda estão com evidência pendente.`;
+  $('#tCont').innerHTML=C.map(a=>`<tr><td class="mono">${a.t.vrid}</td><td class="mono">${dd(a.t.mes,a.t.dia)}</td><td>${a.ind}</td><td>${D.lanes[a.t.lane].n}</td><td class="v">${a.min}</td><td><span class="pill good">no horário</span></td><td>${esc(a.res)}</td><td>${a.t.evid===2?'<span class="pill warn">Pendente</span>':'OK'}</td></tr>`).join('')||'<tr><td colspan="8">Nenhum indevido neste filtro.</td></tr>';
+  $('#btnCopy').onclick=()=>copiar($('#btnCopy'),'VRIDs para disputa (Amazon apontou atraso; nosso registro está no horário):\n'+C.map(a=>`${a.t.vrid} · ${dd(a.t.mes,a.t.dia)}/2026 · ${a.ind} · ${D.lanes[a.t.lane].n} · ${a.res}`).join('\n'),'Copiar lista para a disputa');}
+
+function render(){({geral,atrasos,planos:planosV,fat,rotas:globe,disputa})[S.tab]();}
 seg();
 const h=(location.hash||'').slice(1);tab(TABS.some(([k])=>k===h)?h:'geral');
 </script>

@@ -54,7 +54,42 @@ A_LANES = {"Duque de Caxias/RJ → Cajamar/SP":420,"Duque de Caxias/RJ → Betim
  "Nova Iguaçu/RJ → São Gonçalo/RJ":75,"Nova Iguaçu/RJ → Campos dos Goytacazes/RJ":240,"Cajamar/SP → Duque de Caxias/RJ":420,"Betim/MG → Duque de Caxias/RJ":390}
 A_OTP = {7: .74, 8: .76, 9: .81, 10: .89}; A_OTA = {7: .86, 8: .87, 9: .91, 10: .96}
 cab_a = ["ID Viagem","Mês","Data","Fase","Lane","Tipo de rota","Motorista","Placa","Veículo","Apresentação programada","Chegada na origem","CPT (STD)","Saída real (ATD)","STA destino","Chegada real (ATA)",
- "Transit time (min)","Atraso chegada origem (min)","Atraso saída (min)","Atraso destino (min)","OTP","OTA","Status nosso","Status Amazon","Divergência","Motivo do atraso","Detalhe do motivo","Desconto (R$)"]
+ "Transit time (min)","Atraso chegada origem (min)","Atraso saída (min)","Atraso destino (min)","OTP","OTA","Status nosso","Status Amazon","Divergência","Motivo do atraso","Detalhe do motivo",
+ "VRID","Vínculo","ADHOC/Retorno","Operador","Evidência","Amazon OTP","Amazon OTA","Tipo OTP","Tipo OTA","Min. Amazon OTP","Min. Amazon OTA","Resumo OTP","Resumo OTA","Preço BID (R$)"]
+# Campos extras com gerador próprio (não mexem nos números já calibrados)
+R2 = random.Random(2610)
+VR_USADOS = set()
+def vrid():
+    while True:
+        v = "11" + "".join(R2.choice("0123456789ABCDEFGHJKLMNPQRSTVWXYZ") for _ in range(4))
+        if v not in VR_USADOS: VR_USADOS.add(v); return v + "***"   # 3 últimos mascarados
+OPERADORES = ["Lucas", "Bianca", "Rafael", "Camila"]
+RESUMO_REAL = {"Origem": ["Documentação", "Condutor sem evidência", "Quebra mecânica"], "Trânsito": ["Trânsito", "Trânsito", "Erro do condutor em trajeto", "Quebra mecânica", "Saúde do condutor"],
+               "Destino": ["Trânsito", "Erro do condutor em trajeto"]}
+RESUMO_INDEV = {"OTP": ["Erro da base OTP", "Liberado CPT"], "OTA": ["Erro da base OTA", "Liberado CPT"]}
+BID = {"Duque de Caxias/RJ → Cajamar/SP": 4200, "Cajamar/SP → Duque de Caxias/RJ": 4200, "Duque de Caxias/RJ → Betim/MG": 3900, "Betim/MG → Duque de Caxias/RJ": 3900,
+       "Duque de Caxias/RJ → Serra/ES": 4600, "Nova Iguaçu/RJ → São Gonçalo/RJ": 950, "Nova Iguaçu/RJ → Campos dos Goytacazes/RJ": 2500}  # preço por carga de CARRETA, fictício
+def resumo_ind(t, ind, causa):
+    if t == "Indevido": return R2.choice(RESUMO_INDEV[ind])
+    if t == "Real": return R2.choice(RESUMO_REAL[causa or "Trânsito"])
+    return ""
+def extras(lane, veic, mes, a1, a3, nosso, cli):
+    amz_o, amz_a, min_o, min_a = a1 > 0, a3 > 0, a1, a3
+    if nosso == "Atrasado" and cli == "No prazo": amz_o = amz_a = False; min_o = min_a = 0
+    if nosso == "No prazo" and cli == "Atrasado":
+        if R2.random() < .5: amz_o, min_o = True, R2.randint(3, 45)
+        else: amz_a, min_a = True, R2.randint(3, 45)
+    tipo = lambda amz, nosso_min: ("Real" if nosso_min > 0 else "Indevido") if amz else ""
+    t_o, t_a = tipo(amz_o, a1), tipo(amz_a, a3)
+    def resumo(t, ind, causa):
+        if t == "Indevido": return R2.choice(RESUMO_INDEV[ind])
+        if t == "Real": return R2.choice(RESUMO_REAL[causa or "Trânsito"])
+        return ""
+    adhoc = "ADHOC" if ("MG" in lane.split("→")[1] or "ES" in lane.split("→")[1]) else ("Retorno" if lane.endswith("Duque de Caxias/RJ") else "")
+    evid = "" if not (amz_o or amz_a) else ("OK" if R2.random() < (.97 if mes == 10 else .85) else "Pendente")
+    preco = round(BID[lane] * (1 if veic == "Carreta" else .7))
+    return [vrid(), "Agregado" if R2.random() < .7 else "Frota", adhoc, R2.choice(OPERADORES), evid,
+            "Atrasado" if amz_o else "No prazo", "Atrasado" if amz_a else "No prazo", t_o, t_a, min_o, min_a, preco], (t_o, t_a)
 LA = []; n = 26000
 for mes, lst in base_viagens(A_LANES, 11):
     otp_late = marca(len(lst), 1 - A_OTP[mes]); ota_late = marca(len(lst), 1 - A_OTA[mes])
@@ -76,7 +111,9 @@ for mes, lst in base_viagens(A_LANES, 11):
         LA.append([f"AMZ-{n}", mes, v["std"].strftime("%d/%m/%Y"), FASE[mes], v["lane"], "Ad hoc" if ("MG" in v["lane"] or "ES" in v["lane"]) else "Fixa",
                    v["mot"][0], v["mot"][1], random.choice(VEIC[:2]), fmt(v["apres_prog"]), fmt(apres), fmt(v["std"]), fmt(atd), fmt(v["sta"]), fmt(ata), v["tt"],
                    a1, a2, a3, "Atrasado" if a1 > 0 else "No prazo", "Atrasado" if a3 > 0 else "No prazo", nosso, cli, "Sim" if cli != nosso else "Não",
-                   causa, random.choice(MOTIVOS[causa]) if causa else "", "PENDENTE (valor por minuto desconhecido)" if late else 0]); n += 1
+                   causa, random.choice(MOTIVOS[causa]) if causa else ""]); n += 1
+        ex, (t_o, t_a) = extras(v["lane"], LA[-1][8], mes, a1, a3, nosso, cli)
+        LA[-1] += ex[:11] + [resumo_ind(t_o, "OTP", causa), resumo_ind(t_a, "OTA", causa), ex[11]]
 salva("amazon_viagens_ficticio", cab_a, LA)
 
 # ---------------- SHOPEE: começa entre 60% e 68% na origem e no destino, sobe a partir de setembro ----------------
@@ -148,7 +185,8 @@ salva("jt_viagens_ficticio", cab_j, LJ)
 
 # ---------------- Excel único ----------------
 REGRAS = {
- "Amazon": ["Tolerância ZERO nos três pontos: chegada na origem (OTP), saída (CPT) e chegada no destino (OTA).","Valor do desconto por minuto: PENDENTE (coluna marcada, sem valor inventado).",
+ "Amazon": ["Tolerância ZERO nos três pontos: chegada na origem (OTP), saída (CPT) e chegada no destino (OTA).","VRID fictício com os 3 últimos caracteres mascarados (***). Tipo Real = atraso nosso; Indevido = a Amazon apontou, mas nosso registro está no horário.",
+            "Preço BID fictício por carga (Carreta; Truck = 70%). As regras de faturamento ficam no painel e são editáveis.",
             "Status Amazon = número do cliente; Status nosso = calculado por nós. Divergência quando diferem."],
  "Shopee": ["Origem: SEM tolerância. Chegou atrasado = Delay. Adiantado na origem não pontua.",
             "Destino: janela STA ajustado ± tolerância pelo transit time (até 1h: 5 · 1h–2h59: 10 · 3h–5h59: 15 · 6h–11h59: 20 · 12h–23h59: 25 · 24h+: 30 min).",
