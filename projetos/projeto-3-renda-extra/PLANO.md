@@ -13,8 +13,8 @@ Vender painéis de performance e automações (Google Sheets, HTML offline) para
 - Gasto máximo: R$ 0 até o 1º cliente.
 
 ## Agenda
-- Seg a sex: 20h30 às 23h (folga de segunda a sexta quando precisar).
-- Sábado: um bloco de 4 h. Domingo: livre, para a família.
+- Seg a sex: 18h às 20h (atualizado em 28/10).
+- Sábado: 8h às 16h (atualizado em 28/10). Domingo: livre, para a família.
 
 ## Passos (cada um até 1 h)
 1. Bases fictícias (feito em 25/10): `dados-ficticios/` com Amazon 1.250, Shopee 1.180 e J&T 1.060 viagens, cada uma com a regra do seu cliente. Gerador: `gerar_bases.py`.
