@@ -26,6 +26,9 @@ Quando eu pedir para "salvar", "lembrar", "anotar" ou "da próxima vez faça X":
 - Idioma: português do Brasil
 - Trabalho: analista pleno, setor de Qualidade, área de logística (performance dos clientes). Também crio projetos de IA para a empresa.
 - Nível técnico: intermediário — explique só o que for novo.
+- Vínculo (29/10/2026): CLT na MR Brasil Express. Combinado verbalmente: promoção de assistente 1 para 2, com bonificação mensal que iguala o salário de assistente 3, e a empresa paga a faculdade de IA (a confirmar qual; valores/prazos ainda sem papel).
+- Piloto Claude corporativo (aprovado 27/10, 2 meses, R$ 1.790/mês, 5 assentos: Haroldo, Laciele, Ketheelen, Matheus, Daniel). Alan supervisiona; TI (Felipe) cuida de acessos/segurança; Haroldo desenvolve painéis/automações e consolida resultados. E-mails de 28-29/10 (thread "Formalização do projeto de IA") dizem que as soluções são patrimônio da empresa e há 3 políticas de TI (POL-TI-IA-001/002/003) em análise jurídica.
+- Plano dele para renda extra: acompanhar os 2 meses e depois propor contrato de cobrança por novas automações, painéis, consultoria e treinamento. Ainda não combinado por escrito.
 
 ## Como quero as respostas
 - Tamanho médio, com o motivo. Tom informal e amigável. Prefiro passo a passo numerado.
@@ -69,7 +72,7 @@ Quando eu pedir para "salvar", "lembrar", "anotar" ou "da próxima vez faça X":
 |---|---|---|---|---|---|
 | Painel de planos de ação (prazo 01/11, prioridade: Painel Shopee) | Tratar gargalos e criar ações para não se repetirem | Em andamento (aba "Visão operacional") | Concluir a aba "Visão operacional" | 2026-10-24 | [a informar] |
 | Projeto 2 (nome a confirmar): Performance MREBR + Torre Amazon | Performance/faturamento MREBR e registro diário de OTP/OTA | Em andamento | Aguardando de mim: valor por minuto de desconto e explicação da divergência Relay x Performance | 2026-10-24 | [a informar] |
-| Projeto 3: Renda extra (painéis e automações) | Objetivo nº 1: primeira venda do painel; meta pessoal: reserva de R$ 4.000 | Em andamento (bases e identidade visual prontas; contexto em `CONTEXTO.md`) | Montar 1 painel por cliente (Amazon, Shopee, J&T) a partir das torres do laboratório; planos e preços p/ médio porte em `precos/` | 2026-10-28 | este |
+| Projeto 3: Renda extra (painéis e automações) | Objetivo nº 1: primeira venda do painel; meta pessoal: reserva de R$ 4.000 | Em andamento (bases e identidade visual prontas; contexto em `CONTEXTO.md`) | Montar 1 painel por cliente (Amazon, Shopee, J&T) a partir das torres do laboratório; planos e preços p/ médio porte em `precos/`; contexto mudou em 29/10 (piloto na empresa, ver Quem sou eu) | 2026-10-29 | este |
 
 ## Agente finalizador (resumo; detalhe em `docs/agente-finalizador.md`)
 - Trabalha em branch própria, abre um PR por passo do plano (passo máx. 1 h). Eu aprovo só o que for sensível; merge só com verificações verdes e meu ok.
