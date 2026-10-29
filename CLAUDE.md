@@ -29,6 +29,7 @@ Quando eu pedir para "salvar", "lembrar", "anotar" ou "da próxima vez faça X":
 - Vínculo (29/10/2026): CLT na MR Brasil Express. Combinado verbalmente: promoção de assistente 1 para 2, com bonificação mensal que iguala o salário de assistente 3, e a empresa paga a faculdade de IA (a confirmar qual; valores/prazos ainda sem papel).
 - Piloto Claude corporativo (aprovado 27/10, 2 meses, R$ 1.790/mês, 5 assentos: Haroldo, Laciele, Ketheelen, Matheus, Daniel). Alan supervisiona; TI (Felipe) cuida de acessos/segurança; Haroldo desenvolve painéis/automações e consolida resultados. E-mails de 28-29/10 (thread "Formalização do projeto de IA") dizem que as soluções são patrimônio da empresa e há 3 políticas de TI (POL-TI-IA-001/002/003) em análise jurídica.
 - Plano dele para renda extra: acompanhar os 2 meses e depois propor contrato de cobrança por novas automações, painéis, consultoria e treinamento. Ainda não combinado por escrito.
+- Pendente (30/10): perguntar ao Alan valor e data da bonificação/aumento, regra de pagamento da faculdade (EAD até R$ 190 = empresa paga tudo; semipresencial até R$ 300 = metade; acima de ~R$ 400 = metade) e deixar claro que demanda nova fora do piloto é combinada por escrito. Ele traz as respostas e dúvidas depois.
 
 ## Como quero as respostas
 - Tamanho médio, com o motivo. Tom informal e amigável. Prefiro passo a passo numerado.
